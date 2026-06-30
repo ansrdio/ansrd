@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIST 800-171 / CMMC Readiness Tracker — Online Tool</title>
+<meta name="description" content="Free in-browser NIST 800-171 compliance tracker. All 110 controls, live dashboard, export to XLSX. No signup, no data collection.">
+<link rel="canonical" href="https://ansrd.io/app/">
+<meta property="og:title" content="NIST 800-171 Readiness Tracker — Use Online Free">
+<meta property="og:description" content="Track all 110 NIST 800-171 controls in your browser. Export to XLSX. No accounts.">
+<meta property="og:url" content="https://ansrd.io/app/">
+<meta property="og:image" content="https://ansrd.io/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{
+  --ink:#10222e;--paper:#f6f4ef;--line:#cdd6db;--teal:#0f6b6b;--teal-deep:#0a4a4a;
+  --amber:#c08a2e;--muted:#5d6b73;--card:#ffffff;
+  --met:#1f7a4d;--partial:#9a7400;--gap:#a32a2a;--notstarted:#6b7280;
+  --mono:"SFMono-Regular",ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;color:var(--ink);background:var(--paper);line-height:1.5;-webkit-font-smoothing:antialiased;font-size:15px}
+button,select,input,textarea{font:inherit}
+
+/* Layout */
+.app-shell{display:grid;grid-template-rows:auto 1fr;min-height:100vh}
+header.top{border-bottom:1px solid var(--line);background:rgba(246,244,239,.92);backdrop-filter:blur(6px);position:sticky;top:0;z-index:100;padding:0 24px}
+header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;text-decoration:none;color:var(--ink)}
+.glyph{width:22px;height:22px;border:2px solid var(--teal);border-radius:5px;position:relative;flex:none}
+.glyph::before{content:"";position:absolute;inset:4px 4px auto 4px;height:2px;background:var(--teal)}
+.glyph::after{content:"";position:absolute;inset:auto 4px 4px 4px;height:2px;background:var(--amber)}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;background:var(--line);border-radius:8px;padding:3px;margin:0}
+.tabs button{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;padding:7px 14px;border:none;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-weight:600;white-space:nowrap}
+.tabs button.active{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tabs button:hover:not(.active){color:var(--ink)}
+
+/* Actions */
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button,.actions label{font-family:var(--mono);font-size:.72rem;padding:7px 13px;border-radius:6px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.actions button:hover,.actions label:hover{border-color:var(--teal);color:var(--teal)}
+.actions input[type="file"]{display:none}
+
+/* Main content */
+.main{max-width:1400px;margin:0 auto;width:100%;padding:24px}
+.panel{display:none}
+.panel.active{display:block}
+
+/* Dashboard */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.dash-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px}
+.dash-card .num{font-size:2rem;font-weight:700;color:var(--teal-deep)}
+.dash-card .lbl{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.score-card .num{color:var(--met)}
+@media(max-width:900px){.dash-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.dash-grid{grid-template-columns:1fr}}
+
+.family-table{width:100%;border-collapse:collapse;font-size:.82rem;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.family-table th,.family-table td{padding:10px 14px;text-align:left;border-bottom:1px solid #eee}
+.family-table th{font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#fbfaf7}
+.family-table tr:last-child td{border-bottom:none}
+
+/* Control tracker table */
+.tracker-controls{margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.tracker-controls select,.tracker-controls input{font-family:var(--mono);font-size:.78rem;padding:7px 12px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+.tracker-controls input{min-width:200px}
+
+.ctrl-table{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ctrl-table th,.ctrl-table td{padding:9px 12px;text-align:left;border-bottom:1px solid #eee;vertical-align:top}
+.ctrl-table th{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#fbfaf7;position:sticky;top:56px;z-index:5}
+.ctrl-table tr:last-child td{border-bottom:none}
+.ctrl-table .id-col{font-family:var(--mono);color:var(--muted);white-space:nowrap;width:60px}
+.ctrl-table .family-col{font-family:var(--mono);font-size:.7rem;white-space:nowrap;width:90px}
+.ctrl-table .req-col{max-width:300px}
+.ctrl-table select{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:var(--card)}
+.ctrl-table input[type="text"],.ctrl-table input[type="date"]{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;width:100%;min-width:80px;background:var(--card)}
+.ctrl-table textarea{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;width:100%;min-height:32px;resize:vertical;background:var(--card)}
+
+/* Status pills */
+.pill{font-family:var(--mono);font-size:.66rem;font-weight:700;padding:3px 8px;border-radius:16px;letter-spacing:.03em;display:inline-block}
+.pill-met{background:#e1f1e8;color:var(--met)}
+.pill-partial{background:#f5ecd2;color:var(--partial)}
+.pill-gap{background:#f6e0e0;color:var(--gap)}
+.pill-notstarted{background:#eef0f2;color:var(--notstarted)}
+
+/* POA&M */
+.poam-table{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.poam-table th,.poam-table td{padding:9px 12px;text-align:left;border-bottom:1px solid #eee;vertical-align:top}
+.poam-table th{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#fbfaf7}
+.poam-table input,.poam-table select,.poam-table textarea{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;width:100%;background:var(--card)}
+.poam-table textarea{min-height:30px;resize:vertical}
+
+.add-row-btn{font-family:var(--mono);font-size:.76rem;padding:9px 16px;border:1.5px dashed var(--line);border-radius:8px;background:transparent;color:var(--teal);cursor:pointer;margin-top:12px;font-weight:600}
+.add-row-btn:hover{border-color:var(--teal);background:rgba(15,107,107,.04)}
+.remove-btn{font-family:var(--mono);font-size:.66rem;padding:3px 8px;border:1px solid #f6e0e0;border-radius:4px;background:#fff;color:var(--gap);cursor:pointer}
+.remove-btn:hover{background:#f6e0e0}
+
+/* Access Review */
+.review-table{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.review-table th,.review-table td{padding:9px 12px;text-align:left;border-bottom:1px solid #eee;vertical-align:top}
+.review-table th{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#fbfaf7}
+.review-table input,.review-table select,.review-table textarea{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;width:100%;background:var(--card)}
+
+/* Responsive */
+.table-wrap{overflow-x:auto;border-radius:10px}
+@media(max-width:768px){
+  header .inner{flex-wrap:wrap;height:auto;padding:10px 0}
+  .tabs{overflow-x:auto;flex-wrap:nowrap}
+  .main{padding:16px}
+}
+
+/* Disclaimer */
+.disclaimer{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:32px;padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--card);max-width:700px}
+
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:3px}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<header class="top">
+  <div class="inner">
+    <a href="/" class="brand"><span class="glyph" aria-hidden="true"></span> Readiness Tracker</a>
+    <div class="tabs" role="tablist" aria-label="Tracker views">
+      <button role="tab" aria-selected="true" data-tab="dashboard" class="active">Dashboard</button>
+      <button role="tab" aria-selected="false" data-tab="tracker">Control Tracker</button>
+      <button role="tab" aria-selected="false" data-tab="access-review">Access Review</button>
+      <button role="tab" aria-selected="false" data-tab="poam">POA&amp;M</button>
+    </div>
+    <div class="actions">
+      <button id="export-xlsx" title="Export to XLSX">Export .xlsx</button>
+      <button id="export-json" title="Export to JSON">Export JSON</button>
+      <label title="Import JSON or XLSX">Import <input type="file" id="import-file" accept=".json,.xlsx"></label>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Dashboard Panel -->
+  <div class="panel active" id="panel-dashboard" role="tabpanel" aria-label="Dashboard">
+    <div class="dash-grid">
+      <div class="dash-card score-card"><div class="num" id="score-pct">0%</div><div class="lbl">Readiness Score</div></div>
+      <div class="dash-card"><div class="num" id="count-met">0</div><div class="lbl">Met</div></div>
+      <div class="dash-card"><div class="num" id="count-partial">0</div><div class="lbl">Partial</div></div>
+      <div class="dash-card"><div class="num" id="count-gap">0</div><div class="lbl">Gap</div></div>
+    </div>
+    <div class="dash-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px">
+      <div class="dash-card"><div class="num" id="count-notstarted">0</div><div class="lbl">Not Started</div></div>
+      <div class="dash-card"><div class="num">110</div><div class="lbl">Total Controls</div></div>
+    </div>
+    <h3 style="margin:24px 0 12px;font-size:1.1rem">By Family</h3>
+    <div class="table-wrap">
+      <table class="family-table" id="family-summary">
+        <thead><tr><th>Family</th><th>Controls</th><th>Met</th><th>Partial</th><th>Gap</th><th>Not Started</th><th>Score</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Control Tracker Panel -->
+  <div class="panel" id="panel-tracker" role="tabpanel" aria-label="Control Tracker">
+    <div class="tracker-controls">
+      <select id="filter-family" aria-label="Filter by family"><option value="">All Families</option></select>
+      <select id="filter-status" aria-label="Filter by status">
+        <option value="">All Statuses</option>
+        <option value="Not Started">Not Started</option>
+        <option value="Gap">Gap</option>
+        <option value="Partial">Partial</option>
+        <option value="Met">Met</option>
+      </select>
+      <input type="search" id="search-ctrl" placeholder="Search controls..." aria-label="Search controls">
+    </div>
+    <div class="table-wrap">
+      <table class="ctrl-table" id="ctrl-table">
+        <thead><tr><th>Family</th><th>ID</th><th>Requirement</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th>Reviewed</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Access Review Panel -->
+  <div class="panel" id="panel-access-review" role="tabpanel" aria-label="Access Review Cycle">
+    <p style="color:var(--muted);margin-bottom:16px;font-size:.9rem">Recurring access-control review checklist. Add items for each review cycle.</p>
+    <div class="table-wrap">
+      <table class="review-table" id="review-table">
+        <thead><tr><th>#</th><th>Item</th><th>Status</th><th>Reviewer</th><th>Notes</th><th>Date Completed</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" id="add-review-row">+ Add review item</button>
+  </div>
+
+  <!-- POA&M Panel -->
+  <div class="panel" id="panel-poam" role="tabpanel" aria-label="Plan of Action and Milestones">
+    <p style="color:var(--muted);margin-bottom:16px;font-size:.9rem">Track gaps, assign owners, set target dates, and monitor remediation progress.</p>
+    <div class="table-wrap">
+      <table class="poam-table" id="poam-table">
+        <thead><tr><th>#</th><th>Control ID</th><th>Weakness / Gap</th><th>Owner</th><th>Remediation Action</th><th>Target Date</th><th>Status</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" id="add-poam-row">+ Add POA&amp;M item</button>
+  </div>
+
+  <div class="disclaimer">
+    <strong>Disclaimer:</strong> Control text is summarized from the publicly available NIST SP 800-171 Rev.2. Always refer to the official NIST publication and your own contractual requirements for authoritative wording. All data stays in your browser's localStorage — nothing is transmitted to any server.
+  </div>
+</div>
+</div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+// ===== NIST SP 800-171 Rev.2 — All 110 Controls =====
+const CONTROLS = [
+  // 3.1 Access Control (22 controls)
+  {id:"3.1.1",family:"3.1 Access Control",req:"Limit system access to authorized users, processes acting on behalf of authorized users, and devices (including other systems)."},
+  {id:"3.1.2",family:"3.1 Access Control",req:"Limit system access to the types of transactions and functions that authorized users are permitted to execute."},
+  {id:"3.1.3",family:"3.1 Access Control",req:"Control the flow of CUI in accordance with approved authorizations."},
+  {id:"3.1.4",family:"3.1 Access Control",req:"Separate the duties of individuals to reduce the risk of malevolent activity without collusion."},
+  {id:"3.1.5",family:"3.1 Access Control",req:"Employ the principle of least privilege, including for specific security functions and privileged accounts."},
+  {id:"3.1.6",family:"3.1 Access Control",req:"Use non-privileged accounts or roles when accessing nonsecurity functions."},
+  {id:"3.1.7",family:"3.1 Access Control",req:"Prevent non-privileged users from executing privileged functions and capture the execution of such functions in audit logs."},
+  {id:"3.1.8",family:"3.1 Access Control",req:"Limit unsuccessful logon attempts."},
+  {id:"3.1.9",family:"3.1 Access Control",req:"Provide privacy and security notices consistent with applicable CUI rules."},
+  {id:"3.1.10",family:"3.1 Access Control",req:"Use session lock with pattern-hiding displays to prevent access and viewing of data after a period of inactivity."},
+  {id:"3.1.11",family:"3.1 Access Control",req:"Terminate (automatically) a user session after a defined condition."},
+  {id:"3.1.12",family:"3.1 Access Control",req:"Monitor and control remote access sessions."},
+  {id:"3.1.13",family:"3.1 Access Control",req:"Employ cryptographic mechanisms to protect the confidentiality of remote access sessions."},
+  {id:"3.1.14",family:"3.1 Access Control",req:"Route remote access via managed access control points."},
+  {id:"3.1.15",family:"3.1 Access Control",req:"Authorize remote execution of privileged commands and remote access to security-relevant information."},
+  {id:"3.1.16",family:"3.1 Access Control",req:"Authorize wireless access prior to allowing such connections."},
+  {id:"3.1.17",family:"3.1 Access Control",req:"Protect wireless access using authentication and encryption."},
+  {id:"3.1.18",family:"3.1 Access Control",req:"Control connection of mobile devices."},
+  {id:"3.1.19",family:"3.1 Access Control",req:"Encrypt CUI on mobile devices and mobile computing platforms."},
+  {id:"3.1.20",family:"3.1 Access Control",req:"Verify and control/limit connections to and use of external systems."},
+  {id:"3.1.21",family:"3.1 Access Control",req:"Limit use of portable storage devices on external systems."},
+  {id:"3.1.22",family:"3.1 Access Control",req:"Control CUI posted or processed on publicly accessible systems."},
+  // 3.2 Awareness and Training (3 controls)
+  {id:"3.2.1",family:"3.2 Awareness & Training",req:"Ensure that managers, systems administrators, and users of organizational systems are made aware of the security risks associated with their activities and of the applicable policies, standards, and procedures related to the security of those systems."},
+  {id:"3.2.2",family:"3.2 Awareness & Training",req:"Ensure that personnel are trained to carry out their assigned information security-related duties and responsibilities."},
+  {id:"3.2.3",family:"3.2 Awareness & Training",req:"Provide security awareness training on recognizing and reporting potential indicators of insider threat."},
+  // 3.3 Audit and Accountability (9 controls)
+  {id:"3.3.1",family:"3.3 Audit & Accountability",req:"Create and retain system audit logs and records to the extent needed to enable the monitoring, analysis, investigation, and reporting of unlawful or unauthorized system activity."},
+  {id:"3.3.2",family:"3.3 Audit & Accountability",req:"Ensure that the actions of individual system users can be uniquely traced to those users so they can be held accountable for their actions."},
+  {id:"3.3.3",family:"3.3 Audit & Accountability",req:"Review and update logged events."},
+  {id:"3.3.4",family:"3.3 Audit & Accountability",req:"Alert in the event of an audit logging process failure."},
+  {id:"3.3.5",family:"3.3 Audit & Accountability",req:"Correlate audit record review, analysis, and reporting processes for investigation and response to indications of unlawful, unauthorized, suspicious, or unusual activity."},
+  {id:"3.3.6",family:"3.3 Audit & Accountability",req:"Provide audit record reduction and report generation to support on-demand analysis and reporting."},
+  {id:"3.3.7",family:"3.3 Audit & Accountability",req:"Provide a system capability that compares and synchronizes internal system clocks with an authoritative source to generate time stamps for audit records."},
+  {id:"3.3.8",family:"3.3 Audit & Accountability",req:"Protect audit information and audit logging tools from unauthorized access, modification, and deletion."},
+  {id:"3.3.9",family:"3.3 Audit & Accountability",req:"Limit management of audit logging functionality to a subset of privileged users."},
+  // 3.4 Configuration Management (9 controls)
+  {id:"3.4.1",family:"3.4 Configuration Mgmt",req:"Establish and maintain baseline configurations and inventories of organizational systems (including hardware, software, firmware, and documentation) throughout the respective system development life cycles."},
+  {id:"3.4.2",family:"3.4 Configuration Mgmt",req:"Establish and enforce security configuration settings for information technology products employed in organizational systems."},
+  {id:"3.4.3",family:"3.4 Configuration Mgmt",req:"Track, review, approve or disapprove, and log changes to organizational systems."},
+  {id:"3.4.4",family:"3.4 Configuration Mgmt",req:"Analyze the security impact of changes prior to implementation."},
+  {id:"3.4.5",family:"3.4 Configuration Mgmt",req:"Define, document, approve, and enforce physical and logical access restrictions associated with changes to organizational systems."},
+  {id:"3.4.6",family:"3.4 Configuration Mgmt",req:"Employ the principle of least functionality by configuring organizational systems to provide only essential capabilities."},
+  {id:"3.4.7",family:"3.4 Configuration Mgmt",req:"Restrict, disable, or prevent the use of nonessential programs, functions, ports, protocols, and services."},
+  {id:"3.4.8",family:"3.4 Configuration Mgmt",req:"Apply deny-by-exception (blacklisting) policy to prevent the use of unauthorized software or deny-all, permit-by-exception (whitelisting) policy to allow the execution of authorized software."},
+  {id:"3.4.9",family:"3.4 Configuration Mgmt",req:"Control and monitor user-installed software."},
+  // 3.5 Identification and Authentication (11 controls)
+  {id:"3.5.1",family:"3.5 ID & Authentication",req:"Identify system users, processes acting on behalf of users, and devices."},
+  {id:"3.5.2",family:"3.5 ID & Authentication",req:"Authenticate (or verify) the identities of users, processes, or devices, as a prerequisite to allowing access to organizational systems."},
+  {id:"3.5.3",family:"3.5 ID & Authentication",req:"Use multifactor authentication for local and network access to privileged accounts and for network access to non-privileged accounts."},
+  {id:"3.5.4",family:"3.5 ID & Authentication",req:"Employ replay-resistant authentication mechanisms for network access to privileged and non-privileged accounts."},
+  {id:"3.5.5",family:"3.5 ID & Authentication",req:"Prevent reuse of identifiers for a defined period."},
+  {id:"3.5.6",family:"3.5 ID & Authentication",req:"Disable identifiers after a defined period of inactivity."},
+  {id:"3.5.7",family:"3.5 ID & Authentication",req:"Enforce a minimum password complexity and change of characters when new passwords are created."},
+  {id:"3.5.8",family:"3.5 ID & Authentication",req:"Prohibit password reuse for a specified number of generations."},
+  {id:"3.5.9",family:"3.5 ID & Authentication",req:"Allow temporary password use for system logons with an immediate change to a permanent password."},
+  {id:"3.5.10",family:"3.5 ID & Authentication",req:"Store and transmit only cryptographically-protected passwords."},
+  {id:"3.5.11",family:"3.5 ID & Authentication",req:"Obscure feedback of authentication information."},
+  // 3.6 Incident Response (3 controls)
+  {id:"3.6.1",family:"3.6 Incident Response",req:"Establish an operational incident-handling capability for organizational systems that includes preparation, detection, analysis, containment, recovery, and user response activities."},
+  {id:"3.6.2",family:"3.6 Incident Response",req:"Track, document, and report incidents to designated officials and/or authorities both internal and external to the organization."},
+  {id:"3.6.3",family:"3.6 Incident Response",req:"Test the organizational incident response capability."},
+  // 3.7 Maintenance (6 controls)
+  {id:"3.7.1",family:"3.7 Maintenance",req:"Perform maintenance on organizational systems."},
+  {id:"3.7.2",family:"3.7 Maintenance",req:"Provide controls on the tools, techniques, mechanisms, and personnel used to conduct system maintenance."},
+  {id:"3.7.3",family:"3.7 Maintenance",req:"Ensure equipment removed for off-site maintenance is sanitized of any CUI."},
+  {id:"3.7.4",family:"3.7 Maintenance",req:"Check media containing diagnostic and test programs for malicious code before the media are used in organizational systems."},
+  {id:"3.7.5",family:"3.7 Maintenance",req:"Require multifactor authentication to establish nonlocal maintenance sessions via external network connections and terminate such connections when nonlocal maintenance is complete."},
+  {id:"3.7.6",family:"3.7 Maintenance",req:"Supervise the maintenance activities of maintenance personnel without required access authorization."},
+  // 3.8 Media Protection (9 controls)
+  {id:"3.8.1",family:"3.8 Media Protection",req:"Protect (i.e., physically control and securely store) system media containing CUI, both paper and digital."},
+  {id:"3.8.2",family:"3.8 Media Protection",req:"Limit access to CUI on system media to authorized users."},
+  {id:"3.8.3",family:"3.8 Media Protection",req:"Sanitize or destroy system media containing CUI before disposal or release for reuse."},
+  {id:"3.8.4",family:"3.8 Media Protection",req:"Mark media with necessary CUI markings and distribution limitations."},
+  {id:"3.8.5",family:"3.8 Media Protection",req:"Control access to media containing CUI and maintain accountability for media during transport outside of controlled areas."},
+  {id:"3.8.6",family:"3.8 Media Protection",req:"Implement cryptographic mechanisms to protect the confidentiality of CUI stored on digital media during transport unless otherwise protected by alternative physical safeguards."},
+  {id:"3.8.7",family:"3.8 Media Protection",req:"Control the use of removable media on system components."},
+  {id:"3.8.8",family:"3.8 Media Protection",req:"Prohibit the use of portable storage devices when such devices have no identifiable owner."},
+  {id:"3.8.9",family:"3.8 Media Protection",req:"Protect the confidentiality of backup CUI at storage locations."},
+  // 3.9 Personnel Security (2 controls)
+  {id:"3.9.1",family:"3.9 Personnel Security",req:"Screen individuals prior to authorizing access to organizational systems containing CUI."},
+  {id:"3.9.2",family:"3.9 Personnel Security",req:"Ensure that organizational systems containing CUI are protected during and after personnel actions such as terminations and transfers."},
+  // 3.10 Physical Protection (6 controls)
+  {id:"3.10.1",family:"3.10 Physical Protection",req:"Limit physical access to organizational systems, equipment, and the respective operating environments to authorized individuals."},
+  {id:"3.10.2",family:"3.10 Physical Protection",req:"Protect and monitor the physical facility and support infrastructure for organizational systems."},
+  {id:"3.10.3",family:"3.10 Physical Protection",req:"Escort visitors and monitor visitor activity."},
+  {id:"3.10.4",family:"3.10 Physical Protection",req:"Maintain audit logs of physical access."},
+  {id:"3.10.5",family:"3.10 Physical Protection",req:"Control and manage physical access devices."},
+  {id:"3.10.6",family:"3.10 Physical Protection",req:"Enforce safeguarding measures for CUI at alternate work sites."},
+  // 3.11 Risk Assessment (3 controls)
+  {id:"3.11.1",family:"3.11 Risk Assessment",req:"Periodically assess the risk to organizational operations (including mission, functions, image, or reputation), organizational assets, and individuals, resulting from the operation of organizational systems and the associated processing, storage, or transmission of CUI."},
+  {id:"3.11.2",family:"3.11 Risk Assessment",req:"Scan for vulnerabilities in organizational systems and applications periodically and when new vulnerabilities affecting those systems and applications are identified."},
+  {id:"3.11.3",family:"3.11 Risk Assessment",req:"Remediate vulnerabilities in accordance with risk assessments."},
+  // 3.12 Security Assessment (4 controls)
+  {id:"3.12.1",family:"3.12 Security Assessment",req:"Periodically assess the security controls in organizational systems to determine if the controls are effective in their application."},
+  {id:"3.12.2",family:"3.12 Security Assessment",req:"Develop and implement plans of action designed to correct deficiencies and reduce or eliminate vulnerabilities in organizational systems."},
+  {id:"3.12.3",family:"3.12 Security Assessment",req:"Monitor security controls on an ongoing basis to ensure the continued effectiveness of the controls."},
+  {id:"3.12.4",family:"3.12 Security Assessment",req:"Develop, document, and periodically update system security plans that describe system boundaries, system environments of operation, how security requirements are implemented, and the relationships with or connections to other systems."},
+  // 3.13 System and Communications Protection (16 controls)
+  {id:"3.13.1",family:"3.13 SC Protection",req:"Monitor, control, and protect communications (i.e., information transmitted or received by organizational systems) at the external boundaries and key internal boundaries of organizational systems."},
+  {id:"3.13.2",family:"3.13 SC Protection",req:"Employ architectural designs, software development techniques, and systems engineering principles that promote effective information security within organizational systems."},
+  {id:"3.13.3",family:"3.13 SC Protection",req:"Separate user functionality from system management functionality."},
+  {id:"3.13.4",family:"3.13 SC Protection",req:"Prevent unauthorized and unintended information transfer via shared system resources."},
+  {id:"3.13.5",family:"3.13 SC Protection",req:"Implement subnetworks for publicly accessible system components that are physically or logically separated from internal networks."},
+  {id:"3.13.6",family:"3.13 SC Protection",req:"Deny network communications traffic by default and allow network communications traffic by exception (i.e., deny all, permit by exception)."},
+  {id:"3.13.7",family:"3.13 SC Protection",req:"Prevent remote devices from simultaneously establishing non-remote connections with organizational systems and communicating via some other connection to resources in external networks (i.e., split tunneling)."},
+  {id:"3.13.8",family:"3.13 SC Protection",req:"Implement cryptographic mechanisms to prevent unauthorized disclosure of CUI during transmission unless otherwise protected by alternative physical safeguards."},
+  {id:"3.13.9",family:"3.13 SC Protection",req:"Terminate network connections associated with communications sessions at the end of the sessions or after a defined period of inactivity."},
+  {id:"3.13.10",family:"3.13 SC Protection",req:"Establish and manage cryptographic keys for cryptography employed in organizational systems."},
+  {id:"3.13.11",family:"3.13 SC Protection",req:"Employ FIPS-validated cryptography when used to protect the confidentiality of CUI."},
+  {id:"3.13.12",family:"3.13 SC Protection",req:"Prohibit remote activation of collaborative computing devices and provide indication of devices in use to users present at the device."},
+  {id:"3.13.13",family:"3.13 SC Protection",req:"Control and monitor the use of mobile code."},
+  {id:"3.13.14",family:"3.13 SC Protection",req:"Control and monitor the use of Voice over Internet Protocol (VoIP) technologies."},
+  {id:"3.13.15",family:"3.13 SC Protection",req:"Protect the authenticity of communications sessions."},
+  {id:"3.13.16",family:"3.13 SC Protection",req:"Protect the confidentiality of CUI at rest."},
+  // 3.14 System and Information Integrity (7 controls)
+  {id:"3.14.1",family:"3.14 SI Integrity",req:"Identify, report, and correct system flaws in a timely manner."},
+  {id:"3.14.2",family:"3.14 SI Integrity",req:"Provide protection from malicious code at designated locations within organizational systems."},
+  {id:"3.14.3",family:"3.14 SI Integrity",req:"Monitor system security alerts and advisories and take action in response."},
+  {id:"3.14.4",family:"3.14 SI Integrity",req:"Update malicious code protection mechanisms when new releases are available."},
+  {id:"3.14.5",family:"3.14 SI Integrity",req:"Perform periodic scans of organizational systems and real-time scans of files from external sources as files are downloaded, opened, or executed."},
+  {id:"3.14.6",family:"3.14 SI Integrity",req:"Monitor organizational systems, including inbound and outbound communications traffic, to detect attacks and indicators of potential attacks."},
+  {id:"3.14.7",family:"3.14 SI Integrity",req:"Identify unauthorized use of organizational systems."}
+];
+
+// Default access review items
+const DEFAULT_REVIEW_ITEMS = [
+  "Verify active user accounts match current personnel roster",
+  "Review privileged account assignments and justification",
+  "Check terminated/transferred users removed from all systems",
+  "Validate service accounts and their access levels",
+  "Review shared/group account usage and necessity",
+  "Verify multi-factor authentication enforcement",
+  "Check remote access authorizations are current",
+  "Review access to CUI repositories and data stores",
+  "Validate role-based access control assignments",
+  "Review and update access control policies"
+];
+
+// ===== State Management =====
+const STORAGE_KEY = 'ansrd-tracker-v1';
+
+function getDefaultState() {
+  return {
+    controls: CONTROLS.map(c => ({
+      ...c,
+      status: 'Not Started',
+      owner: '',
+      notes: '',
+      evidence: '',
+      lastReviewed: ''
+    })),
+    poam: [],
+    accessReview: DEFAULT_REVIEW_ITEMS.map((item, i) => ({
+      id: i + 1,
+      item,
+      status: 'Not Started',
+      reviewer: '',
+      notes: '',
+      dateCompleted: ''
+    }))
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Ensure all controls exist (in case of version updates)
+      if (parsed.controls && parsed.controls.length === 110) return parsed;
+    }
+  } catch(e) {}
+  return getDefaultState();
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = loadState();
+
+// ===== Tab Navigation =====
+const tabs = document.querySelectorAll('.tabs button');
+const panels = document.querySelectorAll('.panel');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    panels.forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected','true');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'dashboard') renderDashboard();
+  });
+});
+
+// ===== Dashboard =====
+function renderDashboard() {
+  const counts = {Met:0, Partial:0, Gap:0, 'Not Started':0};
+  state.controls.forEach(c => { counts[c.status] = (counts[c.status]||0) + 1; });
+  
+  document.getElementById('count-met').textContent = counts.Met;
+  document.getElementById('count-partial').textContent = counts.Partial;
+  document.getElementById('count-gap').textContent = counts.Gap;
+  document.getElementById('count-notstarted').textContent = counts['Not Started'];
+  
+  const score = Math.round((counts.Met / 110) * 100);
+  document.getElementById('score-pct').textContent = score + '%';
+  
+  // Family breakdown
+  const families = {};
+  state.controls.forEach(c => {
+    if (!families[c.family]) families[c.family] = {total:0, Met:0, Partial:0, Gap:0, 'Not Started':0};
+    families[c.family].total++;
+    families[c.family][c.status]++;
+  });
+  
+  const tbody = document.querySelector('#family-summary tbody');
+  tbody.innerHTML = '';
+  Object.entries(families).forEach(([name, f]) => {
+    const pct = Math.round((f.Met / f.total) * 100);
+    tbody.innerHTML += `<tr>
+      <td style="font-weight:600">${name}</td>
+      <td>${f.total}</td>
+      <td><span class="pill pill-met">${f.Met}</span></td>
+      <td><span class="pill pill-partial">${f.Partial}</span></td>
+      <td><span class="pill pill-gap">${f.Gap}</span></td>
+      <td><span class="pill pill-notstarted">${f['Not Started']}</span></td>
+      <td style="font-family:var(--mono);font-weight:600">${pct}%</td>
+    </tr>`;
+  });
+}
+
+// ===== Control Tracker =====
+function renderTracker() {
+  const familyFilter = document.getElementById('filter-family').value;
+  const statusFilter = document.getElementById('filter-status').value;
+  const search = document.getElementById('search-ctrl').value.toLowerCase();
+  
+  const tbody = document.querySelector('#ctrl-table tbody');
+  tbody.innerHTML = '';
+  
+  state.controls.forEach((c, i) => {
+    if (familyFilter && c.family !== familyFilter) return;
+    if (statusFilter && c.status !== statusFilter) return;
+    if (search && !c.id.toLowerCase().includes(search) && !c.req.toLowerCase().includes(search) && !c.family.toLowerCase().includes(search)) return;
+    
+    const statusClass = c.status === 'Met' ? 'pill-met' : c.status === 'Partial' ? 'pill-partial' : c.status === 'Gap' ? 'pill-gap' : 'pill-notstarted';
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="family-col">${c.family.split(' ').slice(0,2).join(' ')}</td>
+      <td class="id-col">${c.id}</td>
+      <td class="req-col">${c.req}</td>
+      <td><select data-idx="${i}" data-field="status" aria-label="Status for ${c.id}">
+        <option${c.status==='Not Started'?' selected':''}>Not Started</option>
+        <option${c.status==='Gap'?' selected':''}>Gap</option>
+        <option${c.status==='Partial'?' selected':''}>Partial</option>
+        <option${c.status==='Met'?' selected':''}>Met</option>
+      </select></td>
+      <td><input type="text" data-idx="${i}" data-field="owner" value="${esc(c.owner)}" placeholder="Owner" aria-label="Owner for ${c.id}"></td>
+      <td><textarea data-idx="${i}" data-field="notes" placeholder="Notes" aria-label="Notes for ${c.id}">${esc(c.notes)}</textarea></td>
+      <td><input type="text" data-idx="${i}" data-field="evidence" value="${esc(c.evidence)}" placeholder="Evidence location" aria-label="Evidence for ${c.id}"></td>
+      <td><input type="date" data-idx="${i}" data-field="lastReviewed" value="${c.lastReviewed}" aria-label="Last reviewed for ${c.id}"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// Populate family filter
+(function() {
+  const fam = [...new Set(CONTROLS.map(c => c.family))];
+  const sel = document.getElementById('filter-family');
+  fam.forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; sel.appendChild(o); });
+})();
+
+// Event delegation for tracker
+document.getElementById('ctrl-table').addEventListener('change', e => {
+  const el = e.target;
+  const idx = parseInt(el.dataset.idx);
+  const field = el.dataset.field;
+  if (idx >= 0 && field) {
+    state.controls[idx][field] = el.value;
+    saveState();
+  }
+});
+document.getElementById('ctrl-table').addEventListener('input', e => {
+  const el = e.target;
+  const idx = parseInt(el.dataset.idx);
+  const field = el.dataset.field;
+  if (idx >= 0 && field && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type === 'text'))) {
+    state.controls[idx][field] = el.value;
+    saveState();
+  }
+});
+
+document.getElementById('filter-family').addEventListener('change', renderTracker);
+document.getElementById('filter-status').addEventListener('change', renderTracker);
+document.getElementById('search-ctrl').addEventListener('input', renderTracker);
+
+// ===== Access Review =====
+function renderAccessReview() {
+  const tbody = document.querySelector('#review-table tbody');
+  tbody.innerHTML = '';
+  state.accessReview.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-family:var(--mono);color:var(--muted)">${i+1}</td>
+      <td><input type="text" data-idx="${i}" data-field="item" value="${esc(r.item)}" aria-label="Review item ${i+1}"></td>
+      <td><select data-idx="${i}" data-field="status" aria-label="Status for review item ${i+1}">
+        <option${r.status==='Not Started'?' selected':''}>Not Started</option>
+        <option${r.status==='In Progress'?' selected':''}>In Progress</option>
+        <option${r.status==='Complete'?' selected':''}>Complete</option>
+      </select></td>
+      <td><input type="text" data-idx="${i}" data-field="reviewer" value="${esc(r.reviewer)}" placeholder="Reviewer" aria-label="Reviewer for item ${i+1}"></td>
+      <td><textarea data-idx="${i}" data-field="notes" placeholder="Notes" aria-label="Notes for item ${i+1}">${esc(r.notes)}</textarea></td>
+      <td><input type="date" data-idx="${i}" data-field="dateCompleted" value="${r.dateCompleted}" aria-label="Date completed for item ${i+1}"></td>
+      <td><button class="remove-btn" data-idx="${i}" data-table="review" aria-label="Remove item ${i+1}">×</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('review-table').addEventListener('change', e => {
+  const el = e.target;
+  const idx = parseInt(el.dataset.idx);
+  const field = el.dataset.field;
+  if (idx >= 0 && field) { state.accessReview[idx][field] = el.value; saveState(); }
+});
+document.getElementById('review-table').addEventListener('input', e => {
+  const el = e.target;
+  const idx = parseInt(el.dataset.idx);
+  const field = el.dataset.field;
+  if (idx >= 0 && field && (el.tagName==='TEXTAREA'||el.tagName==='INPUT')) { state.accessReview[idx][field] = el.value; saveState(); }
+});
+document.getElementById('add-review-row').addEventListener('click', () => {
+  state.accessReview.push({id:state.accessReview.length+1, item:'', status:'Not Started', reviewer:'', notes:'', dateCompleted:''});
+  saveState(); renderAccessReview();
+});
+
+// ===== POA&M =====
+function renderPoam() {
+  const tbody = document.querySelector('#poam-table tbody');
+  tbody.innerHTML = '';
+  state.poam.forEach((p, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-family:var(--mono);color:var(--muted)">${i+1}</td>
+      <td><input type="text" data-idx="${i}" data-field="controlId" value="${esc(p.controlId)}" placeholder="3.x.x" aria-label="Control ID for POA&M item ${i+1}"></td>
+      <td><textarea data-idx="${i}" data-field="weakness" placeholder="Describe the gap" aria-label="Weakness for POA&M item ${i+1}">${esc(p.weakness)}</textarea></td>
+      <td><input type="text" data-idx="${i}" data-field="owner" value="${esc(p.owner)}" placeholder="Owner" aria-label="Owner for POA&M item ${i+1}"></td>
+      <td><textarea data-idx="${i}" data-field="remediation" placeholder="Remediation action" aria-label="Remediation for POA&M item ${i+1}">${esc(p.remediation)}</textarea></td>
+      <td><input type="date" data-idx="${i}" data-field="targetDate" value="${p.targetDate}" aria-label="Target date for POA&M item ${i+1}"></td>
+      <td><select data-idx="${i}" data-field="status" aria-label="Status for POA&M item ${i+1}">
+        <option${p.status==='Open'?' selected':''}>Open</option>
+        <option${p.status==='In Progress'?' selected':''}>In Progress</option>
+        <option${p.status==='Closed'?' selected':''}>Closed</option>
+      </select></td>
+      <td><button class="remove-btn" data-idx="${i}" data-table="poam" aria-label="Remove POA&M item ${i+1}">×</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('poam-table').addEventListener('change', e => {
+  const el = e.target;
+  const idx = parseInt(el.dataset.idx);
+  const field = el.dataset.field;
+  if (idx >= 0 && field) { state.poam[idx][field] = el.value; saveState(); }
+});
+document.getElementById('poam-table').addEventListener('input', e => {
+  const el = e.target;
+  const idx = parseInt(el.dataset.idx);
+  const field = el.dataset.field;
+  if (idx >= 0 && field && (el.tagName==='TEXTAREA'||el.tagName==='INPUT')) { state.poam[idx][field] = el.value; saveState(); }
+});
+document.getElementById('add-poam-row').addEventListener('click', () => {
+  state.poam.push({controlId:'', weakness:'', owner:'', remediation:'', targetDate:'', status:'Open'});
+  saveState(); renderPoam();
+});
+
+// Remove buttons (delegation)
+document.addEventListener('click', e => {
+  if (!e.target.classList.contains('remove-btn')) return;
+  const idx = parseInt(e.target.dataset.idx);
+  const table = e.target.dataset.table;
+  if (table === 'poam') { state.poam.splice(idx, 1); saveState(); renderPoam(); }
+  if (table === 'review') { state.accessReview.splice(idx, 1); saveState(); renderAccessReview(); }
+});
+
+// ===== Export XLSX =====
+document.getElementById('export-xlsx').addEventListener('click', () => {
+  const wb = XLSX.utils.book_new();
+  
+  // Control Tracker sheet
+  const ctrlData = state.controls.map(c => ({
+    'Family': c.family,
+    'Control ID': c.id,
+    'Requirement': c.req,
+    'Status': c.status,
+    'Owner': c.owner,
+    'Implementation Notes': c.notes,
+    'Evidence Location': c.evidence,
+    'Last Reviewed': c.lastReviewed
+  }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ctrlData), 'Control Tracker');
+  
+  // Dashboard sheet
+  const families = {};
+  state.controls.forEach(c => {
+    if (!families[c.family]) families[c.family] = {total:0, Met:0, Partial:0, Gap:0, 'Not Started':0};
+    families[c.family].total++;
+    families[c.family][c.status]++;
+  });
+  const dashData = Object.entries(families).map(([name,f]) => ({
+    'Family': name, 'Total': f.total, 'Met': f.Met, 'Partial': f.Partial, 'Gap': f.Gap, 'Not Started': f['Not Started'], 'Score %': Math.round((f.Met/f.total)*100)
+  }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dashData), 'Dashboard');
+  
+  // Access Review sheet
+  const revData = state.accessReview.map((r,i) => ({
+    '#': i+1, 'Item': r.item, 'Status': r.status, 'Reviewer': r.reviewer, 'Notes': r.notes, 'Date Completed': r.dateCompleted
+  }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(revData), 'Access Review Cycle');
+  
+  // POA&M sheet
+  const poamData = state.poam.map((p,i) => ({
+    '#': i+1, 'Control ID': p.controlId, 'Weakness/Gap': p.weakness, 'Owner': p.owner, 'Remediation Action': p.remediation, 'Target Date': p.targetDate, 'Status': p.status
+  }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(poamData), 'POA&M');
+  
+  XLSX.writeFile(wb, 'NIST_800-171_CMMC_Tracker_Export.xlsx');
+});
+
+// ===== Export JSON =====
+document.getElementById('export-json').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'ansrd-tracker-export.json'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ===== Import =====
+document.getElementById('import-file').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  if (file.name.endsWith('.json')) {
+    const text = await file.text();
+    try {
+      const imported = JSON.parse(text);
+      if (imported.controls && imported.controls.length === 110) {
+        state = imported;
+        saveState();
+        renderAll();
+        alert('Import successful!');
+      } else {
+        alert('Invalid JSON format. Expected tracker export with 110 controls.');
+      }
+    } catch(err) { alert('Failed to parse JSON: ' + err.message); }
+  } else if (file.name.endsWith('.xlsx')) {
+    const data = await file.arrayBuffer();
+    const wb = XLSX.read(data);
+    
+    // Try to import Control Tracker sheet
+    const ctrlSheet = wb.Sheets['Control Tracker'];
+    if (ctrlSheet) {
+      const rows = XLSX.utils.sheet_to_json(ctrlSheet);
+      rows.forEach(row => {
+        const ctrl = state.controls.find(c => c.id === row['Control ID']);
+        if (ctrl) {
+          if (row['Status']) ctrl.status = row['Status'];
+          if (row['Owner'] !== undefined) ctrl.owner = row['Owner'] || '';
+          if (row['Implementation Notes'] !== undefined) ctrl.notes = row['Implementation Notes'] || '';
+          if (row['Evidence Location'] !== undefined) ctrl.evidence = row['Evidence Location'] || '';
+          if (row['Last Reviewed'] !== undefined) ctrl.lastReviewed = row['Last Reviewed'] || '';
+        }
+      });
+    }
+    
+    // Try to import POA&M sheet
+    const poamSheet = wb.Sheets['POA&M'] || wb.Sheets['POAM'];
+    if (poamSheet) {
+      const rows = XLSX.utils.sheet_to_json(poamSheet);
+      state.poam = rows.map(r => ({
+        controlId: r['Control ID'] || '',
+        weakness: r['Weakness/Gap'] || r['Weakness'] || '',
+        owner: r['Owner'] || '',
+        remediation: r['Remediation Action'] || r['Remediation'] || '',
+        targetDate: r['Target Date'] || '',
+        status: r['Status'] || 'Open'
+      }));
+    }
+    
+    // Try to import Access Review sheet
+    const revSheet = wb.Sheets['Access Review Cycle'] || wb.Sheets['Access Review'];
+    if (revSheet) {
+      const rows = XLSX.utils.sheet_to_json(revSheet);
+      state.accessReview = rows.map((r, i) => ({
+        id: i+1,
+        item: r['Item'] || r['Check Item'] || '',
+        status: r['Status'] || 'Not Started',
+        reviewer: r['Reviewer'] || '',
+        notes: r['Notes'] || '',
+        dateCompleted: r['Date Completed'] || ''
+      }));
+    }
+    
+    saveState();
+    renderAll();
+    alert('XLSX import successful!');
+  }
+  e.target.value = '';
+});
+
+// ===== Render All =====
+function renderAll() {
+  renderDashboard();
+  renderTracker();
+  renderAccessReview();
+  renderPoam();
+}
+
+renderAll();
+</script>
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "CLOUDFLARE_ANALYTICS_TOKEN"}'></script>
+</body>
+</html>
