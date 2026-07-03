@@ -121,6 +121,18 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 :focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:3px}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 
+/* Saved-locally indicator */
+.save-indicator{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;padding:6px 4px;white-space:nowrap;transition:color .2s}
+.save-indicator.pulse{color:var(--met)}
+
+/* Empty-state hint */
+.empty-hint{font-family:var(--mono);font-size:.76rem;color:var(--teal-deep);background:#eaf3f1;border:1px solid #cfe4e0;border-radius:8px;padding:11px 14px;margin-bottom:20px;line-height:1.5}
+.empty-hint a{color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer}
+.empty-hint a:hover{text-decoration:underline}
+
+/* Version stamp */
+.version-stamp{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:10px}
+
 /* Reset button (danger) */
 .actions button.btn-reset{border-color:#e6c4c4;color:var(--gap)}
 .actions button.btn-reset:hover{border-color:var(--gap);color:var(--gap);background:#fbf1f1}
@@ -157,6 +169,7 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
       <button role="tab" aria-selected="false" data-tab="roadmap">Roadmap</button>
     </div>
     <div class="actions">
+      <span id="save-indicator" class="save-indicator" title="Your data is saved in this browser only — use Export to back it up">✓ Saved locally</span>
       <select id="scope-level" aria-label="CMMC level scope" title="Filter the tracker and dashboard by CMMC level" style="font-family:var(--mono);font-size:.72rem;padding:7px 10px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font-weight:600">
         <option value="L2">Level 2 · 110 controls</option>
         <option value="L1">Level 1 · 17 controls</option>
@@ -172,6 +185,7 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 <div class="main">
   <!-- Dashboard Panel -->
   <div class="panel active" id="panel-dashboard" role="tabpanel" aria-label="Dashboard">
+    <div class="empty-hint" id="empty-hint" style="display:none">New here? Set each control's status in the <a data-goto="tracker">Control Tracker</a> — progress saves automatically in this browser. Use <strong>Export</strong> to back it up or share with a colleague.</div>
     <div class="dash-grid">
       <div class="dash-card score-card"><div class="num" id="score-pct">0%</div><div class="lbl">Readiness Score</div></div>
       <div class="dash-card" title="NIST SP 800-171 DoD Assessment (Basic) self-assessment score: start at 110, subtract each unimplemented control's weighted value (1, 3, or 5 points) per the DoD Assessment Methodology v1.2.1. Range: −203 to 110. This is a self-assessment estimate — not an official SPRS submission.">
@@ -250,6 +264,7 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 
   <div class="trust-line">
     <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.1 · updated July 2026</div>
   </div>
 
   <div class="disclaimer">
@@ -609,8 +624,15 @@ function loadState() {
   return getDefaultState();
 }
 
+let saveIndicatorTimer;
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const ind = document.getElementById('save-indicator');
+  if (ind) {
+    ind.classList.add('pulse');
+    clearTimeout(saveIndicatorTimer);
+    saveIndicatorTimer = setTimeout(() => ind.classList.remove('pulse'), 900);
+  }
 }
 
 let state = loadState();
@@ -663,6 +685,10 @@ function renderDashboard() {
   document.getElementById('count-gap').textContent = counts.Gap;
   document.getElementById('count-notstarted').textContent = counts['Not Started'];
   document.getElementById('count-total').textContent = scoped.length;
+
+  // Empty-state hint: show only when nothing has been assessed yet
+  const untouched = counts.Met === 0 && counts.Partial === 0 && counts.Gap === 0;
+  document.getElementById('empty-hint').style.display = untouched ? 'block' : 'none';
 
   const score = Math.round((counts.Met / scoped.length) * 100);
   document.getElementById('score-pct').textContent = score + '%';
@@ -1074,6 +1100,12 @@ function doReset(){
   renderAll();
   closeResetModal();
 }
+// Empty-state hint → jump to a tab
+document.addEventListener('click', e => {
+  const goto = e.target.dataset && e.target.dataset.goto;
+  if (goto) { const t = document.querySelector(`.tabs button[data-tab="${goto}"]`); if (t) t.click(); }
+});
+
 document.getElementById('reset-btn').addEventListener('click', openResetModal);
 document.getElementById('reset-cancel').addEventListener('click', closeResetModal);
 document.getElementById('reset-confirm').addEventListener('click', doReset);
@@ -1096,7 +1128,8 @@ function renderAll() {
 
 renderAll();
 </script>
-<!-- Cloudflare Web Analytics -->
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a94c36650f5944efaef3df77c64213d6"}'></script>
+<!-- Vercel Web Analytics (first-party, cookieless, no PII) -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
