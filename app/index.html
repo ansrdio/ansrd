@@ -290,7 +290,8 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 </div>
 </div>
 
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<!-- SheetJS CE v0.20.3, vendored locally (Apache-2.0 — see vendor/xlsx-LICENSE.txt). No CDN: works offline/air-gapped. -->
+<script src="vendor/xlsx.full.min.js"></script>
 <script>
 // ===== NIST SP 800-171 Rev.2 — All 110 Controls =====
 const CONTROLS = [

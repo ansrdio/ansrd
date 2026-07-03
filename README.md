@@ -8,7 +8,7 @@ A free, no-signup, browser-based tool to track your progress against all **110 N
 
 There's no backend. This is static HTML/CSS/JS. Your assessment (statuses, notes, owners, evidence, POA&M) is saved to `localStorage` and **never sent anywhere** — open DevTools → Network and watch: nothing posts your data. Export/Import (`.xlsx` + JSON) is how you back it up or move it between machines. No account, no cookies, no PII.
 
-The only network call is a first-party, cookieless [Vercel Web Analytics](https://vercel.com/docs/analytics) beacon that counts anonymous page views — no user tracking.
+On the hosted version (ansrd.io), the only third-party request is a cookieless [Vercel Web Analytics](https://vercel.com/docs/analytics) beacon that counts anonymous page views — no user tracking, no PII. If you self-host, there are no third-party calls at all — the app, including Excel export, runs fully offline.
 
 ## Features
 
@@ -34,9 +34,11 @@ cd ansrd
 python3 -m http.server 8000   # then open http://localhost:8000/app/
 ```
 
+Because SheetJS is bundled and there's no backend, this runs fully offline. Clone it onto an air-gapped or egress-restricted network and everything — including `.xlsx` export — works with zero external calls. Nothing (app or data) leaves your environment.
+
 ## Tech
 
-Static HTML + CSS + vanilla JS · [SheetJS](https://sheetjs.com) (CDN) for XLSX · hosted on Vercel · Vercel Web Analytics (cookieless).
+Static HTML + CSS + vanilla JS · [SheetJS](https://sheetjs.com) (bundled locally, no CDN) for XLSX · hosted on Vercel · Vercel Web Analytics (cookieless).
 
 ## Honest scope
 
