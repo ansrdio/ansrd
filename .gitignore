@@ -5,6 +5,7 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
+.claude/
 
 # Deployment config
 windsurf_deployment.yaml
