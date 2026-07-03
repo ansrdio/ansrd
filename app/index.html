@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NIST 800-171 / CMMC Readiness Tracker — Online Tool</title>
-<meta name="description" content="Free in-browser NIST 800-171 compliance tracker. All 110 controls, live dashboard, export to XLSX. No signup, no data collection.">
+<meta name="description" content="Free in-browser NIST 800-171 / CMMC compliance tracker. All 110 controls, SPRS self-assessment score, Microsoft-stack mapping, roadmap, export to XLSX. No signup, no data collection.">
 <link rel="canonical" href="https://ansrd.io/app/">
 <meta property="og:title" content="NIST 800-171 Readiness Tracker — Use Online Free">
 <meta property="og:description" content="Track all 110 NIST 800-171 controls in your browser. Export to XLSX. No accounts.">
@@ -132,8 +132,13 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
       <button role="tab" aria-selected="false" data-tab="tracker">Control Tracker</button>
       <button role="tab" aria-selected="false" data-tab="access-review">Access Review</button>
       <button role="tab" aria-selected="false" data-tab="poam">POA&amp;M</button>
+      <button role="tab" aria-selected="false" data-tab="roadmap">Roadmap</button>
     </div>
     <div class="actions">
+      <select id="scope-level" aria-label="CMMC level scope" title="Filter the tracker and dashboard by CMMC level" style="font-family:var(--mono);font-size:.72rem;padding:7px 10px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font-weight:600">
+        <option value="L2">Level 2 · 110 controls</option>
+        <option value="L1">Level 1 · 17 controls</option>
+      </select>
       <button id="export-xlsx" title="Export to XLSX">Export .xlsx</button>
       <button id="export-json" title="Export to JSON">Export JSON</button>
       <label title="Import JSON or XLSX">Import <input type="file" id="import-file" accept=".json,.xlsx"></label>
@@ -146,18 +151,24 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
   <div class="panel active" id="panel-dashboard" role="tabpanel" aria-label="Dashboard">
     <div class="dash-grid">
       <div class="dash-card score-card"><div class="num" id="score-pct">0%</div><div class="lbl">Readiness Score</div></div>
+      <div class="dash-card" title="NIST SP 800-171 DoD Assessment (Basic) self-assessment score: start at 110, subtract each unimplemented control's weighted value (1, 3, or 5 points) per the DoD Assessment Methodology v1.2.1. Range: −203 to 110. This is a self-assessment estimate — not an official SPRS submission.">
+        <div class="num" id="sprs-score" style="color:var(--teal-deep)">110</div>
+        <div class="lbl">SPRS Score (est.) <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none" aria-label="DoD Assessment Methodology (opens in new tab)">ⓘ</a></div>
+      </div>
       <div class="dash-card"><div class="num" id="count-met">0</div><div class="lbl">Met</div></div>
       <div class="dash-card"><div class="num" id="count-partial">0</div><div class="lbl">Partial</div></div>
+    </div>
+    <div class="dash-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
       <div class="dash-card"><div class="num" id="count-gap">0</div><div class="lbl">Gap</div></div>
-    </div>
-    <div class="dash-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:16px">
       <div class="dash-card"><div class="num" id="count-notstarted">0</div><div class="lbl">Not Started</div></div>
-      <div class="dash-card"><div class="num">110</div><div class="lbl">Total Controls</div></div>
+      <div class="dash-card"><div class="num" id="count-total">110</div><div class="lbl">Controls in Scope</div></div>
     </div>
+    <p id="sprs-note" style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:8px">SPRS score is a self-assessment estimate over all 110 controls per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal)">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> — not an official SPRS submission.</p>
+    <p id="ssp-warning" style="display:none;font-family:var(--mono);font-size:.7rem;color:var(--gap);margin-bottom:8px">⚠ 3.12.4 (System Security Plan) is not Met. Per the DoD methodology, without an SSP an assessment cannot be completed — the SSP is a prerequisite, not a point deduction.</p>
     <h3 style="margin:24px 0 12px;font-size:1.1rem">By Family</h3>
     <div class="table-wrap">
       <table class="family-table" id="family-summary">
-        <thead><tr><th>Family</th><th>Controls</th><th>Met</th><th>Partial</th><th>Gap</th><th>Not Started</th><th>Score</th></tr></thead>
+        <thead><tr><th>Family</th><th>Controls</th><th>Met</th><th>Partial</th><th>Gap</th><th>Not Started</th><th>Score</th><th>SPRS Pts Lost</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -178,7 +189,7 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
     </div>
     <div class="table-wrap">
       <table class="ctrl-table" id="ctrl-table">
-        <thead><tr><th>Family</th><th>ID</th><th>Requirement</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th>Reviewed</th></tr></thead>
+        <thead><tr><th>Family</th><th>ID</th><th title="SPRS weight per DoD Assessment Methodology Annex A">Wt</th><th>Requirement</th><th title="Indicative mapping to Microsoft capabilities (Defender, Intune, Entra ID, Purview) — see disclaimer for sources">Microsoft Stack</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th>Reviewed</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -208,8 +219,18 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
     <button class="add-row-btn" id="add-poam-row">+ Add POA&amp;M item</button>
   </div>
 
+  <!-- Roadmap Panel -->
+  <div class="panel" id="panel-roadmap" role="tabpanel" aria-label="Compliance Roadmap">
+    <p style="color:var(--muted);margin-bottom:16px;font-size:.9rem">A phased path to compliance, generated from your open POA&amp;M items — sequenced by target date, highest-weight (SPRS) gaps first within each phase.</p>
+    <div id="roadmap-content"></div>
+  </div>
+
   <div class="disclaimer">
-    <strong>Disclaimer:</strong> Control text is summarized from the publicly available NIST SP 800-171 Rev.2. Always refer to the official NIST publication and your own contractual requirements for authoritative wording. All data stays in your browser's localStorage — nothing is transmitted to any server.
+    <strong>Disclaimer:</strong> Control text is summarized from the publicly available NIST SP 800-171 Rev.2. Always refer to the official NIST publication and your own contractual requirements for authoritative wording. All data stays in your browser's localStorage — nothing is transmitted to any server. <strong>Export regularly</strong> — use Export .xlsx / Export JSON to keep per-client or backup copies; Import restores them.
+    <br><br>
+    <strong>SPRS score:</strong> calculated per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> (Annex A weights). It is a <em>self-assessment estimate</em>, not an official SPRS submission, and this tool does not grant CMMC certification. Weights for 3.5.3 (MFA) and 3.13.11 (FIPS crypto) apply built-in partial credit; 3.12.4 (SSP) is a prerequisite rather than a scored item.
+    <br><br>
+    <strong>Microsoft-stack mapping:</strong> indicative mapping to Microsoft Defender, Intune, Entra ID, and Purview, informed by the <a href="https://www.microsoft.com/en-us/download/details.aspx?id=102536" target="_blank" rel="noopener">Microsoft Product Placemat for CMMC 2.0</a>, the Microsoft Technical Reference Guide for CMMC Level 2, and <a href="https://learn.microsoft.com/en-us/entra/standards/configure-for-cmmc-compliance" target="_blank" rel="noopener">Microsoft Learn CMMC configuration guidance</a>. Coverage depends on licensing and configuration — a mapped product supports, but does not by itself satisfy, a requirement.
   </div>
 </div>
 </div>
@@ -344,6 +365,159 @@ const CONTROLS = [
   {id:"3.14.7",family:"3.14 SI Integrity",req:"Identify unauthorized use of organizational systems."}
 ];
 
+// ===== SPRS / DoD Assessment Methodology weights =====
+// Source: NIST SP 800-171 DoD Assessment Methodology, Version 1.2.1 (June 24, 2020), Annex A.
+// https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf
+// 5-point requirements (42):
+const SPRS_5PT = new Set(["3.1.1","3.1.2","3.1.12","3.1.13","3.1.16","3.1.17","3.1.18","3.2.1","3.2.2","3.3.1","3.3.5","3.4.1","3.4.2","3.4.5","3.4.6","3.4.7","3.4.8","3.5.1","3.5.2","3.5.10","3.6.1","3.6.2","3.7.2","3.7.5","3.8.3","3.8.7","3.9.2","3.10.1","3.10.2","3.11.2","3.12.1","3.12.3","3.13.1","3.13.2","3.13.5","3.13.6","3.13.15","3.14.1","3.14.2","3.14.3","3.14.4","3.14.6"]);
+// 3-point requirements (14):
+const SPRS_3PT = new Set(["3.1.5","3.1.19","3.3.2","3.7.1","3.7.4","3.8.1","3.8.2","3.8.8","3.9.1","3.11.1","3.12.2","3.13.8","3.14.5","3.14.7"]);
+// Built-in partial credit (Annex A): subtract 5 if not implemented, 3 if partially implemented.
+// 3.5.3 — MFA: −3 if implemented for remote/privileged users but not general users; −5 if not implemented.
+// 3.13.11 — FIPS-validated crypto: −3 if encryption employed but not FIPS-validated; −5 if no encryption.
+const SPRS_PARTIAL_CREDIT = new Set(["3.5.3","3.13.11"]);
+// 3.12.4 (SSP) is not scored (NA): without an SSP, a DoD assessment cannot be completed.
+const SPRS_NA = new Set(["3.12.4"]);
+
+function sprsWeight(id){
+  if (SPRS_NA.has(id)) return 0;
+  if (SPRS_PARTIAL_CREDIT.has(id) || SPRS_5PT.has(id)) return 5;
+  if (SPRS_3PT.has(id)) return 3;
+  return 1;
+}
+
+// score = 110 − Σ deductions. Methodology credits partial implementation ONLY for 3.5.3 / 3.13.11.
+function computeSprs(controls){
+  let score = 110;
+  controls.forEach(c => {
+    if (SPRS_NA.has(c.id) || c.status === 'Met') return;
+    if (SPRS_PARTIAL_CREDIT.has(c.id) && c.status === 'Partial') { score -= 3; return; }
+    score -= sprsWeight(c.id);
+  });
+  return Math.max(score, -203);
+}
+
+// ===== CMMC Level 1 — the 17 controls derived from FAR 52.204-21 =====
+// Marked with an asterisk in Annex A of the DoD Assessment Methodology.
+const CMMC_L1 = new Set(["3.1.1","3.1.2","3.1.20","3.1.22","3.5.1","3.5.2","3.8.3","3.10.1","3.10.3","3.10.4","3.10.5","3.13.1","3.13.5","3.14.1","3.14.2","3.14.4","3.14.5"]);
+
+// ===== Microsoft-stack mapping (Defender / Intune / Entra ID / Purview) =====
+// Authored from: Microsoft Product Placemat for CMMC 2.0, Microsoft Technical Reference Guide
+// for CMMC Level 2, and Microsoft Learn CMMC configuration guidance. Indicative, not exhaustive —
+// coverage depends on licensing (e.g., GCC High) and configuration. Verify per environment.
+const MS_MAP = {
+"3.1.1":"Entra ID (Conditional Access, user/device identity); Intune (device compliance)",
+"3.1.2":"Entra ID (RBAC, app role assignments)",
+"3.1.3":"Purview (DLP, sensitivity labels); Entra ID (Conditional Access)",
+"3.1.4":"Entra ID (role separation, PIM)",
+"3.1.5":"Entra ID (PIM just-in-time roles, access reviews)",
+"3.1.6":"Entra ID (separate admin accounts, PIM)",
+"3.1.7":"Entra ID (PIM); Purview Audit (privileged actions logged)",
+"3.1.8":"Entra ID (smart lockout)",
+"3.1.9":"Intune (device logon banner); Entra ID (terms of use)",
+"3.1.10":"Intune (device lock / screen timeout policy)",
+"3.1.11":"Entra ID (Conditional Access session controls, sign-in frequency)",
+"3.1.12":"Entra ID (Conditional Access); Defender for Cloud Apps (session monitoring)",
+"3.1.13":"Platform TLS; Entra ID (Global Secure Access / App Proxy)",
+"3.1.14":"Entra ID (Global Secure Access / App Proxy as managed access point)",
+"3.1.15":"Entra ID (PIM, Conditional Access for admin portals)",
+"3.1.16":"Intune (Wi-Fi profiles, authorized SSIDs)",
+"3.1.17":"Intune (WPA2/3-Enterprise Wi-Fi profiles with certificates)",
+"3.1.18":"Intune (MDM enrollment, MAM app protection)",
+"3.1.19":"Intune (BitLocker, app protection policies encrypting CUI on devices)",
+"3.1.20":"Entra ID (B2B/cross-tenant access policies); Defender for Cloud Apps (shadow IT)",
+"3.1.21":"Intune (device restriction: removable storage)",
+"3.1.22":"Purview (DLP for public channels); process control for web posting",
+"3.2.1":"Defender (Attack Simulation Training); org security-awareness program",
+"3.2.2":"Role-based training program; Defender (training campaigns)",
+"3.2.3":"Defender (Attack Simulation Training); insider-threat awareness content",
+"3.3.1":"Purview Audit; Defender XDR / Microsoft Sentinel (log retention)",
+"3.3.2":"Entra ID (unique identities); Purview Audit (per-user actions)",
+"3.3.3":"Purview Audit (audited-events review); Sentinel (analytics rules)",
+"3.3.4":"Sentinel (health monitoring / ingestion alerts)",
+"3.3.5":"Defender XDR (incident correlation); Sentinel (analytics)",
+"3.3.6":"Purview Audit search; Sentinel (workbooks, KQL reporting)",
+"3.3.7":"Platform-managed time sync (M365/Azure)",
+"3.3.8":"Purview Audit (immutable log); Entra RBAC on log access",
+"3.3.9":"Entra ID (limit audit-admin roles)",
+"3.4.1":"Intune (configuration profiles as baseline); Azure inventory",
+"3.4.2":"Intune (security baselines, settings catalog)",
+"3.4.3":"Change-management process; Intune (policy versioning)",
+"3.4.4":"Change-management process (security impact analysis)",
+"3.4.5":"Entra ID (RBAC on config changes); Intune (scoped admin)",
+"3.4.6":"Intune (least-functionality configuration, ASR rules)",
+"3.4.7":"Intune (disable nonessential services/ports); Defender (ASR)",
+"3.4.8":"Defender Application Control / AppLocker via Intune (allow-listing)",
+"3.4.9":"Intune (app inventory, blocked user-installed apps)",
+"3.5.1":"Entra ID (unique user/device/service identities)",
+"3.5.2":"Entra ID (authentication for all access)",
+"3.5.3":"Entra ID (MFA: Authenticator, FIDO2, Windows Hello; Conditional Access enforcement)",
+"3.5.4":"Entra ID (FIDO2 / Windows Hello — replay-resistant)",
+"3.5.5":"Entra ID (identity lifecycle; no identifier reuse)",
+"3.5.6":"Entra ID (access reviews; disable inactive accounts)",
+"3.5.7":"Entra ID (password protection, banned-password lists)",
+"3.5.8":"Entra ID (password protection / history via AD)",
+"3.5.9":"Entra ID (temporary access pass with forced change)",
+"3.5.10":"Entra ID (hashed+salted credential storage; TLS in transit)",
+"3.5.11":"Platform default (obscured password feedback)",
+"3.6.1":"Defender XDR (incident handling); documented IR plan",
+"3.6.2":"Defender XDR (incident tracking); reporting process (e.g., DIBNet for DoD)",
+"3.6.3":"IR tabletop/testing process; Defender (attack simulation)",
+"3.7.1":"Intune (update rings, patching); Azure Update Manager",
+"3.7.2":"Controlled maintenance tooling; Entra PIM for maintenance accounts",
+"3.7.3":"Media-sanitization process before off-site maintenance",
+"3.7.4":"Defender (scan diagnostic media)",
+"3.7.5":"Entra ID (MFA for remote maintenance sessions)",
+"3.7.6":"Supervision process for unescorted maintenance personnel",
+"3.8.1":"Physical media control process; BitLocker via Intune for digital media",
+"3.8.2":"Access control on media; Purview (sensitivity labels)",
+"3.8.3":"Media sanitization process (NIST SP 800-88)",
+"3.8.4":"Purview (CUI sensitivity labels/markings)",
+"3.8.5":"Media transport control process; encryption via BitLocker",
+"3.8.6":"BitLocker To Go via Intune (encrypted media in transport)",
+"3.8.7":"Defender for Endpoint / Intune (device control: removable media)",
+"3.8.8":"Defender for Endpoint (block unknown USB devices)",
+"3.8.9":"M365/Azure encryption at rest for backups; Azure Backup",
+"3.9.1":"HR screening process prior to access",
+"3.9.2":"Entra ID (offboarding: disable accounts, revoke sessions); Intune (wipe)",
+"3.10.1":"Physical/facility controls (org); Microsoft datacenter controls inherited for cloud",
+"3.10.2":"Facility monitoring (org); datacenter controls inherited for cloud",
+"3.10.3":"Visitor escort process (org facilities)",
+"3.10.4":"Physical access logs (org facilities)",
+"3.10.5":"Badge/key management process (org facilities)",
+"3.10.6":"Intune (managed devices at alternate work sites); Conditional Access",
+"3.11.1":"Risk-assessment process; Purview Compliance Manager",
+"3.11.2":"Defender Vulnerability Management (periodic + new-vuln scanning)",
+"3.11.3":"Defender Vulnerability Management (remediation tasks via Intune)",
+"3.12.1":"Purview Compliance Manager (assessments); this tracker",
+"3.12.2":"POA&M process (this tracker); Compliance Manager improvement actions",
+"3.12.3":"Defender Secure Score / Compliance Manager (continuous monitoring)",
+"3.12.4":"SSP documentation process; Compliance Manager templates",
+"3.13.1":"Azure network security (NSG, Firewall); Defender for Cloud; Entra Conditional Access",
+"3.13.2":"Secure architecture/engineering process; Azure landing zones",
+"3.13.3":"Entra ID (separate admin roles/portals from user functions)",
+"3.13.4":"Platform isolation (Azure/M365 multi-tenant controls)",
+"3.13.5":"Azure network segmentation (subnets/DMZ, NSG)",
+"3.13.6":"Azure NSG / Firewall (deny-by-default, allow-by-exception)",
+"3.13.7":"Intune (VPN profile: block split tunneling)",
+"3.13.8":"TLS in transit (M365); Purview Message Encryption",
+"3.13.9":"Entra Conditional Access (sign-in frequency); platform session timeouts",
+"3.13.10":"Azure Key Vault; platform-managed key lifecycle",
+"3.13.11":"Microsoft FIPS 140-validated crypto modules; Intune (FIPS mode policy)",
+"3.13.12":"Teams admin controls (device activation, meeting policies)",
+"3.13.13":"Defender (ASR rules, Office macro controls)",
+"3.13.14":"Teams admin center (VoIP policies, monitoring)",
+"3.13.15":"TLS session authenticity (platform)",
+"3.13.16":"BitLocker via Intune; M365 encryption at rest; Purview labels",
+"3.14.1":"Defender Vulnerability Management; Intune (update rings)",
+"3.14.2":"Defender for Endpoint / Defender for Office 365",
+"3.14.3":"Defender XDR (threat analytics); M365 Message Center",
+"3.14.4":"Defender for Endpoint (auto-updated definitions)",
+"3.14.5":"Defender (real-time + scheduled scans; Safe Attachments)",
+"3.14.6":"Defender XDR; Microsoft Sentinel (traffic/attack monitoring)",
+"3.14.7":"Defender for Cloud Apps (anomalies); Entra ID Protection"
+};
+
 // Default access review items
 const DEFAULT_REVIEW_ITEMS = [
   "Verify active user accounts match current personnel roster",
@@ -401,6 +575,20 @@ function saveState() {
 
 let state = loadState();
 
+// ===== CMMC Level scope (view preference, stored separately from tracker state) =====
+const SCOPE_KEY = 'ansrd-scope-level';
+let scopeLevel = localStorage.getItem(SCOPE_KEY) === 'L1' ? 'L1' : 'L2';
+
+function inScope(c) { return scopeLevel === 'L2' || CMMC_L1.has(c.id); }
+
+document.getElementById('scope-level').value = scopeLevel;
+document.getElementById('scope-level').addEventListener('change', e => {
+  scopeLevel = e.target.value === 'L1' ? 'L1' : 'L2';
+  localStorage.setItem(SCOPE_KEY, scopeLevel);
+  renderDashboard();
+  renderTracker();
+});
+
 // ===== Tab Navigation =====
 const tabs = document.querySelectorAll('.tabs button');
 const panels = document.querySelectorAll('.panel');
@@ -413,30 +601,54 @@ tabs.forEach(tab => {
     tab.setAttribute('aria-selected','true');
     document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
     if (tab.dataset.tab === 'dashboard') renderDashboard();
+    if (tab.dataset.tab === 'roadmap') renderRoadmap();
   });
 });
 
 // ===== Dashboard =====
+// Deduction for a single control per the DoD Assessment Methodology (0 if Met or NA).
+function sprsDeduction(c) {
+  if (SPRS_NA.has(c.id) || c.status === 'Met') return 0;
+  if (SPRS_PARTIAL_CREDIT.has(c.id) && c.status === 'Partial') return 3;
+  return sprsWeight(c.id);
+}
+
 function renderDashboard() {
+  const scoped = state.controls.filter(inScope);
   const counts = {Met:0, Partial:0, Gap:0, 'Not Started':0};
-  state.controls.forEach(c => { counts[c.status] = (counts[c.status]||0) + 1; });
-  
+  scoped.forEach(c => { counts[c.status] = (counts[c.status]||0) + 1; });
+
   document.getElementById('count-met').textContent = counts.Met;
   document.getElementById('count-partial').textContent = counts.Partial;
   document.getElementById('count-gap').textContent = counts.Gap;
   document.getElementById('count-notstarted').textContent = counts['Not Started'];
-  
-  const score = Math.round((counts.Met / 110) * 100);
+  document.getElementById('count-total').textContent = scoped.length;
+
+  const score = Math.round((counts.Met / scoped.length) * 100);
   document.getElementById('score-pct').textContent = score + '%';
-  
-  // Family breakdown
+
+  // SPRS score — always computed over all 110 controls (methodology is defined on the full set)
+  const sprs = computeSprs(state.controls);
+  const sprsEl = document.getElementById('sprs-score');
+  sprsEl.textContent = sprs;
+  sprsEl.style.color = sprs >= 88 ? 'var(--met)' : sprs >= 0 ? 'var(--partial)' : 'var(--gap)';
+  document.getElementById('sprs-note').innerHTML =
+    (scopeLevel === 'L1' ? '<strong>Note:</strong> Level 1 scope is active for the counts above, but the SPRS score is always calculated over all 110 controls. ' : '') +
+    'SPRS score is a self-assessment estimate per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal)">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> — not an official SPRS submission.';
+
+  // SSP prerequisite warning
+  const ssp = state.controls.find(c => c.id === '3.12.4');
+  document.getElementById('ssp-warning').style.display = (ssp && ssp.status !== 'Met') ? 'block' : 'none';
+
+  // Family breakdown (scoped)
   const families = {};
-  state.controls.forEach(c => {
-    if (!families[c.family]) families[c.family] = {total:0, Met:0, Partial:0, Gap:0, 'Not Started':0};
+  scoped.forEach(c => {
+    if (!families[c.family]) families[c.family] = {total:0, Met:0, Partial:0, Gap:0, 'Not Started':0, ptsLost:0};
     families[c.family].total++;
     families[c.family][c.status]++;
+    families[c.family].ptsLost += sprsDeduction(c);
   });
-  
+
   const tbody = document.querySelector('#family-summary tbody');
   tbody.innerHTML = '';
   Object.entries(families).forEach(([name, f]) => {
@@ -449,6 +661,7 @@ function renderDashboard() {
       <td><span class="pill pill-gap">${f.Gap}</span></td>
       <td><span class="pill pill-notstarted">${f['Not Started']}</span></td>
       <td style="font-family:var(--mono);font-weight:600">${pct}%</td>
+      <td style="font-family:var(--mono);font-weight:600;color:${f.ptsLost ? 'var(--gap)' : 'var(--met)'}">${f.ptsLost ? '−' + f.ptsLost : '0'}</td>
     </tr>`;
   });
 }
@@ -463,17 +676,22 @@ function renderTracker() {
   tbody.innerHTML = '';
   
   state.controls.forEach((c, i) => {
+    if (!inScope(c)) return;
     if (familyFilter && c.family !== familyFilter) return;
     if (statusFilter && c.status !== statusFilter) return;
-    if (search && !c.id.toLowerCase().includes(search) && !c.req.toLowerCase().includes(search) && !c.family.toLowerCase().includes(search)) return;
-    
+    if (search && !c.id.toLowerCase().includes(search) && !c.req.toLowerCase().includes(search) && !c.family.toLowerCase().includes(search) && !(MS_MAP[c.id]||'').toLowerCase().includes(search)) return;
+
     const statusClass = c.status === 'Met' ? 'pill-met' : c.status === 'Partial' ? 'pill-partial' : c.status === 'Gap' ? 'pill-gap' : 'pill-notstarted';
-    
+    const wt = SPRS_NA.has(c.id) ? 'NA' : (SPRS_PARTIAL_CREDIT.has(c.id) ? '5/3' : sprsWeight(c.id));
+    const l1 = CMMC_L1.has(c.id) ? ' <span class="pill pill-met" title="CMMC Level 1 (FAR 52.204-21)" style="font-size:.58rem;padding:1px 5px">L1</span>' : '';
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="family-col">${c.family.split(' ').slice(0,2).join(' ')}</td>
-      <td class="id-col">${c.id}</td>
+      <td class="id-col">${c.id}${l1}</td>
+      <td class="id-col" title="SPRS weight (DoD Assessment Methodology Annex A)">${wt}</td>
       <td class="req-col">${c.req}</td>
+      <td style="font-family:var(--mono);font-size:.68rem;color:var(--muted);max-width:220px">${MS_MAP[c.id] || '—'}</td>
       <td><select data-idx="${i}" data-field="status" aria-label="Status for ${c.id}">
         <option${c.status==='Not Started'?' selected':''}>Not Started</option>
         <option${c.status==='Gap'?' selected':''}>Gap</option>
@@ -612,6 +830,61 @@ document.addEventListener('click', e => {
   if (table === 'review') { state.accessReview.splice(idx, 1); saveState(); renderAccessReview(); }
 });
 
+// ===== Roadmap (generated from POA&M) =====
+function renderRoadmap() {
+  const el = document.getElementById('roadmap-content');
+  const open = state.poam.filter(p => p.status !== 'Closed');
+
+  if (!open.length) {
+    el.innerHTML = '<div class="dash-card" style="max-width:560px"><div style="font-weight:600;margin-bottom:6px">No open POA&amp;M items.</div><p style="color:var(--muted);font-size:.9rem">Log gaps in the POA&amp;M tab — the roadmap sequences them into phases by target date, highest-weight gaps first.</p></div>';
+    return;
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = d => Math.round((new Date(d + 'T00:00:00') - today) / 86400000);
+  const phases = [
+    {name:'Overdue', desc:'Target date has passed — reprioritize or update the date', items:[]},
+    {name:'Phase 1 · Next 30 days', desc:'Immediate remediation window', items:[]},
+    {name:'Phase 2 · 31–90 days', desc:'Near-term roadmap', items:[]},
+    {name:'Phase 3 · Beyond 90 days', desc:'Longer-term milestones', items:[]},
+    {name:'Unscheduled', desc:'No target date set — assign one to place these on the roadmap', items:[]}
+  ];
+  open.forEach(p => {
+    if (!p.targetDate) { phases[4].items.push(p); return; }
+    const d = days(p.targetDate);
+    if (d < 0) phases[0].items.push(p);
+    else if (d <= 30) phases[1].items.push(p);
+    else if (d <= 90) phases[2].items.push(p);
+    else phases[3].items.push(p);
+  });
+
+  const wtOf = p => { const id = (p.controlId||'').trim(); return SPRS_NA.has(id) ? 0 : (MS_MAP.hasOwnProperty(id) ? sprsWeight(id) : 0); };
+  let html = '';
+  phases.forEach(ph => {
+    if (!ph.items.length) return;
+    ph.items.sort((a,b) => wtOf(b) - wtOf(a) || (a.targetDate||'9999').localeCompare(b.targetDate||'9999'));
+    const pts = ph.items.reduce((s,p) => s + wtOf(p), 0);
+    html += `<h3 style="margin:20px 0 4px;font-size:1.05rem">${ph.name} <span style="font-family:var(--mono);font-size:.7rem;color:var(--muted);font-weight:400">· ${ph.items.length} item${ph.items.length>1?'s':''}${pts ? ' · up to +' + pts + ' SPRS pts recoverable' : ''}</span></h3>
+    <p style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-bottom:8px">${ph.desc}</p>
+    <div class="table-wrap"><table class="poam-table"><thead><tr><th>Control</th><th>Wt</th><th>Weakness / Gap</th><th>Remediation</th><th>Owner</th><th>Target</th><th>Status</th></tr></thead><tbody>`;
+    ph.items.forEach(p => {
+      const w = wtOf(p);
+      html += `<tr>
+        <td style="font-family:var(--mono)">${esc(p.controlId) || '—'}</td>
+        <td style="font-family:var(--mono);font-weight:600">${w || '—'}</td>
+        <td>${esc(p.weakness)}</td>
+        <td>${esc(p.remediation)}</td>
+        <td>${esc(p.owner)}</td>
+        <td style="font-family:var(--mono)">${p.targetDate || '—'}</td>
+        <td><span class="pill ${p.status==='In Progress'?'pill-partial':'pill-gap'}">${esc(p.status)}</span></td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+  });
+  html += '<p style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:12px">Weights per DoD Assessment Methodology Annex A. Edit items in the POA&amp;M tab — the roadmap regenerates automatically.</p>';
+  el.innerHTML = html;
+}
+
 // ===== Export XLSX =====
 document.getElementById('export-xlsx').addEventListener('click', () => {
   const wb = XLSX.utils.book_new();
@@ -620,7 +893,10 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
   const ctrlData = state.controls.map(c => ({
     'Family': c.family,
     'Control ID': c.id,
+    'CMMC Level': CMMC_L1.has(c.id) ? 'L1' : 'L2',
+    'SPRS Weight': SPRS_NA.has(c.id) ? 'NA' : (SPRS_PARTIAL_CREDIT.has(c.id) ? '5/3' : sprsWeight(c.id)),
     'Requirement': c.req,
+    'Microsoft Stack Mapping': MS_MAP[c.id] || '',
     'Status': c.status,
     'Owner': c.owner,
     'Implementation Notes': c.notes,
@@ -640,6 +916,15 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
     'Family': name, 'Total': f.total, 'Met': f.Met, 'Partial': f.Partial, 'Gap': f.Gap, 'Not Started': f['Not Started'], 'Score %': Math.round((f.Met/f.total)*100)
   }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dashData), 'Dashboard');
+
+  // SPRS sheet
+  const sprsData = [
+    {'Item':'SPRS Score (self-assessment estimate)','Value':computeSprs(state.controls)},
+    {'Item':'Methodology','Value':'NIST SP 800-171 DoD Assessment Methodology v1.2.1, Annex A'},
+    {'Item':'Range','Value':'-203 to 110'},
+    {'Item':'Note','Value':'Estimate only - not an official SPRS submission. 3.12.4 (SSP) is a prerequisite, not a scored item.'}
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sprsData), 'SPRS');
   
   // Access Review sheet
   const revData = state.accessReview.map((r,i) => ({
@@ -744,6 +1029,7 @@ function renderAll() {
   renderTracker();
   renderAccessReview();
   renderPoam();
+  renderRoadmap();
 }
 
 renderAll();

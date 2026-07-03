@@ -1,6 +1,6 @@
 # NIST 800-171 / CMMC Readiness Tracker
 
-A free, practical compliance-readiness tool for small and mid-sized regulated healthcare organizations.
+A free, practical compliance-readiness tool for small and mid-sized regulated healthcare organizations and Defense Industrial Base (DIB) contractors.
 
 **Live:** [https://ansrd.io](https://ansrd.io)
 
@@ -11,8 +11,18 @@ A free, practical compliance-readiness tool for small and mid-sized regulated he
 | Path | Description |
 |------|-------------|
 | `/` | Marketing landing page |
-| `/app/` | In-browser tracker (all 110 controls, dashboard, POA&M, access review) |
+| `/app/` | In-browser tracker (all 110 controls, dashboard + SPRS score, Microsoft-stack mapping, CMMC L1/L2 toggle, POA&M, roadmap, access review) |
 | `/NIST_800-171_CMMC_Tracker.xlsx` | Downloadable spreadsheet template |
+
+## Tracker features (v2)
+
+- **SPRS score** — DoD self-assessment estimate per the [NIST SP 800-171 DoD Assessment Methodology v1.2.1](https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf), Annex A: start at 110, subtract each unimplemented control's weighted value (1/3/5). Built-in partial credit for 3.5.3 (MFA) and 3.13.11 (FIPS crypto); 3.12.4 (SSP) treated as a prerequisite (NA), consistent with the methodology; floor −203. Labeled as an estimate, not an official submission.
+- **Microsoft-stack mapping** — indicative per-control mapping to Defender, Intune, Entra ID, and Purview, informed by the [Microsoft Product Placemat for CMMC 2.0](https://www.microsoft.com/en-us/download/details.aspx?id=102536), the Microsoft Technical Reference Guide for CMMC L2, and [Microsoft Learn CMMC guidance](https://learn.microsoft.com/en-us/entra/standards/configure-for-cmmc-compliance).
+- **CMMC Level 1 / Level 2 toggle** — the 17 FAR 52.204-21 controls (asterisked in Annex A) vs. all 110; filters the tracker and dashboard rollups. SPRS remains calculated over all 110.
+- **Roadmap** — phased view generated from open POA&M items (Overdue / 30 / 90 / beyond / unscheduled), highest-weight gaps first, with recoverable SPRS points per phase.
+- **Export/Import** — .xlsx and JSON round-trip; state schema unchanged from v1, so existing localStorage data and old JSON exports still load. MSPs can keep one exported file per client.
+
+Note: DoD Class Deviation 2024-O0013 keeps CMMC Level 2 on NIST SP 800-171 **Rev 2** — this tool intentionally does not use Rev 3.
 
 ## Tech Stack
 
