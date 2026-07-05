@@ -154,6 +154,61 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 .modal-actions button.danger:hover{background:#8a2323;border-color:#8a2323;color:#fff}
 .modal-actions button.primary{border-color:var(--teal);background:var(--teal);color:#fff}
 .modal-actions button.primary:hover{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff}
+
+/* Export group (Task 5 — backup emphasis) */
+.export-group{display:inline-flex;gap:6px;align-items:center;padding:4px 8px 4px 6px;border:1.5px dashed #d9c179;border-radius:8px;background:#fdf9ec}
+.export-group .grp-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);font-weight:700}
+.export-group button{border-color:#e2d3a6}
+.export-group.flash{box-shadow:0 0 0 3px rgba(192,138,46,.4);transition:box-shadow .2s}
+
+/* App footer links (Task 3 feedback + Task 1/2 links) */
+.app-footer{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-family:var(--mono);font-size:.72rem;max-width:820px}
+.app-footer a{color:var(--teal);text-decoration:none;font-weight:600;cursor:pointer}
+.app-footer a:hover{text-decoration:underline}
+.app-footer .sep{color:var(--line)}
+
+/* Second dashboard grid (3 cards) — own responsive rules */
+.dash-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+@media(max-width:640px){.dash-grid3{grid-template-columns:1fr}}
+
+/* FAQ (Task 2) */
+.faq-wrap{max-width:820px}
+.faq-wrap h3{font-size:1.3rem;margin-bottom:16px}
+.faq-item{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:10px}
+.faq-item summary{cursor:pointer;list-style:none;padding:14px 18px;font-weight:700;font-size:.96rem;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:"+";font-family:var(--mono);color:var(--teal);font-size:1.15rem;flex:none}
+.faq-item[open] summary::after{content:"\2013"}
+.faq-item summary:hover{color:var(--teal)}
+.faq-item .faq-body{padding:0 18px 16px;color:var(--muted);font-size:.9rem;line-height:1.6}
+.faq-item .faq-body a{color:var(--teal)}
+
+/* Privacy page (Task 1) */
+.privacy-wrap{max-width:820px}
+.privacy-wrap h3{font-size:1.3rem;margin-bottom:4px}
+.privacy-wrap .privacy-sub{color:var(--muted);font-size:.9rem;margin-bottom:22px;font-style:italic}
+.privacy-list{list-style:none;display:grid;gap:14px}
+.privacy-list li{padding-left:28px;position:relative;font-size:.92rem;line-height:1.6;color:var(--ink)}
+.privacy-list li::before{content:"\2713";position:absolute;left:0;top:0;color:var(--met);font-weight:700;font-size:1rem}
+.privacy-list li a{color:var(--teal)}
+.privacy-list li code{font-family:var(--mono);font-size:.82rem;background:#eef0f2;padding:1px 5px;border-radius:4px}
+
+/* Data-flow visual (Task 6) */
+.dataflow{margin:26px 0 6px;padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:var(--card);max-width:640px}
+.dataflow svg{width:100%;height:auto;display:block}
+.dataflow .cap{font-family:var(--mono);font-size:.66rem;color:var(--muted);text-align:center;margin-top:10px}
+
+/* --- Mobile pass (Task 7) --- */
+@media(max-width:768px){
+  /* contain the wide tracker table instead of pushing the whole page sideways */
+  #panel-tracker .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ctrl-table{min-width:860px}
+  .ctrl-table th{position:static;top:auto}
+  /* comfortable tap targets */
+  .actions button,.actions label,.tabs button,#scope-level,
+  .tracker-controls select,.tracker-controls input{min-height:44px}
+  .tracker-controls input{min-width:0;flex:1 1 100%}
+}
 </style>
 </head>
 <body>
@@ -167,6 +222,8 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
       <button role="tab" aria-selected="false" data-tab="access-review">Access Review</button>
       <button role="tab" aria-selected="false" data-tab="poam">POA&amp;M</button>
       <button role="tab" aria-selected="false" data-tab="roadmap">Roadmap</button>
+      <button role="tab" aria-selected="false" data-tab="faq">FAQ</button>
+      <button role="tab" aria-selected="false" data-tab="privacy">Privacy</button>
     </div>
     <div class="actions">
       <span id="save-indicator" class="save-indicator" title="Your data is saved in this browser only — use Export to back it up">✓ Saved locally</span>
@@ -174,9 +231,12 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
         <option value="L2">Level 2 · 110 controls</option>
         <option value="L1">Level 1 · 17 controls</option>
       </select>
-      <button id="export-xlsx" title="Export to XLSX">Export .xlsx</button>
-      <button id="export-json" title="Export to JSON">Export JSON</button>
-      <label title="Import JSON or XLSX">Import <input type="file" id="import-file" accept=".json,.xlsx"></label>
+      <span class="export-group" title="Download your progress as a file — your backup, and the way to move data between devices.">
+        <span class="grp-label" aria-hidden="true">Back&nbsp;up</span>
+        <button id="export-xlsx" title="Download your progress as an Excel (.xlsx) file — your backup and the way to move data between devices.">Export .xlsx</button>
+        <button id="export-json" title="Download your progress as a JSON file — your backup and the way to move data between devices.">Export JSON</button>
+      </span>
+      <label title="Restore progress from a previously exported .json or .xlsx file">Import <input type="file" id="import-file" accept=".json,.xlsx"></label>
       <button id="reset-btn" class="btn-reset" title="Clear all data and start over">Reset</button>
     </div>
   </div>
@@ -185,7 +245,7 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 <div class="main">
   <!-- Dashboard Panel -->
   <div class="panel active" id="panel-dashboard" role="tabpanel" aria-label="Dashboard">
-    <div class="empty-hint" id="empty-hint" style="display:none">New here? Set each control's status in the <a data-goto="tracker">Control Tracker</a> — progress saves automatically in this browser. Use <strong>Export</strong> to back it up or share with a colleague.</div>
+    <div class="empty-hint" id="empty-hint" style="display:none">Your progress saves automatically in this browser — <strong>nothing is uploaded</strong>. Set each control's status in the <a data-goto="tracker">Control Tracker</a>; use <a id="hint-export">Export</a> to back it up. See <a data-goto="privacy">Privacy &amp; Your Data</a>.</div>
     <div class="dash-grid">
       <div class="dash-card score-card"><div class="num" id="score-pct">0%</div><div class="lbl">Readiness Score</div></div>
       <div class="dash-card" title="NIST SP 800-171 DoD Assessment (Basic) self-assessment score: start at 110, subtract each unimplemented control's weighted value (1, 3, or 5 points) per the DoD Assessment Methodology v1.2.1. Range: −203 to 110. This is a self-assessment estimate — not an official SPRS submission.">
@@ -195,7 +255,7 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
       <div class="dash-card"><div class="num" id="count-met">0</div><div class="lbl">Met</div></div>
       <div class="dash-card"><div class="num" id="count-partial">0</div><div class="lbl">Partial</div></div>
     </div>
-    <div class="dash-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+    <div class="dash-grid3">
       <div class="dash-card"><div class="num" id="count-gap">0</div><div class="lbl">Gap</div></div>
       <div class="dash-card"><div class="num" id="count-notstarted">0</div><div class="lbl">Not Started</div></div>
       <div class="dash-card"><div class="num" id="count-total">110</div><div class="lbl">Controls in Scope</div></div>
@@ -262,9 +322,65 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
     <div id="roadmap-content"></div>
   </div>
 
+  <!-- FAQ Panel -->
+  <div class="panel" id="panel-faq" role="tabpanel" aria-label="Frequently Asked Questions">
+    <div class="faq-wrap">
+      <h3>Frequently asked questions</h3>
+      <details class="faq-item"><summary>Is my data saved? Where?</summary><div class="faq-body">Yes — in your browser's local storage, on your device only. It persists across reloads and restarts. It's never sent to a server, and we can't see it.</div></details>
+      <details class="faq-item"><summary>Do I need an account or to sign in?</summary><div class="faq-body">No. No account, no email, no sign-up. Just open it and start.</div></details>
+      <details class="faq-item"><summary>How do I back up or move my data to another computer?</summary><div class="faq-body">Use <strong>Export (.xlsx or JSON)</strong> to download a file, then <strong>Import</strong> on the other machine to restore it. This is also your backup — do it regularly, since clearing your browser data will erase your progress.</div></details>
+      <details class="faq-item"><summary>Will I lose my work?</summary><div class="faq-body">Your work stays until you clear your browser's site data (or use Reset). To be safe, export a backup periodically.</div></details>
+      <details class="faq-item"><summary>Can I use the online tracker and still download my saved data?</summary><div class="faq-body">Yes. Work in the app, then use Export (.xlsx / JSON) any time to save a copy. Import brings it back.</div></details>
+      <details class="faq-item"><summary>Is the SPRS score official?</summary><div class="faq-body">No. It's a self-assessment estimate calculated per the NIST SP 800-171 DoD Assessment Methodology (Annex A weights). It is not an official SPRS submission, and this tool does not grant CMMC certification. Always confirm against the official methodology and your contractual requirements.</div></details>
+      <details class="faq-item"><summary>Do you collect any of my data?</summary><div class="faq-body">No. Your assessment data never leaves your browser. The hosted site uses cookieless, aggregate analytics (page counts only) — nothing that identifies you or touches your tracker contents.</div></details>
+      <details class="faq-item"><summary>Can I run this on my own network or air-gapped?</summary><div class="faq-body">Yes. It's static and open source (<a href="https://github.com/ansrdio/ansrd" target="_blank" rel="noopener">github.com/ansrdio/ansrd</a>). Clone it and serve the folder — it works fully offline with no external calls.</div></details>
+      <details class="faq-item"><summary>Which framework version is this based on?</summary><div class="faq-body">NIST SP 800-171 Rev 2 — the baseline for CMMC Level 2 under DoD Class Deviation 2024-O0013. (Intentionally not Rev 3.)</div></details>
+      <details class="faq-item"><summary>How do I suggest a feature or report a problem?</summary><div class="faq-body">Open an issue on GitHub: <a href="https://github.com/ansrdio/ansrd/issues" target="_blank" rel="noopener">github.com/ansrdio/ansrd/issues</a>.</div></details>
+      <details class="faq-item"><summary>Is it really free?</summary><div class="faq-body">Yes — free, open source, no sign-up, no ads, no upsell.</div></details>
+    </div>
+  </div>
+
+  <!-- Privacy Panel -->
+  <div class="panel" id="panel-privacy" role="tabpanel" aria-label="Privacy and Your Data">
+    <div class="privacy-wrap">
+      <h3>Privacy &amp; your data</h3>
+      <p class="privacy-sub">Your data, plainly.</p>
+      <ul class="privacy-list">
+        <li><strong>No account, ever.</strong> No sign-up, no login, no email required. Open it and start.</li>
+        <li><strong>No backend for your data.</strong> Everything you enter — control statuses, notes, owners, evidence, POA&amp;M items — is saved only in your own browser's local storage, on your device. It is never uploaded, transmitted, or stored on any server we control. We cannot see it.</li>
+        <li><strong>You own it.</strong> Use <strong>Export (.xlsx / JSON)</strong> to back up your work or move it between machines, and <strong>Import</strong> to restore it. That's the only way your data ever leaves your browser — because you chose to save a file.</li>
+        <li><strong>Back up regularly.</strong> Because nothing is stored on a server, clearing your browser's site data (or using Reset) erases your progress. Export a copy periodically.</li>
+        <li><strong>Analytics.</strong> The hosted site (ansrd.io) uses <strong>Vercel Web Analytics</strong> — cookieless, no personal data, aggregate page counts only. It cannot see or transmit anything you enter in the tracker. No advertising trackers, no third-party cookies.</li>
+        <li><strong>Run it yourself.</strong> It's static and open source. Clone it from <a href="https://github.com/ansrdio/ansrd" target="_blank" rel="noopener">GitHub</a> and run it entirely inside your own environment — even fully air-gapped. Self-hosted, it makes <strong>no external requests at all</strong>.</li>
+        <li><strong>Verify it yourself.</strong> Open your browser's DevTools → Network tab and watch: your assessment data never posts anywhere.</li>
+      </ul>
+      <div class="dataflow">
+        <svg viewBox="0 0 600 150" role="img" aria-label="Your data flows from you into your browser's local storage on your device, and never to any server.">
+          <defs><marker id="arw" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--teal)"/></marker></defs>
+          <rect x="8" y="45" width="118" height="60" rx="10" fill="none" stroke="var(--teal)" stroke-width="2"/>
+          <text x="67" y="72" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">You</text>
+          <text x="67" y="90" text-anchor="middle" font-size="10" fill="var(--muted)">your device</text>
+          <line x1="130" y1="75" x2="212" y2="75" stroke="var(--teal)" stroke-width="2" marker-end="url(#arw)"/>
+          <rect x="218" y="33" width="174" height="84" rx="10" fill="#eaf3f1" stroke="var(--teal)" stroke-width="2"/>
+          <text x="305" y="60" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">Your browser</text>
+          <text x="305" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">local storage</text>
+          <text x="305" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="var(--met)">✓ saved here</text>
+          <line x1="396" y1="75" x2="474" y2="75" stroke="var(--gap)" stroke-width="2" stroke-dasharray="6 5"/>
+          <circle cx="435" cy="75" r="15" fill="var(--paper)"/>
+          <line x1="424" y1="64" x2="446" y2="86" stroke="var(--gap)" stroke-width="3"/>
+          <line x1="446" y1="64" x2="424" y2="86" stroke="var(--gap)" stroke-width="3"/>
+          <rect x="480" y="45" width="112" height="60" rx="10" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"/>
+          <text x="536" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="var(--muted)">No server</text>
+          <text x="536" y="90" text-anchor="middle" font-size="10" fill="var(--muted)">nothing uploaded</text>
+        </svg>
+        <div class="cap">Your data → your browser's local storage ✓ &nbsp;·&nbsp; ✕ never to a server</div>
+      </div>
+    </div>
+  </div>
+
   <div class="trust-line">
     <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
-    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.1 · updated July 2026</div>
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.3 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
   </div>
 
   <div class="disclaimer">
@@ -273,6 +389,16 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
     <strong>SPRS score:</strong> calculated per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> (Annex A weights). It is a <em>self-assessment estimate</em>, not an official SPRS submission, and this tool does not grant CMMC certification. Weights for 3.5.3 (MFA) and 3.13.11 (FIPS crypto) apply built-in partial credit; 3.12.4 (SSP) is a prerequisite rather than a scored item.
     <br><br>
     <strong>Microsoft-stack mapping:</strong> indicative mapping to Microsoft Defender, Intune, Entra ID, and Purview, informed by the <a href="https://www.microsoft.com/en-us/download/details.aspx?id=102536" target="_blank" rel="noopener">Microsoft Product Placemat for CMMC 2.0</a>, the Microsoft Technical Reference Guide for CMMC Level 2, and <a href="https://learn.microsoft.com/en-us/entra/standards/configure-for-cmmc-compliance" target="_blank" rel="noopener">Microsoft Learn CMMC configuration guidance</a>. Coverage depends on licensing and configuration — a mapped product supports, but does not by itself satisfy, a requirement.
+  </div>
+
+  <div class="app-footer">
+    <a href="https://github.com/ansrdio/ansrd/issues" target="_blank" rel="noopener">Suggestions / Feedback ↗</a>
+    <span class="sep">·</span>
+    <a data-goto="privacy">Privacy &amp; Your Data</a>
+    <span class="sep">·</span>
+    <a data-goto="faq">FAQ</a>
+    <span class="sep">·</span>
+    <a href="https://github.com/ansrdio/ansrd" target="_blank" rel="noopener">Source on GitHub ↗</a>
   </div>
 </div>
 
@@ -667,6 +793,22 @@ tabs.forEach(tab => {
     if (tab.dataset.tab === 'roadmap') renderRoadmap();
   });
 });
+
+// Deep-link to a tab via URL hash (e.g. /app/#faq, /app/#privacy) — used by footer & landing links
+function activateTab(name){ const b = document.querySelector('.tabs button[data-tab="' + name + '"]'); if (b) b.click(); }
+if (location.hash) activateTab(location.hash.slice(1));
+window.addEventListener('hashchange', () => { if (location.hash) activateTab(location.hash.slice(1)); });
+
+// Empty-state "Export" link → highlight the Export controls
+function flashExport(){
+  const g = document.querySelector('.export-group');
+  if (!g) return;
+  g.scrollIntoView({block:'center', behavior:'smooth'});
+  g.classList.add('flash');
+  setTimeout(() => g.classList.remove('flash'), 1600);
+}
+const hintExportLink = document.getElementById('hint-export');
+if (hintExportLink) hintExportLink.addEventListener('click', flashExport);
 
 // ===== Dashboard =====
 // Deduction for a single control per the DoD Assessment Methodology (0 if Met or NA).
