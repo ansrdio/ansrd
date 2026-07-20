@@ -209,6 +209,32 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
   .tracker-controls select,.tracker-controls input{min-height:44px}
   .tracker-controls input{min-width:0;flex:1 1 100%}
 }
+
+/* --- Assessment objectives (NIST SP 800-171A) --- */
+.obj-toggle{font-family:var(--mono);font-size:.62rem;font-weight:700;padding:2px 6px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--teal);cursor:pointer;white-space:nowrap;line-height:1.4}
+.obj-toggle:hover{border-color:var(--teal);background:#eaf3f1}
+.obj-toggle .caret{display:inline-block;transition:transform .15s}
+.obj-toggle.open .caret{transform:rotate(90deg)}
+.obj-count{font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-left:4px}
+tr.obj-row>td{background:#fbfaf7;padding:0 12px 12px;border-bottom:1px solid #eee}
+tr.obj-row.hidden{display:none}
+.obj-panel{border-left:3px solid var(--teal);padding:10px 0 4px 14px;margin-top:2px}
+.obj-panel .obj-head{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.obj-item{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px dotted #e3e3e3}
+.obj-item:last-child{border-bottom:none}
+.obj-key{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--teal-deep);flex:none;min-width:56px}
+.obj-text{flex:1;font-size:.78rem;line-height:1.5;color:var(--ink)}
+.obj-item select{font-family:var(--mono);font-size:.68rem;padding:3px 6px;border:1px solid var(--line);border-radius:4px;background:var(--card);flex:none}
+.obj-item.met .obj-text{color:var(--muted)}
+.obj-bulk{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.obj-bulk button{font-family:var(--mono);font-size:.64rem;padding:4px 9px;border:1px solid var(--line);border-radius:5px;background:var(--card);color:var(--ink);cursor:pointer}
+.obj-bulk button:hover{border-color:var(--teal);color:var(--teal)}
+.derived-note{font-family:var(--mono);font-size:.58rem;color:var(--muted);display:block;margin-top:3px}
+@media(max-width:768px){
+  .obj-item{flex-wrap:wrap}
+  .obj-item select{min-height:44px}
+  .obj-toggle{min-height:32px}
+}
 </style>
 </head>
 <body>
@@ -331,6 +357,7 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
       <details class="faq-item"><summary>How do I back up or move my data to another computer?</summary><div class="faq-body">Use <strong>Export (.xlsx or JSON)</strong> to download a file, then <strong>Import</strong> on the other machine to restore it. This is also your backup — do it regularly, since clearing your browser data will erase your progress.</div></details>
       <details class="faq-item"><summary>Will I lose my work?</summary><div class="faq-body">Your work stays until you clear your browser's site data (or use Reset). To be safe, export a backup periodically.</div></details>
       <details class="faq-item"><summary>Can I use the online tracker and still download my saved data?</summary><div class="faq-body">Yes. Work in the app, then use Export (.xlsx / JSON) any time to save a copy. Import brings it back.</div></details>
+      <details class="faq-item"><summary>What are the [a], [b], [c] items under each control?</summary><div class="faq-body">Those are the <strong>assessment objectives</strong> from <a href="https://csrc.nist.gov/pubs/sp/800/171/a/final" target="_blank" rel="noopener">NIST SP 800-171A</a> — the individual determination statements an assessor checks for each requirement. Expand a control in the Control Tracker to mark each one Met / Not Met / N/A. The control's overall status rolls up automatically: all applicable objectives Met → <strong>Met</strong>, some Met → <strong>Partial</strong>, none Met → <strong>Gap</strong>. Objectives marked N/A are excluded from the rollup. Note that SPRS scoring stays per-control per the DoD methodology — it isn't scored per objective.</div></details>
       <details class="faq-item"><summary>Is the SPRS score official?</summary><div class="faq-body">No. It's a self-assessment estimate calculated per the NIST SP 800-171 DoD Assessment Methodology (Annex A weights). It is not an official SPRS submission, and this tool does not grant CMMC certification. Always confirm against the official methodology and your contractual requirements.</div></details>
       <details class="faq-item"><summary>Do you collect any of my data?</summary><div class="faq-body">No. Your assessment data never leaves your browser. The hosted site uses cookieless, aggregate analytics (page counts only) — nothing that identifies you or touches your tracker contents.</div></details>
       <details class="faq-item"><summary>Can I run this on my own network or air-gapped?</summary><div class="faq-body">Yes. It's static and open source (<a href="https://github.com/ansrdio/ansrd" target="_blank" rel="noopener">github.com/ansrdio/ansrd</a>). Clone it and serve the folder — it works fully offline with no external calls.</div></details>
@@ -380,13 +407,15 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 
   <div class="trust-line">
     <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
-    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.3 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.4 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
   </div>
 
   <div class="disclaimer">
     <strong>Disclaimer:</strong> Control text is summarized from the publicly available NIST SP 800-171 Rev.2. Always refer to the official NIST publication and your own contractual requirements for authoritative wording. All data stays in your browser's localStorage — nothing is transmitted to any server. <strong>Export regularly</strong> — use Export .xlsx / Export JSON to keep per-client or backup copies; Import restores them.
     <br><br>
     <strong>SPRS score:</strong> calculated per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> (Annex A weights). It is a <em>self-assessment estimate</em>, not an official SPRS submission, and this tool does not grant CMMC certification. Weights for 3.5.3 (MFA) and 3.13.11 (FIPS crypto) apply built-in partial credit; 3.12.4 (SSP) is a prerequisite rather than a scored item.
+    <br><br>
+    <strong>Assessment objectives:</strong> the <code>[a] [b] [c]</code> determination statements under each control are summarized from the publicly available <a href="https://csrc.nist.gov/pubs/sp/800/171/a/final" target="_blank" rel="noopener">NIST SP 800-171A</a> — refer to the official publication for authoritative wording. Marking objectives rolls the control up automatically (all applicable objectives Met → Met; some Met → Partial; none Met → Gap); objectives marked N/A are excluded. SPRS scoring remains per-control per the DoD methodology — it is not calculated per objective.
     <br><br>
     <strong>Microsoft-stack mapping:</strong> indicative mapping to Microsoft Defender, Intune, Entra ID, and Purview, informed by the <a href="https://www.microsoft.com/en-us/download/details.aspx?id=102536" target="_blank" rel="noopener">Microsoft Product Placemat for CMMC 2.0</a>, the Microsoft Technical Reference Guide for CMMC Level 2, and <a href="https://learn.microsoft.com/en-us/entra/standards/configure-for-cmmc-compliance" target="_blank" rel="noopener">Microsoft Learn CMMC configuration guidance</a>. Coverage depends on licensing and configuration — a mapped product supports, but does not by itself satisfy, a requirement.
   </div>
@@ -700,6 +729,159 @@ const MS_MAP = {
 "3.14.7":"Defender for Cloud Apps (anomalies); Entra ID Protection"
 };
 
+// ===== NIST SP 800-171A assessment objectives =====
+// Each 800-171 requirement decomposes into determination statements [a], [b], [c]...
+// Text summarized from the publicly available NIST SP 800-171A; refer to the official
+// publication for authoritative wording. Populated below.
+// 110 controls / 320 objectives. Note: 23 requirements carry a single unlettered
+// determination statement in 800-171A; those are keyed [a] here by convention.
+const OBJECTIVES = {
+"3.1.1":[{"k":"a","t":"authorized users are identified"},{"k":"b","t":"processes acting on behalf of authorized users are identified"},{"k":"c","t":"devices (and other systems) authorized to connect to the system are identified"},{"k":"d","t":"system access is limited to authorized users"},{"k":"e","t":"system access is limited to processes acting on behalf of authorized users"},{"k":"f","t":"system access is limited to authorized devices (including other systems)"}],
+"3.1.2":[{"k":"a","t":"the types of transactions and functions that authorized users are permitted to execute are defined"},{"k":"b","t":"system access is limited to the defined types of transactions and functions for authorized users"}],
+"3.1.3":[{"k":"a","t":"information flow control policies are defined"},{"k":"b","t":"methods and enforcement mechanisms for controlling the flow of CUI are defined"},{"k":"c","t":"designated sources and destinations (e.g., networks, individuals, and devices) for CUI within the system and between interconnected systems are identified"},{"k":"d","t":"authorizations for controlling the flow of CUI are defined"},{"k":"e","t":"approved authorizations for controlling the flow of CUI are enforced"}],
+"3.1.4":[{"k":"a","t":"the duties of individuals requiring separation are defined"},{"k":"b","t":"responsibilities for duties that require separation are assigned to separate individuals"},{"k":"c","t":"access privileges that enable individuals to exercise the duties that require separation are granted to separate individuals"}],
+"3.1.5":[{"k":"a","t":"privileged accounts are identified"},{"k":"b","t":"access to privileged accounts is authorized in accordance with the principle of least privilege"},{"k":"c","t":"security functions are identified"},{"k":"d","t":"access to security functions is authorized in accordance with the principle of least privilege"}],
+"3.1.6":[{"k":"a","t":"nonsecurity functions are identified"},{"k":"b","t":"users are required to use non-privileged accounts or roles when accessing nonsecurity functions"}],
+"3.1.7":[{"k":"a","t":"privileged functions are defined"},{"k":"b","t":"non-privileged users are defined"},{"k":"c","t":"non-privileged users are prevented from executing privileged functions"},{"k":"d","t":"the execution of privileged functions is captured in audit logs"}],
+"3.1.8":[{"k":"a","t":"the means of limiting unsuccessful logon attempts is defined"},{"k":"b","t":"the defined means of limiting unsuccessful logon attempts is implemented"}],
+"3.1.9":[{"k":"a","t":"privacy and security notices required by CUI-specified rules are identified, consistent, and associated with the specific CUI category"},{"k":"b","t":"privacy and security notices are displayed"}],
+"3.1.10":[{"k":"a","t":"the period of inactivity after which the system initiates a session lock is defined"},{"k":"b","t":"access to the system and viewing of data is prevented by initiating a session lock after the defined period of inactivity"},{"k":"c","t":"previously visible information is concealed via a pattern-hiding display after the defined period of inactivity"}],
+"3.1.11":[{"k":"a","t":"conditions requiring a user session to terminate are defined"},{"k":"b","t":"a user session is automatically terminated after any of the defined conditions occur"}],
+"3.1.12":[{"k":"a","t":"remote access sessions are permitted"},{"k":"b","t":"the types of permitted remote access are identified"},{"k":"c","t":"remote access sessions are controlled"},{"k":"d","t":"remote access sessions are monitored"}],
+"3.1.13":[{"k":"a","t":"cryptographic mechanisms to protect the confidentiality of remote access sessions are identified"},{"k":"b","t":"cryptographic mechanisms to protect the confidentiality of remote access sessions are implemented"}],
+"3.1.14":[{"k":"a","t":"managed access control points are identified and implemented"},{"k":"b","t":"remote access is routed through managed network access control points"}],
+"3.1.15":[{"k":"a","t":"privileged commands authorized for remote execution are identified"},{"k":"b","t":"security-relevant information authorized to be accessed remotely is identified"},{"k":"c","t":"the execution of the identified privileged commands via remote access is authorized"},{"k":"d","t":"access to the identified security-relevant information via remote access is authorized"}],
+"3.1.16":[{"k":"a","t":"wireless access points are identified"},{"k":"b","t":"wireless access is authorized prior to allowing such connections"}],
+"3.1.17":[{"k":"a","t":"wireless access to the system is protected using authentication"},{"k":"b","t":"wireless access to the system is protected using encryption"}],
+"3.1.18":[{"k":"a","t":"mobile devices that process, store, or transmit CUI are identified"},{"k":"b","t":"mobile device connections are authorized"},{"k":"c","t":"mobile device connections are monitored and logged"}],
+"3.1.19":[{"k":"a","t":"mobile devices and mobile computing platforms that process, store, or transmit CUI are identified"},{"k":"b","t":"encryption is employed to protect CUI on identified mobile devices and mobile computing platforms"}],
+"3.1.20":[{"k":"a","t":"connections to external systems are identified"},{"k":"b","t":"the use of external systems is identified"},{"k":"c","t":"connections to external systems are verified"},{"k":"d","t":"the use of external systems is verified"},{"k":"e","t":"connections to external systems are controlled/limited"},{"k":"f","t":"the use of external systems is controlled/limited"}],
+"3.1.21":[{"k":"a","t":"the use of portable storage devices containing CUI on external systems is identified and documented"},{"k":"b","t":"limits on the use of portable storage devices containing CUI on external systems are defined"},{"k":"c","t":"the use of portable storage devices containing CUI on external systems is limited as defined"}],
+"3.1.22":[{"k":"a","t":"individuals authorized to post or process information on publicly accessible systems are identified"},{"k":"b","t":"procedures to ensure CUI is not posted or processed on publicly accessible systems are identified"},{"k":"c","t":"a review process is in place prior to posting of any content to publicly accessible systems"},{"k":"d","t":"content on publicly accessible systems is reviewed to ensure that it does not include CUI"},{"k":"e","t":"mechanisms are in place to remove and address improper posting of CUI"}],
+"3.2.1":[{"k":"a","t":"security risks associated with organizational activities involving CUI are identified"},{"k":"b","t":"policies, standards, and procedures related to the security of the system are identified"},{"k":"c","t":"managers, systems administrators, and users of the system are made aware of the security risks associated with their activities"},{"k":"d","t":"managers, systems administrators, and users of the system are made aware of the applicable policies, standards, and procedures related to the security of the system"}],
+"3.2.2":[{"k":"a","t":"information security-related duties, roles, and responsibilities are defined"},{"k":"b","t":"information security-related duties, roles, and responsibilities are assigned to designated personnel"},{"k":"c","t":"personnel are adequately trained to carry out their assigned information security-related duties, roles, and responsibilities"}],
+"3.2.3":[{"k":"a","t":"potential indicators associated with insider threats are identified"},{"k":"b","t":"security awareness training on recognizing and reporting potential indicators of insider threat is provided to managers and employees"}],
+"3.3.1":[{"k":"a","t":"audit logs needed (i.e., event types to be logged) to enable the monitoring, analysis, investigation, and reporting of unlawful or unauthorized system activity are specified"},{"k":"b","t":"the content of audit records needed to support monitoring, analysis, investigation, and reporting of unlawful or unauthorized system activity is defined"},{"k":"c","t":"audit records are created (generated)"},{"k":"d","t":"audit records, once created, contain the defined content"},{"k":"e","t":"retention requirements for audit records are defined"},{"k":"f","t":"audit records are retained as defined"}],
+"3.3.2":[{"k":"a","t":"the content of the audit records needed to support the ability to uniquely trace users to their actions is defined"},{"k":"b","t":"audit records, once created, contain the defined content"}],
+"3.3.3":[{"k":"a","t":"a process for determining when to review logged events is defined"},{"k":"b","t":"event types being logged are reviewed in accordance with the defined review process"},{"k":"c","t":"event types being logged are updated based on the review"}],
+"3.3.4":[{"k":"a","t":"personnel or roles to be alerted in the event of an audit logging process failure are identified"},{"k":"b","t":"types of audit logging process failures for which alert will be generated are defined"},{"k":"c","t":"identified personnel or roles are alerted in the event of an audit logging process failure"}],
+"3.3.5":[{"k":"a","t":"audit record review, analysis, and reporting processes for investigation and response to indications of unlawful, unauthorized, suspicious, or unusual activity are defined"},{"k":"b","t":"defined audit record review, analysis, and reporting processes are correlated"}],
+"3.3.6":[{"k":"a","t":"an audit record reduction capability that supports on-demand analysis is provided"},{"k":"b","t":"a report generation capability that supports on-demand reporting is provided"}],
+"3.3.7":[{"k":"a","t":"internal system clocks are used to generate time stamps for audit records"},{"k":"b","t":"an authoritative source with which to compare and synchronize internal system clocks is specified"},{"k":"c","t":"internal system clocks used to generate time stamps for audit records are compared to and synchronized with the specified authoritative time source"}],
+"3.3.8":[{"k":"a","t":"audit information is protected from unauthorized access"},{"k":"b","t":"audit information is protected from unauthorized modification"},{"k":"c","t":"audit information is protected from unauthorized deletion"},{"k":"d","t":"audit logging tools are protected from unauthorized access"},{"k":"e","t":"audit logging tools are protected from unauthorized modification"},{"k":"f","t":"audit logging tools are protected from unauthorized deletion"}],
+"3.3.9":[{"k":"a","t":"a subset of privileged users granted access to manage audit logging functionality is defined"},{"k":"b","t":"management of audit logging functionality is limited to the defined subset of privileged users"}],
+"3.4.1":[{"k":"a","t":"a baseline configuration is established"},{"k":"b","t":"the baseline configuration includes hardware, software, firmware, and documentation"},{"k":"c","t":"the baseline configuration is maintained (reviewed and updated) throughout the system development life cycle"},{"k":"d","t":"a system inventory is established"},{"k":"e","t":"the system inventory includes hardware, software, firmware, and documentation"},{"k":"f","t":"the inventory is maintained (reviewed and updated) throughout the system development life cycle"}],
+"3.4.2":[{"k":"a","t":"security configuration settings for information technology products employed in the system are established and included in the baseline configuration"},{"k":"b","t":"security configuration settings for information technology products employed in the system are enforced"}],
+"3.4.3":[{"k":"a","t":"changes to the system are tracked"},{"k":"b","t":"changes to the system are reviewed"},{"k":"c","t":"changes to the system are approved or disapproved"},{"k":"d","t":"changes to the system are logged"}],
+"3.4.4":[{"k":"a","t":"the security impact of changes to the system is analyzed prior to implementation"}],
+"3.4.5":[{"k":"a","t":"physical access restrictions associated with changes to the system are defined"},{"k":"b","t":"physical access restrictions associated with changes to the system are documented"},{"k":"c","t":"physical access restrictions associated with changes to the system are approved"},{"k":"d","t":"physical access restrictions associated with changes to the system are enforced"},{"k":"e","t":"logical access restrictions associated with changes to the system are defined"},{"k":"f","t":"logical access restrictions associated with changes to the system are documented"},{"k":"g","t":"logical access restrictions associated with changes to the system are approved"},{"k":"h","t":"logical access restrictions associated with changes to the system are enforced"}],
+"3.4.6":[{"k":"a","t":"essential system capabilities are defined based on the principle of least functionality"},{"k":"b","t":"the system is configured to provide only the defined essential capabilities"}],
+"3.4.7":[{"k":"a","t":"essential programs are defined"},{"k":"b","t":"the use of nonessential programs is defined"},{"k":"c","t":"the use of nonessential programs is restricted, disabled, or prevented as defined"},{"k":"d","t":"essential functions are defined"},{"k":"e","t":"the use of nonessential functions is defined"},{"k":"f","t":"the use of nonessential functions is restricted, disabled, or prevented as defined"},{"k":"g","t":"essential ports are defined"},{"k":"h","t":"the use of nonessential ports is defined"},{"k":"i","t":"the use of nonessential ports is restricted, disabled, or prevented as defined"},{"k":"j","t":"essential protocols are defined"},{"k":"k","t":"the use of nonessential protocols is defined"},{"k":"l","t":"the use of nonessential protocols is restricted, disabled, or prevented as defined"},{"k":"m","t":"essential services are defined"},{"k":"n","t":"the use of nonessential services is defined"},{"k":"o","t":"the use of nonessential services is restricted, disabled, or prevented as defined"}],
+"3.4.8":[{"k":"a","t":"a policy specifying whether whitelisting or blacklisting is to be implemented is specified"},{"k":"b","t":"the software allowed to execute under whitelisting or denied use under blacklisting is specified"},{"k":"c","t":"whitelisting to allow the execution of authorized software or blacklisting to prevent the use of unauthorized software is implemented as specified"}],
+"3.4.9":[{"k":"a","t":"a policy for controlling the installation of software by users is established"},{"k":"b","t":"installation of software by users is controlled based on the established policy"},{"k":"c","t":"installation of software by users is monitored"}],
+"3.5.1":[{"k":"a","t":"system users are identified"},{"k":"b","t":"processes acting on behalf of users are identified"},{"k":"c","t":"devices accessing the system are identified"}],
+"3.5.2":[{"k":"a","t":"the identity of each user is authenticated or verified as a prerequisite to system access"},{"k":"b","t":"the identity of each process acting on behalf of a user is authenticated or verified as a prerequisite to system access"},{"k":"c","t":"the identity of each device accessing or connecting to the system is authenticated or verified as a prerequisite to system access"}],
+"3.5.3":[{"k":"a","t":"privileged accounts are identified"},{"k":"b","t":"multifactor authentication is implemented for local access to privileged accounts"},{"k":"c","t":"multifactor authentication is implemented for network access to privileged accounts"},{"k":"d","t":"multifactor authentication is implemented for network access to non-privileged accounts"}],
+"3.5.4":[{"k":"a","t":"replay-resistant authentication mechanisms are implemented for network account access to privileged and non-privileged accounts"}],
+"3.5.5":[{"k":"a","t":"a period within which identifiers cannot be reused is defined"},{"k":"b","t":"reuse of identifiers is prevented within the defined period"}],
+"3.5.6":[{"k":"a","t":"a period of inactivity after which an identifier is disabled is defined"},{"k":"b","t":"identifiers are disabled after the defined period of inactivity"}],
+"3.5.7":[{"k":"a","t":"password complexity requirements are defined"},{"k":"b","t":"password change of character requirements are defined"},{"k":"c","t":"minimum password complexity requirements as defined are enforced when new passwords are created"},{"k":"d","t":"minimum password change of character requirements as defined are enforced when new passwords are created"}],
+"3.5.8":[{"k":"a","t":"the number of generations during which a password cannot be reused is specified"},{"k":"b","t":"reuse of passwords is prohibited during the specified number of generations"}],
+"3.5.9":[{"k":"a","t":"an immediate change to a permanent password is required when a temporary password is used for system logon"}],
+"3.5.10":[{"k":"a","t":"passwords are cryptographically protected in storage"},{"k":"b","t":"passwords are cryptographically protected in transit"}],
+"3.5.11":[{"k":"a","t":"authentication information is obscured during the authentication process"}],
+"3.6.1":[{"k":"a","t":"an operational incident-handling capability is established"},{"k":"b","t":"the operational incident-handling capability includes preparation"},{"k":"c","t":"the operational incident-handling capability includes detection"},{"k":"d","t":"the operational incident-handling capability includes analysis"},{"k":"e","t":"the operational incident-handling capability includes containment"},{"k":"f","t":"the operational incident-handling capability includes recovery"},{"k":"g","t":"the operational incident-handling capability includes user response activities"}],
+"3.6.2":[{"k":"a","t":"incidents are tracked"},{"k":"b","t":"incidents are documented"},{"k":"c","t":"authorities to whom incidents are to be reported are identified"},{"k":"d","t":"organizational officials to whom incidents are to be reported are identified"},{"k":"e","t":"identified authorities are notified of incidents"},{"k":"f","t":"identified organizational officials are notified of incidents"}],
+"3.6.3":[{"k":"a","t":"the incident response capability is tested"}],
+"3.7.1":[{"k":"a","t":"system maintenance is performed"}],
+"3.7.2":[{"k":"a","t":"tools used to conduct system maintenance are controlled"},{"k":"b","t":"techniques used to conduct system maintenance are controlled"},{"k":"c","t":"mechanisms used to conduct system maintenance are controlled"},{"k":"d","t":"personnel used to conduct system maintenance are controlled"}],
+"3.7.3":[{"k":"a","t":"equipment to be removed from organizational spaces for off-site maintenance is sanitized of any CUI"}],
+"3.7.4":[{"k":"a","t":"media containing diagnostic and test programs are checked for malicious code before being used in organizational systems that process, store, or transmit CUI"}],
+"3.7.5":[{"k":"a","t":"multifactor authentication is used to establish nonlocal maintenance sessions via external network connections"},{"k":"b","t":"nonlocal maintenance sessions established via external network connections are terminated when nonlocal maintenance is complete"}],
+"3.7.6":[{"k":"a","t":"maintenance personnel without required access authorization are supervised during maintenance activities"}],
+"3.8.1":[{"k":"a","t":"paper media containing CUI is physically controlled"},{"k":"b","t":"digital media containing CUI is physically controlled"},{"k":"c","t":"paper media containing CUI is securely stored"},{"k":"d","t":"digital media containing CUI is securely stored"}],
+"3.8.2":[{"k":"a","t":"access to CUI on system media is limited to authorized users"}],
+"3.8.3":[{"k":"a","t":"system media containing CUI is sanitized or destroyed before disposal"},{"k":"b","t":"system media containing CUI is sanitized before it is released for reuse"}],
+"3.8.4":[{"k":"a","t":"media containing CUI is marked with applicable CUI markings"},{"k":"b","t":"media containing CUI is marked with distribution limitations"}],
+"3.8.5":[{"k":"a","t":"access to media containing CUI is controlled"},{"k":"b","t":"accountability for media containing CUI is maintained during transport outside of controlled areas"}],
+"3.8.6":[{"k":"a","t":"the confidentiality of CUI stored on digital media is protected during transport using cryptographic mechanisms or alternative physical safeguards"}],
+"3.8.7":[{"k":"a","t":"the use of removable media on system components is controlled"}],
+"3.8.8":[{"k":"a","t":"the use of portable storage devices is prohibited when such devices have no identifiable owner"}],
+"3.8.9":[{"k":"a","t":"the confidentiality of backup CUI is protected at storage locations"}],
+"3.9.1":[{"k":"a","t":"individuals are screened prior to authorizing access to organizational systems containing CUI"}],
+"3.9.2":[{"k":"a","t":"a policy and/or process for terminating system access and any credentials coincident with personnel actions is established"},{"k":"b","t":"system access and credentials are terminated consistent with personnel actions such as termination or transfer"},{"k":"c","t":"the system is protected during and after personnel transfer actions"}],
+"3.10.1":[{"k":"a","t":"authorized individuals allowed physical access are identified"},{"k":"b","t":"physical access to organizational systems is limited to authorized individuals"},{"k":"c","t":"physical access to equipment is limited to authorized individuals"},{"k":"d","t":"physical access to operating environments is limited to authorized individuals"}],
+"3.10.2":[{"k":"a","t":"the physical facility where organizational systems reside is protected"},{"k":"b","t":"the support infrastructure for organizational systems is protected"},{"k":"c","t":"the physical facility where organizational systems reside is monitored"},{"k":"d","t":"the support infrastructure for organizational systems is monitored"}],
+"3.10.3":[{"k":"a","t":"visitors are escorted"},{"k":"b","t":"visitor activity is monitored"}],
+"3.10.4":[{"k":"a","t":"audit logs of physical access are maintained"}],
+"3.10.5":[{"k":"a","t":"physical access devices are identified"},{"k":"b","t":"physical access devices are controlled"},{"k":"c","t":"physical access devices are managed"}],
+"3.10.6":[{"k":"a","t":"safeguarding measures for CUI are defined for alternate work sites"},{"k":"b","t":"safeguarding measures for CUI are enforced for alternate work sites"}],
+"3.11.1":[{"k":"a","t":"the frequency to assess risk to organizational operations, organizational assets, and individuals is defined"},{"k":"b","t":"risk to organizational operations, organizational assets, and individuals resulting from the operation of an organizational system that processes, stores, or transmits CUI is assessed with the defined frequency"}],
+"3.11.2":[{"k":"a","t":"the frequency to scan for vulnerabilities in organizational systems and applications is defined"},{"k":"b","t":"vulnerability scans are performed on organizational systems with the defined frequency"},{"k":"c","t":"vulnerability scans are performed on applications with the defined frequency"},{"k":"d","t":"vulnerability scans are performed on organizational systems when new vulnerabilities are identified"},{"k":"e","t":"vulnerability scans are performed on applications when new vulnerabilities are identified"}],
+"3.11.3":[{"k":"a","t":"vulnerabilities are identified"},{"k":"b","t":"vulnerabilities are remediated in accordance with risk assessments"}],
+"3.12.1":[{"k":"a","t":"the frequency of security control assessments is defined"},{"k":"b","t":"security controls are assessed with the defined frequency to determine if the controls are effective in their application"}],
+"3.12.2":[{"k":"a","t":"deficiencies and vulnerabilities to be addressed by the plan of action are identified"},{"k":"b","t":"a plan of action is developed to correct identified deficiencies and reduce or eliminate identified vulnerabilities"},{"k":"c","t":"the plan of action is implemented to correct identified deficiencies and reduce or eliminate identified vulnerabilities"}],
+"3.12.3":[{"k":"a","t":"security controls are monitored on an ongoing basis to ensure the continued effectiveness of those controls"}],
+"3.12.4":[{"k":"a","t":"a system security plan is developed"},{"k":"b","t":"the system boundary is described and documented in the system security plan"},{"k":"c","t":"the system environment of operation is described and documented in the system security plan"},{"k":"d","t":"the security requirements identified and approved by the designated authority as non-applicable are identified"},{"k":"e","t":"the method of security requirement implementation is described and documented in the system security plan"},{"k":"f","t":"the relationship with or connection to other systems is described and documented in the system security plan"},{"k":"g","t":"the frequency to update the system security plan is defined"},{"k":"h","t":"system security plan is updated with the defined frequency"}],
+"3.13.1":[{"k":"a","t":"the external system boundary is defined"},{"k":"b","t":"key internal system boundaries are defined"},{"k":"c","t":"communications are monitored at the external system boundary"},{"k":"d","t":"communications are monitored at key internal boundaries"},{"k":"e","t":"communications are controlled at the external system boundary"},{"k":"f","t":"communications are controlled at key internal boundaries"},{"k":"g","t":"communications are protected at the external system boundary"},{"k":"h","t":"communications are protected at key internal boundaries"}],
+"3.13.2":[{"k":"a","t":"architectural designs that promote effective information security are identified"},{"k":"b","t":"software development techniques that promote effective information security are identified"},{"k":"c","t":"systems engineering principles that promote effective information security are identified"},{"k":"d","t":"identified architectural designs that promote effective information security are employed"},{"k":"e","t":"identified software development techniques that promote effective information security are employed"},{"k":"f","t":"identified systems engineering principles that promote effective information security are employed"}],
+"3.13.3":[{"k":"a","t":"user functionality is identified"},{"k":"b","t":"system management functionality is identified"},{"k":"c","t":"user functionality is separated from system management functionality"}],
+"3.13.4":[{"k":"a","t":"unauthorized and unintended information transfer via shared system resources is prevented"}],
+"3.13.5":[{"k":"a","t":"publicly accessible system components are identified"},{"k":"b","t":"subnetworks for publicly accessible system components are physically or logically separated from internal networks"}],
+"3.13.6":[{"k":"a","t":"network communications traffic is denied by default"},{"k":"b","t":"network communications traffic is allowed by exception"}],
+"3.13.7":[{"k":"a","t":"remote devices are prevented from simultaneously establishing non-remote connections with the system and communicating via some other connection to resources in external networks (i.e., split tunneling)"}],
+"3.13.8":[{"k":"a","t":"cryptographic mechanisms intended to prevent unauthorized disclosure of CUI are identified"},{"k":"b","t":"alternative physical safeguards intended to prevent unauthorized disclosure of CUI are identified"},{"k":"c","t":"either cryptographic mechanisms or alternative physical safeguards are implemented to prevent unauthorized disclosure of CUI during transmission"}],
+"3.13.9":[{"k":"a","t":"a period of inactivity to terminate network connections associated with communications sessions is defined"},{"k":"b","t":"network connections associated with communications sessions are terminated at the end of the sessions"},{"k":"c","t":"network connections associated with communications sessions are terminated after the defined period of inactivity"}],
+"3.13.10":[{"k":"a","t":"cryptographic keys are established whenever cryptography is employed"},{"k":"b","t":"cryptographic keys are managed whenever cryptography is employed"}],
+"3.13.11":[{"k":"a","t":"FIPS-validated cryptography is employed to protect the confidentiality of CUI"}],
+"3.13.12":[{"k":"a","t":"collaborative computing devices are identified"},{"k":"b","t":"collaborative computing devices provide indication to users of devices in use"},{"k":"c","t":"remote activation of collaborative computing devices is prohibited"}],
+"3.13.13":[{"k":"a","t":"use of mobile code is controlled"},{"k":"b","t":"use of mobile code is monitored"}],
+"3.13.14":[{"k":"a","t":"use of Voice over Internet Protocol (VoIP) technologies is controlled"},{"k":"b","t":"use of Voice over Internet Protocol (VoIP) technologies is monitored"}],
+"3.13.15":[{"k":"a","t":"the authenticity of communications sessions is protected"}],
+"3.13.16":[{"k":"a","t":"the confidentiality of CUI at rest is protected"}],
+"3.14.1":[{"k":"a","t":"the time within which to identify system flaws is specified"},{"k":"b","t":"system flaws are identified within the specified time frame"},{"k":"c","t":"the time within which to report system flaws is specified"},{"k":"d","t":"system flaws are reported within the specified time frame"},{"k":"e","t":"the time within which to correct system flaws is specified"},{"k":"f","t":"system flaws are corrected within the specified time frame"}],
+"3.14.2":[{"k":"a","t":"designated locations for malicious code protection are identified"},{"k":"b","t":"protection from malicious code at designated locations is provided"}],
+"3.14.3":[{"k":"a","t":"response actions to system security alerts and advisories are identified"},{"k":"b","t":"system security alerts and advisories are monitored"},{"k":"c","t":"actions in response to system security alerts and advisories are taken"}],
+"3.14.4":[{"k":"a","t":"malicious code protection mechanisms are updated when new releases are available"}],
+"3.14.5":[{"k":"a","t":"the frequency for malicious code scans is defined"},{"k":"b","t":"malicious code scans are performed with the defined frequency"},{"k":"c","t":"real-time malicious code scans of files from external sources as files are downloaded, opened, or executed are performed"}],
+"3.14.6":[{"k":"a","t":"the system is monitored to detect attacks and indicators of potential attacks"},{"k":"b","t":"inbound communications traffic is monitored to detect attacks and indicators of potential attacks"},{"k":"c","t":"outbound communications traffic is monitored to detect attacks and indicators of potential attacks"}],
+"3.14.7":[{"k":"a","t":"authorized use of the system is defined"},{"k":"b","t":"unauthorized use of the system is identified"}]
+};
+
+// Objectives defined for a control (empty array if none).
+function objsFor(id) { return OBJECTIVES[id] || []; }
+
+// Roll a control's status up from its objective statuses.
+// Only recomputes once at least one objective has been set, so controls tracked
+// purely at the control level (existing saved data) keep their manual status.
+function rollupStatus(ctrl) {
+  const defs = objsFor(ctrl.id);
+  if (!defs.length) return null;
+  const st = ctrl.objStatus || {};
+  const set = defs.filter(o => st[o.k]);
+  if (!set.length) return null;                       // untouched — leave manual status alone
+  const applicable = set.filter(o => st[o.k] !== 'N/A');
+  if (!applicable.length) return null;                // all marked N/A — leave as-is
+  const met = applicable.filter(o => st[o.k] === 'Met').length;
+  const allDefsApplicable = defs.filter(o => st[o.k] !== 'N/A');
+  if (met === allDefsApplicable.length && met > 0) return 'Met';
+  if (met > 0) return 'Partial';
+  return 'Gap';
+}
+
+// Apply the rollup to a control (returns true if the status changed).
+function applyRollup(ctrl) {
+  const next = rollupStatus(ctrl);
+  if (next && next !== ctrl.status) { ctrl.status = next; return true; }
+  return false;
+}
+
+function objProgress(ctrl) {
+  const defs = objsFor(ctrl.id);
+  const st = ctrl.objStatus || {};
+  return { met: defs.filter(o => st[o.k] === 'Met').length, total: defs.length };
+}
+
 // Default access review items
 const DEFAULT_REVIEW_ITEMS = [
   "Verify active user accounts match current personnel roster",
@@ -725,7 +907,8 @@ function getDefaultState() {
       owner: '',
       notes: '',
       evidence: '',
-      lastReviewed: ''
+      lastReviewed: '',
+      objStatus: {}
     })),
     poam: [],
     accessReview: DEFAULT_REVIEW_ITEMS.map((item, i) => ({
@@ -739,13 +922,23 @@ function getDefaultState() {
   };
 }
 
+// Bring older saved/imported state up to the current schema without losing anything.
+function migrateState(s) {
+  if (s && Array.isArray(s.controls)) {
+    s.controls.forEach(c => {
+      if (!c.objStatus || typeof c.objStatus !== 'object') c.objStatus = {};
+    });
+  }
+  return s;
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       // Ensure all controls exist (in case of version updates)
-      if (parsed.controls && parsed.controls.length === 110) return parsed;
+      if (parsed.controls && parsed.controls.length === 110) return migrateState(parsed);
     }
   } catch(e) {}
   return getDefaultState();
@@ -876,6 +1069,9 @@ function renderDashboard() {
 }
 
 // ===== Control Tracker =====
+// Which controls have their objectives panel open (view state — not persisted)
+const expandedObjs = new Set();
+
 function renderTracker() {
   const familyFilter = document.getElementById('filter-family').value;
   const statusFilter = document.getElementById('filter-status').value;
@@ -894,25 +1090,61 @@ function renderTracker() {
     const wt = SPRS_NA.has(c.id) ? 'NA' : (SPRS_PARTIAL_CREDIT.has(c.id) ? '5/3' : sprsWeight(c.id));
     const l1 = CMMC_L1.has(c.id) ? ' <span class="pill pill-met" title="CMMC Level 1 (FAR 52.204-21)" style="font-size:.58rem;padding:1px 5px">L1</span>' : '';
 
+    const defs = objsFor(c.id);
+    const prog = objProgress(c);
+    const expanded = expandedObjs.has(c.id);
+    const objBtn = defs.length
+      ? `<div style="margin-top:6px"><button class="obj-toggle${expanded ? ' open' : ''}" data-obj-toggle="${c.id}" aria-expanded="${expanded}" title="Show the NIST SP 800-171A assessment objectives for ${c.id}"><span class="caret">▶</span> ${defs.length} objective${defs.length > 1 ? 's' : ''}<span class="obj-count">${prog.met}/${prog.total} met</span></button></div>`
+      : '';
+    const derived = defs.length && rollupStatus(c) ? '<span class="derived-note">from objectives</span>' : '';
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="family-col">${c.family.split(' ').slice(0,2).join(' ')}</td>
       <td class="id-col">${c.id}${l1}</td>
       <td class="id-col" title="SPRS weight (DoD Assessment Methodology Annex A)">${wt}</td>
-      <td class="req-col">${c.req}</td>
+      <td class="req-col">${c.req}${objBtn}</td>
       <td style="font-family:var(--mono);font-size:.68rem;color:var(--muted);max-width:220px">${MS_MAP[c.id] || '—'}</td>
       <td><select data-idx="${i}" data-field="status" aria-label="Status for ${c.id}">
         <option${c.status==='Not Started'?' selected':''}>Not Started</option>
         <option${c.status==='Gap'?' selected':''}>Gap</option>
         <option${c.status==='Partial'?' selected':''}>Partial</option>
         <option${c.status==='Met'?' selected':''}>Met</option>
-      </select></td>
+      </select>${derived}</td>
       <td><input type="text" data-idx="${i}" data-field="owner" value="${esc(c.owner)}" placeholder="Owner" aria-label="Owner for ${c.id}"></td>
       <td><textarea data-idx="${i}" data-field="notes" placeholder="Notes" aria-label="Notes for ${c.id}">${esc(c.notes)}</textarea></td>
       <td><input type="text" data-idx="${i}" data-field="evidence" value="${esc(c.evidence)}" placeholder="Evidence location" aria-label="Evidence for ${c.id}"></td>
       <td><input type="date" data-idx="${i}" data-field="lastReviewed" value="${c.lastReviewed}" aria-label="Last reviewed for ${c.id}"></td>
     `;
     tbody.appendChild(tr);
+
+    if (defs.length) {
+      const st = c.objStatus || {};
+      const otr = document.createElement('tr');
+      otr.className = 'obj-row' + (expanded ? '' : ' hidden');
+      otr.innerHTML = `<td colspan="10"><div class="obj-panel">
+        <div class="obj-head">NIST SP 800-171A assessment objectives — determine if:</div>
+        ${defs.map(o => {
+          const v = st[o.k] || '';
+          return `<div class="obj-item${v === 'Met' ? ' met' : ''}">
+            <span class="obj-key">${c.id}[${o.k}]</span>
+            <span class="obj-text">${esc(o.t)}</span>
+            <select data-obj-id="${c.id}" data-obj-key="${o.k}" aria-label="Status for ${c.id} objective ${o.k}">
+              <option value=""${v === '' ? ' selected' : ''}>—</option>
+              <option value="Met"${v === 'Met' ? ' selected' : ''}>Met</option>
+              <option value="Not Met"${v === 'Not Met' ? ' selected' : ''}>Not Met</option>
+              <option value="N/A"${v === 'N/A' ? ' selected' : ''}>N/A</option>
+            </select>
+          </div>`;
+        }).join('')}
+        <div class="obj-bulk">
+          <button data-obj-all="${c.id}" data-obj-val="Met">Mark all Met</button>
+          <button data-obj-all="${c.id}" data-obj-val="Not Met">Mark all Not Met</button>
+          <button data-obj-all="${c.id}" data-obj-val="">Clear</button>
+        </div>
+      </div></td>`;
+      tbody.appendChild(otr);
+    }
   });
 }
 
@@ -943,6 +1175,38 @@ document.getElementById('ctrl-table').addEventListener('input', e => {
     state.controls[idx][field] = el.value;
     saveState();
   }
+});
+
+// ===== Assessment objectives: expand / set / bulk-set =====
+document.getElementById('ctrl-table').addEventListener('click', e => {
+  const toggle = e.target.closest('[data-obj-toggle]');
+  if (toggle) {
+    const id = toggle.dataset.objToggle;
+    if (expandedObjs.has(id)) expandedObjs.delete(id); else expandedObjs.add(id);
+    renderTracker();
+    return;
+  }
+  const bulk = e.target.closest('[data-obj-all]');
+  if (bulk) {
+    const c = state.controls.find(x => x.id === bulk.dataset.objAll);
+    if (!c) return;
+    const val = bulk.dataset.objVal;
+    if (!c.objStatus) c.objStatus = {};
+    objsFor(c.id).forEach(o => { if (val) c.objStatus[o.k] = val; else delete c.objStatus[o.k]; });
+    applyRollup(c);
+    saveState(); renderTracker(); renderDashboard();
+  }
+});
+
+document.getElementById('ctrl-table').addEventListener('change', e => {
+  const el = e.target;
+  if (!el.dataset.objId) return;
+  const c = state.controls.find(x => x.id === el.dataset.objId);
+  if (!c) return;
+  if (!c.objStatus) c.objStatus = {};
+  if (el.value) c.objStatus[el.dataset.objKey] = el.value; else delete c.objStatus[el.dataset.objKey];
+  applyRollup(c);
+  saveState(); renderTracker(); renderDashboard();
 });
 
 document.getElementById('filter-family').addEventListener('change', renderTracker);
@@ -1107,6 +1371,7 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
     'Requirement': c.req,
     'Microsoft Stack Mapping': MS_MAP[c.id] || '',
     'Status': c.status,
+    'Objectives Met': objsFor(c.id).length ? (objProgress(c).met + '/' + objProgress(c).total) : '',
     'Owner': c.owner,
     'Implementation Notes': c.notes,
     'Evidence Location': c.evidence,
@@ -1134,6 +1399,20 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
     {'Item':'Note','Value':'Estimate only - not an official SPRS submission. 3.12.4 (SSP) is a prerequisite, not a scored item.'}
   ];
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sprsData), 'SPRS');
+
+  // Assessment Objectives sheet (NIST SP 800-171A)
+  const objData = [];
+  state.controls.forEach(c => {
+    objsFor(c.id).forEach(o => {
+      objData.push({
+        'Control ID': c.id,
+        'Objective': c.id + '[' + o.k + ']',
+        'Determination Statement': o.t,
+        'Status': (c.objStatus && c.objStatus[o.k]) || ''
+      });
+    });
+  });
+  if (objData.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(objData), 'Assessment Objectives');
   
   // Access Review sheet
   const revData = state.accessReview.map((r,i) => ({
@@ -1169,7 +1448,7 @@ document.getElementById('import-file').addEventListener('change', async e => {
     try {
       const imported = JSON.parse(text);
       if (imported.controls && imported.controls.length === 110) {
-        state = imported;
+        state = migrateState(imported);
         saveState();
         renderAll();
         alert('Import successful!');
@@ -1197,6 +1476,22 @@ document.getElementById('import-file').addEventListener('change', async e => {
       });
     }
     
+    // Try to import Assessment Objectives sheet (restores per-objective statuses)
+    const objSheet = wb.Sheets['Assessment Objectives'];
+    if (objSheet) {
+      const rows = XLSX.utils.sheet_to_json(objSheet);
+      rows.forEach(r => {
+        const cid = String(r['Control ID'] || '').trim();
+        const k = (String(r['Objective'] || '').match(/\[([a-z]+)\]\s*$/i) || [])[1];
+        const ctrl = state.controls.find(x => x.id === cid);
+        if (!ctrl || !k) return;
+        if (!ctrl.objStatus) ctrl.objStatus = {};
+        const v = String(r['Status'] || '').trim();
+        if (v) ctrl.objStatus[k] = v; else delete ctrl.objStatus[k];
+      });
+      state.controls.forEach(applyRollup);
+    }
+
     // Try to import POA&M sheet
     const poamSheet = wb.Sheets['POA&M'] || wb.Sheets['POAM'];
     if (poamSheet) {
