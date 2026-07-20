@@ -210,6 +210,30 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
   .tracker-controls input{min-width:0;flex:1 1 100%}
 }
 
+/* --- Global search palette --- */
+.search-btn{font-family:var(--mono);font-size:.72rem;padding:7px 12px;border-radius:6px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.search-btn:hover{border-color:var(--teal);color:var(--teal)}
+.search-btn kbd{font-family:var(--mono);font-size:.62rem;background:#eef0f2;border:1px solid var(--line);border-radius:3px;padding:1px 4px;color:var(--muted)}
+.pal-overlay{display:none;position:fixed;inset:0;background:rgba(16,34,46,.45);z-index:1100;align-items:flex-start;justify-content:center;padding:80px 20px 20px}
+.pal-overlay.open{display:flex}
+.pal{background:var(--card);border:1px solid var(--line);border-radius:12px;width:100%;max-width:640px;box-shadow:0 18px 50px rgba(0,0,0,.28);overflow:hidden;display:flex;flex-direction:column;max-height:70vh}
+.pal-input-wrap{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.pal-input-wrap svg{flex:none;opacity:.5}
+#pal-input{flex:1;border:none;outline:none;font-size:1rem;background:transparent;color:var(--ink);font-family:inherit}
+.pal-hint{font-family:var(--mono);font-size:.62rem;color:var(--muted);padding:8px 16px;border-bottom:1px solid #eee;background:#fbfaf7}
+.pal-results{overflow-y:auto;padding:6px}
+.pal-item{padding:9px 12px;border-radius:8px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.pal-item.sel,.pal-item:hover{background:#eaf3f1}
+.pal-id{font-family:var(--mono);font-size:.74rem;font-weight:700;color:var(--teal-deep);flex:none;min-width:52px}
+.pal-body{flex:1;min-width:0}
+.pal-req{font-size:.82rem;line-height:1.4;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pal-why{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:3px}
+.pal-why b{color:var(--amber);font-weight:700}
+.pal-status{flex:none}
+.pal-empty{padding:22px 16px;text-align:center;color:var(--muted);font-size:.86rem}
+mark{background:#fdf0c8;color:inherit;padding:0 1px;border-radius:2px}
+@media(max-width:768px){.pal-overlay{padding:60px 12px 12px}.search-btn kbd{display:none}}
+
 /* --- Overlap: implementation clusters --- */
 .ov-intro{color:var(--muted);font-size:.92rem;margin-bottom:18px;max-width:820px;line-height:1.55}
 .ov-note{font-family:var(--mono);font-size:.68rem;color:var(--muted);background:#fdf9ec;border:1px solid #e8dcb5;border-radius:8px;padding:10px 14px;margin-bottom:22px;max-width:820px;line-height:1.5}
@@ -282,6 +306,7 @@ tr.obj-row.hidden{display:none}
       <button role="tab" aria-selected="false" data-tab="privacy">Privacy</button>
     </div>
     <div class="actions">
+      <button class="search-btn" id="search-open" title="Search controls by keyword — try &quot;MFA&quot;, &quot;antivirus&quot;, &quot;backup&quot;, &quot;VPN&quot;">🔍 Search <kbd>⌘K</kbd></button>
       <span id="save-indicator" class="save-indicator" title="Your data is saved in this browser only — use Export to back it up">✓ Saved locally</span>
       <select id="scope-level" aria-label="CMMC level scope" title="Filter the tracker and dashboard by CMMC level" style="font-family:var(--mono);font-size:.72rem;padding:7px 10px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font-weight:600">
         <option value="L2">Level 2 · 110 controls</option>
@@ -338,7 +363,7 @@ tr.obj-row.hidden{display:none}
         <option value="Partial">Partial</option>
         <option value="Met">Met</option>
       </select>
-      <input type="search" id="search-ctrl" placeholder="Search controls..." aria-label="Search controls">
+      <input type="search" id="search-ctrl" placeholder="Search — try MFA, antivirus, backup, USB…" aria-label="Search controls" title="Searches control text, assessment objectives, Microsoft mapping, HIPAA and clusters. Understands shorthand like MFA, antivirus, VPN, USB.">
     </div>
     <div class="table-wrap">
       <table class="ctrl-table" id="ctrl-table">
@@ -405,6 +430,7 @@ tr.obj-row.hidden{display:none}
       <details class="faq-item"><summary>Can I use the online tracker and still download my saved data?</summary><div class="faq-body">Yes. Work in the app, then use Export (.xlsx / JSON) any time to save a copy. Import brings it back.</div></details>
       <details class="faq-item"><summary>What are the [a], [b], [c] items under each control?</summary><div class="faq-body">Those are the <strong>assessment objectives</strong> from <a href="https://csrc.nist.gov/pubs/sp/800/171/a/final" target="_blank" rel="noopener">NIST SP 800-171A</a> — the individual determination statements an assessor checks for each requirement. Expand a control in the Control Tracker to mark each one Met / Not Met / N/A. The control's overall status rolls up automatically: all applicable objectives Met → <strong>Met</strong>, some Met → <strong>Partial</strong>, none Met → <strong>Gap</strong>. Objectives marked N/A are excluded from the rollup. Note that SPRS scoring stays per-control per the DoD methodology — it isn't scored per objective.</div></details>
       <details class="faq-item"><summary>Does being 800-171 compliant make me HIPAA compliant?</summary><div class="faq-body"><strong>No.</strong> There's substantial overlap — the Overlap tab shows which HIPAA Security Rule standards your 800-171 work supports — but 800-171 leaves real HIPAA gaps. The biggest is <strong>contingency planning</strong> (§164.308(a)(7): disaster recovery, emergency mode operation, criticality analysis), which 800-171 Rev 2 has no family for. Business associate contract content (§164.314) and documentation availability (§164.316(b)(2)(ii)) are also uncovered. The crosswalk is also <em>one-way</em>: implementing MFA satisfies §164.312(d), but HIPAA doesn't require MFA. Treat it as a planning aid, not a compliance claim.</div></details>
+      <details class="faq-item"><summary>I can't remember the control number — how do I find it?</summary><div class="faq-body">Press <strong>⌘K</strong> (or <strong>Ctrl+K</strong>), or click <strong>Search</strong> in the top bar, and type what you remember in plain language. It understands the shorthand people actually use — <strong>MFA</strong> finds the multifactor controls, <strong>antivirus</strong> finds the malicious-code ones, <strong>VPN</strong> finds remote access, <strong>USB</strong> finds portable storage, <strong>screen lock</strong> finds session lock. It searches control text, all 320 assessment objectives, the Microsoft mapping, HIPAA citations and cluster names, and tells you which one matched. Hit ↵ to jump straight to that control.</div></details>
       <details class="faq-item"><summary>What is the Overlap tab for?</summary><div class="faq-body">Two things. <strong>Implementation clusters</strong> group controls that one project usually closes together — a single MFA rollout covers requirements in both 3.5 and 3.7, so you can plan by effort instead of control number. (These groupings are ours, not NIST's.) <strong>HIPAA overlap</strong> shows which HIPAA Security Rule standards your 800-171 controls support, plus the requirements they don't cover.</div></details>
       <details class="faq-item"><summary>Is the SPRS score official?</summary><div class="faq-body">No. It's a self-assessment estimate calculated per the NIST SP 800-171 DoD Assessment Methodology (Annex A weights). It is not an official SPRS submission, and this tool does not grant CMMC certification. Always confirm against the official methodology and your contractual requirements.</div></details>
       <details class="faq-item"><summary>Do you collect any of my data?</summary><div class="faq-body">No. Your assessment data never leaves your browser. The hosted site uses cookieless, aggregate analytics (page counts only) — nothing that identifies you or touches your tracker contents.</div></details>
@@ -455,7 +481,7 @@ tr.obj-row.hidden{display:none}
 
   <div class="trust-line">
     <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
-    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.6 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.7 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
   </div>
 
   <div class="disclaimer">
@@ -480,6 +506,18 @@ tr.obj-row.hidden{display:none}
     <a data-goto="faq">FAQ</a>
     <span class="sep">·</span>
     <a href="https://github.com/ansrdio/ansrd" target="_blank" rel="noopener">Source on GitHub ↗</a>
+  </div>
+</div>
+
+<!-- Global search palette -->
+<div class="pal-overlay" id="pal-overlay" role="dialog" aria-modal="true" aria-label="Search controls">
+  <div class="pal">
+    <div class="pal-input-wrap">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="2"/><line x1="11" y1="11" x2="15" y2="15" stroke="currentColor" stroke-width="2"/></svg>
+      <input id="pal-input" type="text" placeholder="Search controls — try &quot;MFA&quot;, &quot;antivirus&quot;, &quot;backup&quot;, &quot;screen lock&quot;…" autocomplete="off" spellcheck="false" aria-label="Search controls">
+    </div>
+    <div class="pal-hint">Searches control text, the 320 assessment objectives, Microsoft mapping, HIPAA and clusters · ↑↓ to move · ↵ to open · esc to close</div>
+    <div class="pal-results" id="pal-results"></div>
   </div>
 </div>
 
@@ -1221,7 +1259,7 @@ function renderTracker() {
     if (!inScope(c)) return;
     if (familyFilter && c.family !== familyFilter) return;
     if (statusFilter && c.status !== statusFilter) return;
-    if (search && !c.id.toLowerCase().includes(search) && !c.req.toLowerCase().includes(search) && !c.family.toLowerCase().includes(search) && !(MS_MAP[c.id]||'').toLowerCase().includes(search)) return;
+    if (search && !matchesQuery(c, search)) return;
 
     const statusClass = c.status === 'Met' ? 'pill-met' : c.status === 'Partial' ? 'pill-partial' : c.status === 'Gap' ? 'pill-gap' : 'pill-notstarted';
     const wt = SPRS_NA.has(c.id) ? 'NA' : (SPRS_PARTIAL_CREDIT.has(c.id) ? '5/3' : sprsWeight(c.id));
@@ -1759,6 +1797,158 @@ document.getElementById('import-file').addEventListener('change', async e => {
     alert('XLSX import successful!');
   }
   e.target.value = '';
+});
+
+// ===== Global search =====
+// Maps the shorthand people actually type to wording that appears in the source text.
+const SEARCH_SYNONYMS = {
+  "mfa":["multifactor"],"2fa":["multifactor"],"two factor":["multifactor"],"two-factor":["multifactor"],
+  "antivirus":["malicious code"],"anti-virus":["malicious code"],"malware":["malicious code"],"virus":["malicious code"],
+  "vpn":["remote access"],"firewall":["network communications traffic","external boundaries"],"segmentation":["subnetwork"],"dmz":["subnetwork"],
+  "siem":["audit"],"logs":["audit"],"logging":["audit"],"log":["audit"],
+  "screen lock":["session lock"],"screensaver":["session lock"],"lock screen":["session lock"],"timeout":["inactivity"],"idle":["inactivity"],
+  "phishing":["awareness"],"insider":["insider threat"],
+  "patch":["flaw","vulnerabilit"],"patching":["flaw","vulnerabilit"],"cve":["vulnerabilit"],"pentest":["vulnerabilit"],
+  "asset":["inventory","baseline"],"inventory":["inventory"],"hardening":["configuration settings","least functionality"],"baseline":["baseline"],
+  "wifi":["wireless"],"wi-fi":["wireless"],
+  "usb":["portable storage","removable media"],"thumb drive":["portable storage"],"flash drive":["portable storage"],"removable":["removable media"],
+  "byod":["mobile device"],"mdm":["mobile device"],"intune":["mobile device"],
+  "offboarding":["personnel actions","terminat"],"onboarding":["screen individuals"],"termination":["terminat"],"leaver":["terminat"],
+  "ssp":["system security plan"],"poam":["plans of action"],"poa&m":["plans of action"],
+  "rbac":["least privilege"],"least privilege":["least privilege"],"sod":["separate the duties"],"separation of duties":["separate the duties"],
+  "dlp":["flow of cui"],"fips":["fips"],"encryption":["cryptograph","encrypt"],"crypto":["cryptograph"],"key management":["cryptographic keys"],
+  "at rest":["at rest"],"in transit":["transmission"],"tls":["transmission","cryptograph"],
+  "ntp":["clocks","time stamp"],"time sync":["clocks"],
+  "badge":["physical access device"],"visitor":["visitor"],"cctv":["monitor the physical"],
+  "tabletop":["test the organizational incident"],"ir plan":["incident-handling"],
+  "admin":["privileged"],"root":["privileged"],"sso":["authenticat"],
+  "backup":["backup"],"disaster recovery":["backup"],
+  "banner":["privacy and security notices"],"voip":["voice over internet"],"split tunnel":["split tunneling"],
+  "allowlist":["whitelisting"],"whitelist":["whitelisting"],"application control":["whitelisting"],"blocklist":["blacklisting"],
+  "sanitize":["saniti"],"destroy":["destro"],"shred":["destro"],"disposal":["disposal"]
+};
+
+let _searchBlobs = null;
+function searchBlobs() {
+  if (_searchBlobs) return _searchBlobs;
+  _searchBlobs = {};
+  CONTROLS.forEach(c => {
+    _searchBlobs[c.id] = {
+      id: c.id.toLowerCase(),
+      req: (c.req || '').toLowerCase(),
+      fam: (c.family || '').toLowerCase(),
+      obj: objsFor(c.id).map(o => o.t).join(' ').toLowerCase(),
+      cl: CLUSTERS.filter(cl => cl.c.includes(c.id)).map(cl => cl.n).join(' ').toLowerCase(),
+      ms: (MS_MAP[c.id] || '').toLowerCase(),
+      hip: hipaaFor(c.id).map(x => x + ' ' + (HIPAA_NAMES[x] || '')).join(' ').toLowerCase()
+    };
+  });
+  return _searchBlobs;
+}
+
+function expandTerms(q) {
+  const terms = [q];
+  Object.keys(SEARCH_SYNONYMS).forEach(k => { if (q.includes(k)) SEARCH_SYNONYMS[k].forEach(t => terms.push(t)); });
+  return [...new Set(terms)];
+}
+
+const SEARCH_FIELDS = [['id',100,'control ID'],['req',60,'requirement'],['obj',45,'assessment objective'],['fam',30,'family'],['cl',20,'cluster'],['ms',15,'Microsoft mapping'],['hip',12,'HIPAA mapping']];
+
+function matchesQuery(c, q) {
+  const b = searchBlobs()[c.id];
+  if (!b) return false;
+  return expandTerms(q).some(t => SEARCH_FIELDS.some(([f]) => b[f].includes(t)));
+}
+
+function searchControls(qRaw) {
+  const q = (qRaw || '').trim().toLowerCase();
+  if (!q) return [];
+  const terms = expandTerms(q);
+  const blobs = searchBlobs();
+  const hits = [];
+  state.controls.forEach(c => {
+    const b = blobs[c.id];
+    if (!b) return;
+    let best = 0, why = '';
+    SEARCH_FIELDS.forEach(([f, sc, label]) => {
+      terms.forEach(t => {
+        if (b[f].includes(t) && sc > best) {
+          best = sc;
+          why = 'matched ' + label + (t !== q ? ' via <b>' + t + '</b>' : '');
+        }
+      });
+    });
+    if (best) hits.push({ c, score: best, why });
+  });
+  return hits.sort((a, b2) => b2.score - a.score || a.c.id.localeCompare(b2.c.id, undefined, { numeric: true })).slice(0, 40);
+}
+
+const palOverlay = document.getElementById('pal-overlay');
+const palInput = document.getElementById('pal-input');
+const palResults = document.getElementById('pal-results');
+let palHits = [], palSel = 0;
+
+function openPalette() { palOverlay.classList.add('open'); palInput.value = ''; renderPalette(); palInput.focus(); }
+function closePalette() { palOverlay.classList.remove('open'); }
+
+function renderPalette() {
+  const q = palInput.value;
+  palHits = searchControls(q);
+  palSel = 0;
+  if (!q.trim()) {
+    palResults.innerHTML = '<div class="pal-empty">Type what you remember — e.g. <strong>MFA</strong>, <strong>antivirus</strong>, <strong>backup</strong>, <strong>screen lock</strong>, <strong>USB</strong>, <strong>wireless</strong>.</div>';
+    return;
+  }
+  if (!palHits.length) {
+    palResults.innerHTML = '<div class="pal-empty">No controls matched “' + esc(q) + '”.</div>';
+    return;
+  }
+  palResults.innerHTML = palHits.map((h, i) => {
+    const st = h.c.status;
+    const pc = st === 'Met' ? 'pill-met' : st === 'Partial' ? 'pill-partial' : st === 'Gap' ? 'pill-gap' : 'pill-notstarted';
+    return `<div class="pal-item${i === palSel ? ' sel' : ''}" data-i="${i}">
+      <span class="pal-id">${h.c.id}</span>
+      <span class="pal-body"><span class="pal-req">${esc(h.c.req)}</span><span class="pal-why">${h.why}</span></span>
+      <span class="pal-status"><span class="pill ${pc}">${st}</span></span>
+    </div>`;
+  }).join('');
+}
+
+function palMove(d) {
+  if (!palHits.length) return;
+  palSel = (palSel + d + palHits.length) % palHits.length;
+  [...palResults.children].forEach((el, i) => el.classList.toggle('sel', i === palSel));
+  const sel = palResults.children[palSel];
+  if (sel && sel.scrollIntoView) sel.scrollIntoView({ block: 'nearest' });
+}
+
+function palGo(i) {
+  const h = palHits[i];
+  if (!h) return;
+  closePalette();
+  document.querySelector('.tabs button[data-tab="tracker"]').click();
+  document.getElementById('filter-family').value = '';
+  document.getElementById('filter-status').value = '';
+  document.getElementById('search-ctrl').value = h.c.id;
+  expandedObjs.add(h.c.id);
+  renderTracker();
+}
+
+document.getElementById('search-open').addEventListener('click', openPalette);
+palInput.addEventListener('input', renderPalette);
+palResults.addEventListener('click', e => {
+  const item = e.target.closest('.pal-item');
+  if (item) palGo(parseInt(item.dataset.i));
+});
+palOverlay.addEventListener('click', e => { if (e.target === palOverlay) closePalette(); });
+document.addEventListener('keydown', e => {
+  const open = palOverlay.classList.contains('open');
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); open ? closePalette() : openPalette(); return; }
+  if (!open) return;
+  if (e.key === 'Escape') { e.preventDefault(); closePalette(); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); palMove(1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); palMove(-1); }
+  else if (e.key === 'Enter') { e.preventDefault(); palGo(palSel); }
 });
 
 // ===== Reset / Start over (guarded) =====
