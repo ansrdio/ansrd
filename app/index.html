@@ -230,6 +230,14 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 .chip.notstarted{background:#eef0f2;color:var(--notstarted);border-color:#dfe3e6}
 .chip:hover{outline:2px solid var(--teal);outline-offset:1px}
 .chip .x{opacity:.55;font-weight:400}
+.lc-flag{color:var(--amber);font-weight:700;margin-left:3px;cursor:help}
+.gapbox{background:#fbf1f1;border:1px solid #e8c4c4;border-left:3px solid var(--gap);border-radius:8px;padding:14px 18px;margin-bottom:20px;max-width:900px;font-size:.86rem;line-height:1.6}
+.gapbox strong{color:var(--gap)}
+.gapbox ul{margin:8px 0 0 18px}
+.gapbox li{margin-bottom:3px}
+.mono-cit{font-family:var(--mono);font-size:.74rem;color:var(--ink)}
+#hipaa-table td{vertical-align:middle}
+#hipaa-table .chips{gap:4px}
 
 /* --- Assessment objectives (NIST SP 800-171A) --- */
 .obj-toggle{font-family:var(--mono);font-size:.62rem;font-weight:700;padding:2px 6px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--teal);cursor:pointer;white-space:nowrap;line-height:1.4}
@@ -334,7 +342,7 @@ tr.obj-row.hidden{display:none}
     </div>
     <div class="table-wrap">
       <table class="ctrl-table" id="ctrl-table">
-        <thead><tr><th>Family</th><th>ID</th><th title="SPRS weight per DoD Assessment Methodology Annex A">Wt</th><th>Requirement</th><th title="Indicative mapping to Microsoft capabilities (Defender, Intune, Entra ID, Purview) — see disclaimer for sources">Microsoft Stack</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th>Reviewed</th></tr></thead>
+        <thead><tr><th>Family</th><th>ID</th><th title="SPRS weight per DoD Assessment Methodology Annex A">Wt</th><th>Requirement</th><th title="Indicative mapping to Microsoft capabilities (Defender, Intune, Entra ID, Purview) — see disclaimer for sources">Microsoft Stack</th><th title="Indicative HIPAA Security Rule overlap (45 CFR Part 164) — one-way and not audit-grade; see the Overlap tab">HIPAA</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th>Reviewed</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -375,6 +383,15 @@ tr.obj-row.hidden{display:none}
     <p class="ov-intro">Where one project closes several requirements at once. These groupings are deliberately <strong>cross-family</strong> — a single MFA rollout, for example, satisfies requirements in both 3.5 (Identification &amp; Authentication) and 3.7 (Maintenance). Use this to plan work by effort rather than by control number.</p>
     <p class="ov-note"><strong>Note:</strong> these clusters are editorial groupings by this tool to help sequence work — they are <em>not</em> defined by NIST, and a control appearing in two clusters is intentional. Always confirm scope against your own environment and contractual requirements.</p>
     <div class="cluster-grid" id="cluster-grid"></div>
+
+    <h3 style="margin:36px 0 6px;font-size:1.25rem">HIPAA Security Rule overlap</h3>
+    <p class="ov-intro">If you're a covered entity or business associate, much of your 800-171 work also serves the HIPAA Security Rule (45 CFR Part 164, Subpart C). This shows which HIPAA standards your controls touch — and, just as importantly, which ones they don't.</p>
+    <p class="ov-note"><strong>Indicative only — not audit-grade equivalence.</strong> Derived by chaining NIST SP 800-171 Rev 2 Appendix D (171→800-53) with NIST SP 800-66 Rev 2 (HIPAA→800-53); CFR citations and names verified against the regulation text. Mappings run <em>one way</em>: implementing an 800-171 control may help satisfy a HIPAA standard, not the reverse (e.g. MFA satisfies §164.312(d), but HIPAA does not require MFA). Entries marked <span class="lc-flag">~</span> are weak, catch-all, or analogy-based — the whole 3.4 Configuration Management family routes through Risk Management because the Security Rule has no configuration-management standard. Verify against your own obligations.</p>
+    <div id="hipaa-gapbox"></div>
+    <div class="table-wrap"><table class="family-table" id="hipaa-table">
+      <thead><tr><th>HIPAA standard</th><th>Citation</th><th>800-171 controls that support it</th><th>Met</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
   </div>
 
   <!-- FAQ Panel -->
@@ -387,6 +404,8 @@ tr.obj-row.hidden{display:none}
       <details class="faq-item"><summary>Will I lose my work?</summary><div class="faq-body">Your work stays until you clear your browser's site data (or use Reset). To be safe, export a backup periodically.</div></details>
       <details class="faq-item"><summary>Can I use the online tracker and still download my saved data?</summary><div class="faq-body">Yes. Work in the app, then use Export (.xlsx / JSON) any time to save a copy. Import brings it back.</div></details>
       <details class="faq-item"><summary>What are the [a], [b], [c] items under each control?</summary><div class="faq-body">Those are the <strong>assessment objectives</strong> from <a href="https://csrc.nist.gov/pubs/sp/800/171/a/final" target="_blank" rel="noopener">NIST SP 800-171A</a> — the individual determination statements an assessor checks for each requirement. Expand a control in the Control Tracker to mark each one Met / Not Met / N/A. The control's overall status rolls up automatically: all applicable objectives Met → <strong>Met</strong>, some Met → <strong>Partial</strong>, none Met → <strong>Gap</strong>. Objectives marked N/A are excluded from the rollup. Note that SPRS scoring stays per-control per the DoD methodology — it isn't scored per objective.</div></details>
+      <details class="faq-item"><summary>Does being 800-171 compliant make me HIPAA compliant?</summary><div class="faq-body"><strong>No.</strong> There's substantial overlap — the Overlap tab shows which HIPAA Security Rule standards your 800-171 work supports — but 800-171 leaves real HIPAA gaps. The biggest is <strong>contingency planning</strong> (§164.308(a)(7): disaster recovery, emergency mode operation, criticality analysis), which 800-171 Rev 2 has no family for. Business associate contract content (§164.314) and documentation availability (§164.316(b)(2)(ii)) are also uncovered. The crosswalk is also <em>one-way</em>: implementing MFA satisfies §164.312(d), but HIPAA doesn't require MFA. Treat it as a planning aid, not a compliance claim.</div></details>
+      <details class="faq-item"><summary>What is the Overlap tab for?</summary><div class="faq-body">Two things. <strong>Implementation clusters</strong> group controls that one project usually closes together — a single MFA rollout covers requirements in both 3.5 and 3.7, so you can plan by effort instead of control number. (These groupings are ours, not NIST's.) <strong>HIPAA overlap</strong> shows which HIPAA Security Rule standards your 800-171 controls support, plus the requirements they don't cover.</div></details>
       <details class="faq-item"><summary>Is the SPRS score official?</summary><div class="faq-body">No. It's a self-assessment estimate calculated per the NIST SP 800-171 DoD Assessment Methodology (Annex A weights). It is not an official SPRS submission, and this tool does not grant CMMC certification. Always confirm against the official methodology and your contractual requirements.</div></details>
       <details class="faq-item"><summary>Do you collect any of my data?</summary><div class="faq-body">No. Your assessment data never leaves your browser. The hosted site uses cookieless, aggregate analytics (page counts only) — nothing that identifies you or touches your tracker contents.</div></details>
       <details class="faq-item"><summary>Can I run this on my own network or air-gapped?</summary><div class="faq-body">Yes. It's static and open source (<a href="https://github.com/ansrdio/ansrd" target="_blank" rel="noopener">github.com/ansrdio/ansrd</a>). Clone it and serve the folder — it works fully offline with no external calls.</div></details>
@@ -436,7 +455,7 @@ tr.obj-row.hidden{display:none}
 
   <div class="trust-line">
     <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
-    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.5 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.6 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
   </div>
 
   <div class="disclaimer">
@@ -445,6 +464,10 @@ tr.obj-row.hidden{display:none}
     <strong>SPRS score:</strong> calculated per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> (Annex A weights). It is a <em>self-assessment estimate</em>, not an official SPRS submission, and this tool does not grant CMMC certification. Weights for 3.5.3 (MFA) and 3.13.11 (FIPS crypto) apply built-in partial credit; 3.12.4 (SSP) is a prerequisite rather than a scored item.
     <br><br>
     <strong>Assessment objectives:</strong> the <code>[a] [b] [c]</code> determination statements under each control are summarized from the publicly available <a href="https://csrc.nist.gov/pubs/sp/800/171/a/final" target="_blank" rel="noopener">NIST SP 800-171A</a> — refer to the official publication for authoritative wording. Marking objectives rolls the control up automatically (all applicable objectives Met → Met; some Met → Partial; none Met → Gap); objectives marked N/A are excluded. SPRS scoring remains per-control per the DoD methodology — it is not calculated per objective.
+    <br><br>
+    <strong>HIPAA crosswalk:</strong> indicative only, and <em>one-way</em> — implementing an 800-171 control may help satisfy a HIPAA Security Rule standard, not the reverse. Derived by chaining <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf" target="_blank" rel="noopener">NIST SP 800-171 Rev 2 Appendix D</a> (171→800-53) with <a href="https://csrc.nist.gov/pubs/sp/800/66/r2/final" target="_blank" rel="noopener">NIST SP 800-66 Rev 2</a> (HIPAA→800-53); CFR citations and standard names verified against the regulation text. Entries flagged <span class="lc-flag">~</span> are weak or catch-all. <strong>Being 800-171 compliant does not make you HIPAA compliant</strong> — contingency planning (§164.308(a)(7)) in particular has no 800-171 counterpart. Reflects the Security Rule as currently codified; HHS's January 2025 NPRM would change several of these. Consult counsel and your own risk analysis.
+    <br><br>
+    <strong>Implementation clusters:</strong> editorial groupings by this tool to help sequence work — not defined by NIST. Controls intentionally appear in more than one cluster.
     <br><br>
     <strong>Microsoft-stack mapping:</strong> indicative mapping to Microsoft Defender, Intune, Entra ID, and Purview, informed by the <a href="https://www.microsoft.com/en-us/download/details.aspx?id=102536" target="_blank" rel="noopener">Microsoft Product Placemat for CMMC 2.0</a>, the Microsoft Technical Reference Guide for CMMC Level 2, and <a href="https://learn.microsoft.com/en-us/entra/standards/configure-for-cmmc-compliance" target="_blank" rel="noopener">Microsoft Learn CMMC configuration guidance</a>. Coverage depends on licensing and configuration — a mapped product supports, but does not by itself satisfy, a requirement.
   </div>
@@ -938,6 +961,63 @@ const CLUSTERS = [
   {n:"Governance: SSP, POA&M & risk", w:"The documentation backbone assessors ask for first — system security plan, risk assessment, control assessment, POA&M, continuous monitoring.", c:["3.11.1","3.12.1","3.12.2","3.12.3","3.12.4"]}
 ];
 
+// ===== HIPAA Security Rule crosswalk (45 CFR Part 164, Subpart C) =====
+// Derived by chaining NIST SP 800-171 Rev 2 Appendix D (171 -> 800-53) with
+// NIST SP 800-66 Rev 2 (HIPAA -> 800-53). Citation strings and standard names
+// verified against the CFR text. INDICATIVE ONLY — not audit-grade equivalence.
+const HIPAA_NAMES = {
+"164.308(a)(1)(i)":"Security Management Process","164.308(a)(1)(ii)(A)":"Risk Analysis","164.308(a)(1)(ii)(B)":"Risk Management","164.308(a)(1)(ii)(D)":"Information System Activity Review",
+"164.308(a)(3)(i)":"Workforce Security","164.308(a)(3)(ii)(A)":"Authorization and/or Supervision","164.308(a)(3)(ii)(B)":"Workforce Clearance Procedure","164.308(a)(3)(ii)(C)":"Termination Procedures",
+"164.308(a)(4)(i)":"Information Access Management","164.308(a)(4)(ii)(A)":"Isolating Health Care Clearinghouse Functions","164.308(a)(4)(ii)(B)":"Access Authorization","164.308(a)(4)(ii)(C)":"Access Establishment and Modification",
+"164.308(a)(5)(i)":"Security Awareness and Training","164.308(a)(5)(ii)(A)":"Security Reminders","164.308(a)(5)(ii)(B)":"Protection from Malicious Software","164.308(a)(5)(ii)(C)":"Log-in Monitoring","164.308(a)(5)(ii)(D)":"Password Management",
+"164.308(a)(6)(i)":"Security Incident Procedures","164.308(a)(6)(ii)":"Response and Reporting","164.308(a)(7)(ii)(A)":"Data Backup Plan","164.308(a)(7)(ii)(D)":"Testing and Revision Procedures","164.308(a)(8)":"Evaluation","164.308(b)(1)":"Business Associate Contracts and Other Arrangements",
+"164.310(a)(1)":"Facility Access Controls","164.310(a)(2)(ii)":"Facility Security Plan","164.310(a)(2)(iii)":"Access Control and Validation Procedures","164.310(a)(2)(iv)":"Maintenance Records","164.310(b)":"Workstation Use","164.310(c)":"Workstation Security",
+"164.310(d)(1)":"Device and Media Controls","164.310(d)(2)(i)":"Disposal","164.310(d)(2)(ii)":"Media Re-use","164.310(d)(2)(iii)":"Accountability","164.310(d)(2)(iv)":"Data Backup and Storage",
+"164.312(a)(1)":"Access Control","164.312(a)(2)(i)":"Unique User Identification","164.312(a)(2)(iii)":"Automatic Logoff","164.312(a)(2)(iv)":"Encryption and Decryption","164.312(b)":"Audit Controls","164.312(c)(1)":"Integrity","164.312(d)":"Person or Entity Authentication",
+"164.312(e)(1)":"Transmission Security","164.312(e)(2)(i)":"Integrity Controls","164.312(e)(2)(ii)":"Encryption",
+"164.314(a)(1)":"Business Associate Contracts or Other Arrangements","164.316(a)":"Policies and Procedures","164.316(b)(1)":"Documentation","164.316(b)(2)(i)":"Time Limit","164.316(b)(2)(iii)":"Updates"
+};
+const HIPAA_MAP = {
+"3.1.1":["164.312(a)(1)","164.308(a)(4)(i)","164.308(a)(4)(ii)(B)","164.308(a)(3)(i)"],"3.1.2":["164.312(a)(1)","164.308(a)(4)(ii)(C)","164.308(a)(4)(ii)(B)"],"3.1.3":["164.312(e)(1)"],"3.1.4":["164.308(a)(3)(i)","164.308(a)(4)(i)"],
+"3.1.5":["164.308(a)(4)(ii)(B)","164.312(a)(1)","164.308(a)(3)(ii)(A)"],"3.1.6":["164.308(a)(4)(ii)(B)","164.312(a)(1)"],"3.1.7":["164.312(b)","164.308(a)(4)(ii)(B)"],"3.1.8":["164.308(a)(5)(ii)(C)","164.312(d)"],
+"3.1.9":["164.308(a)(5)(i)","164.308(a)(5)(ii)(A)"],"3.1.10":["164.312(a)(2)(iii)","164.310(c)"],"3.1.11":["164.312(a)(2)(iii)"],"3.1.12":["164.312(a)(1)","164.312(e)(1)","164.308(a)(4)(ii)(B)"],
+"3.1.13":["164.312(e)(2)(ii)","164.312(e)(1)"],"3.1.14":["164.312(e)(1)","164.312(a)(1)"],"3.1.15":["164.308(a)(4)(ii)(B)","164.312(a)(1)"],"3.1.16":["164.308(a)(4)(ii)(B)","164.312(a)(1)"],
+"3.1.17":["164.312(e)(2)(ii)","164.312(d)","164.312(e)(1)"],"3.1.18":["164.310(d)(1)","164.312(a)(1)"],"3.1.19":["164.312(a)(2)(iv)","164.310(d)(1)"],"3.1.20":["164.308(b)(1)","164.314(a)(1)","164.312(a)(1)"],
+"3.1.21":["164.310(d)(1)","164.310(d)(2)(iii)"],"3.1.22":[],
+"3.2.1":["164.308(a)(5)(i)","164.308(a)(5)(ii)(A)","164.308(a)(5)(ii)(B)"],"3.2.2":["164.308(a)(5)(i)","164.308(a)(3)(ii)(A)"],"3.2.3":["164.308(a)(5)(i)","164.308(a)(5)(ii)(A)"],
+"3.3.1":["164.312(b)","164.308(a)(1)(ii)(D)","164.316(b)(2)(i)"],"3.3.2":["164.312(b)","164.312(a)(2)(i)"],"3.3.3":["164.308(a)(1)(ii)(D)","164.312(b)"],"3.3.4":["164.312(b)","164.308(a)(1)(ii)(D)"],
+"3.3.5":["164.308(a)(1)(ii)(D)","164.308(a)(6)(ii)","164.312(b)"],"3.3.6":["164.312(b)","164.308(a)(1)(ii)(D)"],"3.3.7":["164.312(b)"],"3.3.8":["164.312(b)","164.312(c)(1)","164.312(a)(1)"],"3.3.9":["164.312(b)","164.308(a)(4)(ii)(B)"],
+"3.4.1":["164.308(a)(1)(ii)(B)","164.310(d)(2)(iii)"],"3.4.2":["164.308(a)(1)(ii)(B)"],"3.4.3":["164.308(a)(1)(ii)(B)","164.312(b)"],"3.4.4":["164.308(a)(1)(ii)(A)","164.308(a)(1)(ii)(B)"],
+"3.4.5":["164.312(a)(1)","164.308(a)(4)(ii)(C)","164.310(a)(1)"],"3.4.6":["164.308(a)(1)(ii)(B)"],"3.4.7":["164.308(a)(1)(ii)(B)","164.308(a)(5)(ii)(B)"],"3.4.8":["164.308(a)(5)(ii)(B)","164.308(a)(1)(ii)(B)"],"3.4.9":["164.308(a)(5)(ii)(B)","164.308(a)(1)(ii)(B)"],
+"3.5.1":["164.312(a)(2)(i)","164.312(d)"],"3.5.2":["164.312(d)","164.312(a)(2)(i)","164.308(a)(5)(ii)(D)"],"3.5.3":["164.312(d)"],"3.5.4":["164.312(d)","164.312(e)(1)"],"3.5.5":["164.312(a)(2)(i)"],
+"3.5.6":["164.312(a)(2)(i)","164.308(a)(3)(ii)(C)"],"3.5.7":["164.308(a)(5)(ii)(D)"],"3.5.8":["164.308(a)(5)(ii)(D)"],"3.5.9":["164.308(a)(5)(ii)(D)"],"3.5.10":["164.308(a)(5)(ii)(D)","164.312(e)(2)(ii)","164.312(a)(2)(iv)"],"3.5.11":["164.308(a)(5)(ii)(D)"],
+"3.6.1":["164.308(a)(6)(i)","164.308(a)(6)(ii)"],"3.6.2":["164.308(a)(6)(ii)","164.308(a)(6)(i)","164.316(b)(1)"],"3.6.3":["164.308(a)(6)(i)","164.308(a)(7)(ii)(D)","164.308(a)(8)"],
+"3.7.1":["164.310(a)(2)(iv)","164.310(a)(1)"],"3.7.2":["164.310(a)(2)(iv)","164.310(a)(2)(iii)"],"3.7.3":["164.310(d)(2)(i)","164.310(d)(2)(ii)","164.310(d)(1)"],"3.7.4":["164.308(a)(5)(ii)(B)","164.310(d)(1)"],
+"3.7.5":["164.312(d)","164.310(a)(2)(iv)"],"3.7.6":["164.310(a)(2)(iii)","164.308(a)(3)(ii)(A)"],
+"3.8.1":["164.310(d)(1)","164.310(d)(2)(iii)","164.310(c)"],"3.8.2":["164.310(d)(1)","164.312(a)(1)"],"3.8.3":["164.310(d)(2)(i)","164.310(d)(2)(ii)"],"3.8.4":[],"3.8.5":["164.310(d)(1)","164.310(d)(2)(iii)"],
+"3.8.6":["164.312(a)(2)(iv)","164.310(d)(1)"],"3.8.7":["164.310(d)(1)","164.310(d)(2)(iii)"],"3.8.8":["164.310(d)(2)(iii)","164.310(d)(1)"],"3.8.9":["164.310(d)(2)(iv)","164.308(a)(7)(ii)(A)"],
+"3.9.1":["164.308(a)(3)(ii)(B)","164.308(a)(3)(i)"],"3.9.2":["164.308(a)(3)(ii)(C)","164.308(a)(3)(i)","164.308(a)(4)(ii)(C)"],
+"3.10.1":["164.310(a)(1)","164.310(a)(2)(iii)","164.310(c)"],"3.10.2":["164.310(a)(1)","164.310(a)(2)(ii)"],"3.10.3":["164.310(a)(2)(iii)","164.310(a)(1)"],"3.10.4":["164.310(a)(2)(iii)","164.310(a)(1)"],
+"3.10.5":["164.310(a)(2)(iii)","164.310(a)(2)(ii)"],"3.10.6":["164.310(b)","164.310(c)","164.310(d)(1)"],
+"3.11.1":["164.308(a)(1)(ii)(A)","164.308(a)(1)(i)"],"3.11.2":["164.308(a)(1)(ii)(A)","164.308(a)(8)"],"3.11.3":["164.308(a)(1)(ii)(B)","164.308(a)(1)(ii)(A)"],
+"3.12.1":["164.308(a)(8)","164.308(a)(1)(i)"],"3.12.2":["164.308(a)(1)(ii)(B)","164.308(a)(8)"],"3.12.3":["164.308(a)(8)","164.308(a)(1)(ii)(D)"],"3.12.4":["164.316(a)","164.316(b)(1)","164.316(b)(2)(iii)"],
+"3.13.1":["164.312(e)(1)","164.312(a)(1)"],"3.13.2":["164.308(a)(1)(ii)(B)"],"3.13.3":[],"3.13.4":["164.312(a)(1)"],"3.13.5":["164.312(e)(1)","164.308(a)(4)(ii)(A)"],"3.13.6":["164.312(e)(1)","164.312(a)(1)"],
+"3.13.7":["164.312(e)(1)"],"3.13.8":["164.312(e)(2)(ii)","164.312(e)(1)"],"3.13.9":["164.312(a)(2)(iii)"],"3.13.10":["164.312(a)(2)(iv)","164.312(e)(2)(ii)"],"3.13.11":["164.312(a)(2)(iv)","164.312(e)(2)(ii)"],
+"3.13.12":[],"3.13.13":["164.308(a)(5)(ii)(B)"],"3.13.14":[],"3.13.15":["164.312(e)(2)(i)","164.312(d)"],"3.13.16":["164.312(a)(2)(iv)","164.312(a)(1)"],
+"3.14.1":["164.308(a)(1)(ii)(B)","164.308(a)(6)(ii)","164.308(a)(1)(ii)(A)"],"3.14.2":["164.308(a)(5)(ii)(B)"],"3.14.3":["164.308(a)(5)(ii)(A)","164.308(a)(6)(ii)"],"3.14.4":["164.308(a)(5)(ii)(B)"],
+"3.14.5":["164.308(a)(5)(ii)(B)"],"3.14.6":["164.308(a)(1)(ii)(D)","164.312(b)","164.308(a)(6)(i)"],"3.14.7":["164.308(a)(1)(ii)(D)","164.308(a)(5)(ii)(C)","164.312(b)"]
+};
+// Mappings that are weak, catch-all, or analogy-based — surfaced honestly in the UI.
+const HIPAA_LOW_CONF = new Set(["3.1.3","3.1.9","3.1.14","3.1.16","3.1.20","3.3.4","3.3.7","3.4.1","3.4.2","3.4.3","3.4.4","3.4.5","3.4.6","3.4.7","3.4.8","3.4.9","3.13.2","3.13.4","3.13.5","3.13.10","3.13.11"]);
+// HIPAA Security Rule requirements that 800-171 does NOT meaningfully cover.
+const HIPAA_GAPS = [
+  ["164.308(a)(7)(i)","Contingency Plan"],["164.308(a)(7)(ii)(B)","Disaster Recovery Plan"],
+  ["164.308(a)(7)(ii)(C)","Emergency Mode Operation Plan"],["164.308(a)(7)(ii)(E)","Applications and Data Criticality Analysis"],
+  ["164.312(c)(2)","Mechanism to Authenticate ePHI"],["164.314(a)(2)","Business Associate Contract content requirements"],
+  ["164.314(b)","Requirements for Group Health Plans"],["164.316(b)(2)(ii)","Documentation — Availability"]
+];
+function hipaaFor(id) { return HIPAA_MAP[id] || []; }
+
 // Default access review items
 const DEFAULT_REVIEW_ITEMS = [
   "Verify active user accounts match current personnel roster",
@@ -1162,6 +1242,7 @@ function renderTracker() {
       <td class="id-col" title="SPRS weight (DoD Assessment Methodology Annex A)">${wt}</td>
       <td class="req-col">${c.req}${objBtn}</td>
       <td style="font-family:var(--mono);font-size:.68rem;color:var(--muted);max-width:220px">${MS_MAP[c.id] || '—'}</td>
+      <td style="font-family:var(--mono);font-size:.64rem;color:var(--muted);max-width:150px" title="${hipaaFor(c.id).map(x => '§' + x + ' ' + (HIPAA_NAMES[x]||'')).join(' · ').replace(/"/g,'&quot;') || 'No HIPAA Security Rule counterpart'}">${hipaaFor(c.id).length ? hipaaFor(c.id).map(x => '§' + x).join('<br>') + (HIPAA_LOW_CONF.has(c.id) ? ' <span class="lc-flag">~</span>' : '') : '—'}</td>
       <td><select data-idx="${i}" data-field="status" aria-label="Status for ${c.id}">
         <option${c.status==='Not Started'?' selected':''}>Not Started</option>
         <option${c.status==='Gap'?' selected':''}>Gap</option>
@@ -1179,7 +1260,7 @@ function renderTracker() {
       const st = c.objStatus || {};
       const otr = document.createElement('tr');
       otr.className = 'obj-row' + (expanded ? '' : ' hidden');
-      otr.innerHTML = `<td colspan="10"><div class="obj-panel">
+      otr.innerHTML = `<td colspan="11"><div class="obj-panel">
         <div class="obj-head">NIST SP 800-171A assessment objectives — determine if:</div>
         ${defs.map(o => {
           const v = st[o.k] || '';
@@ -1438,10 +1519,52 @@ function renderOverlap() {
       <div class="chips">${chips}</div>
     </div>`;
   }).join('');
+  renderHipaa();
+}
+
+// ===== HIPAA crosswalk view (grouped by HIPAA standard) =====
+function renderHipaa() {
+  const byId = {};
+  state.controls.forEach(c => { byId[c.id] = c; });
+  const cls = s => s === 'Met' ? 'met' : s === 'Partial' ? 'partial' : s === 'Gap' ? 'gap' : 'notstarted';
+
+  // invert: HIPAA citation -> supporting 800-171 controls
+  const inv = {};
+  Object.keys(HIPAA_MAP).forEach(id => {
+    hipaaFor(id).forEach(cit => { (inv[cit] = inv[cit] || []).push(id); });
+  });
+
+  const rows = Object.keys(inv).sort().map(cit => {
+    const ids = inv[cit];
+    const met = ids.filter(id => byId[id] && byId[id].status === 'Met').length;
+    const chips = ids.map(id => {
+      const c = byId[id];
+      const lc = HIPAA_LOW_CONF.has(id) ? '<span class="lc-flag" title="Weak, catch-all, or analogy-based mapping — verify against your obligations">~</span>' : '';
+      return `<span class="chip ${cls(c ? c.status : '')}" data-jump="${id}" title="${c ? esc(c.req).replace(/"/g,'&quot;') : ''}">${id}${lc}</span>`;
+    }).join(' ');
+    return `<tr>
+      <td style="font-weight:600">${HIPAA_NAMES[cit] || '—'}</td>
+      <td style="font-family:var(--mono);font-size:.72rem;white-space:nowrap">§${cit}</td>
+      <td><div class="chips">${chips}</div></td>
+      <td style="font-family:var(--mono);font-weight:600;color:${met === ids.length ? 'var(--met)' : met ? 'var(--partial)' : 'var(--muted)'}">${met}/${ids.length}</td>
+    </tr>`;
+  }).join('');
+  document.querySelector('#hipaa-table tbody').innerHTML = rows;
+
+  // Controls with no HIPAA counterpart + HIPAA requirements 800-171 misses
+  const noMap = Object.keys(HIPAA_MAP).filter(id => !hipaaFor(id).length);
+  document.getElementById('hipaa-gapbox').innerHTML = `
+    <div class="gapbox">
+      <strong>⚠ 800-171 compliance is not HIPAA compliance.</strong>
+      These Security Rule requirements have little or no 800-171 counterpart — you must address them separately:
+      <ul>${HIPAA_GAPS.map(g => `<li><span class="mono-cit">§${g[0]}</span> ${g[1]}</li>`).join('')}</ul>
+      Contingency planning is the biggest gap: 800-171 Rev 2 has no contingency-planning family.
+      <div style="margin-top:10px">Conversely, these 800-171 controls have no meaningful HIPAA Security Rule counterpart: ${noMap.map(id => `<span class="chip notstarted" data-jump="${id}">${id}</span>`).join(' ')}</div>
+    </div>`;
 }
 
 // Click a control chip → jump to it in the Control Tracker
-document.getElementById('cluster-grid').addEventListener('click', e => {
+document.getElementById('panel-overlap').addEventListener('click', e => {
   const chip = e.target.closest('[data-jump]');
   if (!chip) return;
   const id = chip.dataset.jump;
@@ -1464,6 +1587,7 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
     'SPRS Weight': SPRS_NA.has(c.id) ? 'NA' : (SPRS_PARTIAL_CREDIT.has(c.id) ? '5/3' : sprsWeight(c.id)),
     'Requirement': c.req,
     'Microsoft Stack Mapping': MS_MAP[c.id] || '',
+    'HIPAA Security Rule (indicative)': hipaaFor(c.id).map(x => '§' + x).join('; ') + (HIPAA_LOW_CONF.has(c.id) ? ' (low confidence)' : ''),
     'Status': c.status,
     'Objectives Met': objsFor(c.id).length ? (objProgress(c).met + '/' + objProgress(c).total) : '',
     'Owner': c.owner,
@@ -1507,6 +1631,22 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
     });
   });
   if (objData.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(objData), 'Assessment Objectives');
+
+  // HIPAA crosswalk sheet (indicative)
+  const hipData = [];
+  state.controls.forEach(c => {
+    hipaaFor(c.id).forEach(cit => hipData.push({
+      'Control ID': c.id, 'Control Status': c.status,
+      'HIPAA Citation': '45 CFR §' + cit, 'HIPAA Standard': HIPAA_NAMES[cit] || '',
+      'Confidence': HIPAA_LOW_CONF.has(c.id) ? 'Low - weak/catch-all mapping' : 'Indicative'
+    }));
+  });
+  HIPAA_GAPS.forEach(g => hipData.push({
+    'Control ID': '(none)', 'Control Status': '',
+    'HIPAA Citation': '45 CFR §' + g[0], 'HIPAA Standard': g[1],
+    'Confidence': 'NOT COVERED by NIST 800-171 - address separately'
+  }));
+  if (hipData.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hipData), 'HIPAA Crosswalk');
   
   // Access Review sheet
   const revData = state.accessReview.map((r,i) => ({
