@@ -79,7 +79,13 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 .ctrl-table .req-col{max-width:300px}
 .ctrl-table select{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:var(--card)}
 .ctrl-table input[type="text"],.ctrl-table input[type="date"]{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;width:100%;min-width:80px;background:var(--card)}
-.ctrl-table textarea{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;width:100%;min-height:32px;resize:vertical;background:var(--card)}
+.ctrl-table textarea{font-family:var(--mono);font-size:.72rem;padding:6px 8px;border:1px solid var(--line);border-radius:4px;width:100%;min-height:56px;line-height:1.5;resize:vertical;background:var(--card);overflow:hidden}
+/* The tracker is column-dense, so give the free-text fields real room. */
+.ctrl-table .notes-col{min-width:320px}
+.ctrl-table .evidence-col{min-width:170px}
+.ctrl-table .owner-col{min-width:115px}
+/* Roomy while you're actually typing */
+.ctrl-table textarea:focus{min-height:150px;border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,107,107,.10)}
 
 /* Status pills */
 .pill{font-family:var(--mono);font-size:.66rem;font-weight:700;padding:3px 8px;border-radius:16px;letter-spacing:.03em;display:inline-block}
@@ -1386,9 +1392,9 @@ function renderTracker() {
         <option${c.status==='Partial'?' selected':''}>Partial</option>
         <option${c.status==='Met'?' selected':''}>Met</option>
       </select>${derived}</td>
-      <td><input type="text" data-idx="${i}" data-field="owner" value="${esc(c.owner)}" placeholder="Owner" aria-label="Owner for ${c.id}"></td>
-      <td><textarea data-idx="${i}" data-field="notes" placeholder="Notes" aria-label="Notes for ${c.id}">${esc(c.notes)}</textarea></td>
-      <td><input type="text" data-idx="${i}" data-field="evidence" value="${esc(c.evidence)}" placeholder="Evidence location" aria-label="Evidence for ${c.id}"></td>
+      <td class="owner-col"><input type="text" data-idx="${i}" data-field="owner" value="${esc(c.owner)}" placeholder="Owner" aria-label="Owner for ${c.id}"></td>
+      <td class="notes-col"><textarea data-idx="${i}" data-field="notes" placeholder="Implementation notes…" aria-label="Notes for ${c.id}">${esc(c.notes)}</textarea></td>
+      <td class="evidence-col"><input type="text" data-idx="${i}" data-field="evidence" value="${esc(c.evidence)}" placeholder="Evidence location" aria-label="Evidence for ${c.id}"></td>
       <td class="review-cell">
         <input type="date" data-idx="${i}" data-field="lastReviewed" value="${c.lastReviewed}" aria-label="Last reviewed for ${c.id}" title="Date last reviewed">
         <select data-idx="${i}" data-field="freq" aria-label="Review frequency for ${c.id}" title="Suggested cadence — change it to suit your environment">
@@ -1427,6 +1433,16 @@ function renderTracker() {
       tbody.appendChild(otr);
     }
   });
+  autoGrowAll();
+}
+
+// Grow a notes box to fit its content (capped, then it scrolls / can be dragged).
+function autoGrow(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight + 2, 300) + 'px';
+}
+function autoGrowAll() {
+  document.querySelectorAll('#ctrl-table textarea').forEach(ta => { if (ta.value) autoGrow(ta); });
 }
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
@@ -1457,6 +1473,7 @@ document.getElementById('ctrl-table').addEventListener('input', e => {
   if (idx >= 0 && field && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type === 'text'))) {
     state.controls[idx][field] = el.value;
     saveState();
+    if (el.tagName === 'TEXTAREA') autoGrow(el);
   }
 });
 
