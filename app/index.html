@@ -210,6 +210,20 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
   .tracker-controls input{min-width:0;flex:1 1 100%}
 }
 
+/* --- Review cycle cell --- */
+.review-cell{min-width:150px}
+.review-cell select{margin-top:4px;width:100%}
+.due{display:inline-block;margin-top:5px;font-family:var(--mono);font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:4px;line-height:1.5;white-space:nowrap}
+.due-over{background:#f6e0e0;color:var(--gap)}
+.due-soon{background:#f5ecd2;color:var(--partial)}
+.due-ok{background:#e1f1e8;color:var(--met)}
+.due-unset{background:#eef0f2;color:var(--muted);font-weight:600}
+.review-summary{font-family:var(--mono);font-size:.7rem;margin-bottom:8px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.review-summary a{cursor:pointer;text-decoration:none;font-weight:700}
+.review-summary .over{color:var(--gap)}
+.review-summary .soon{color:var(--partial)}
+.review-summary .unset{color:var(--muted)}
+
 /* --- Global search palette --- */
 .search-btn{font-family:var(--mono);font-size:.72rem;padding:7px 12px;border-radius:6px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:7px}
 .search-btn:hover{border-color:var(--teal);color:var(--teal)}
@@ -343,6 +357,7 @@ tr.obj-row.hidden{display:none}
     </div>
     <p id="sprs-note" style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:8px">SPRS score is a self-assessment estimate over all 110 controls per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal)">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> — not an official SPRS submission.</p>
     <p id="ssp-warning" style="display:none;font-family:var(--mono);font-size:.7rem;color:var(--gap);margin-bottom:8px">⚠ 3.12.4 (System Security Plan) is not Met. Per the DoD methodology, without an SSP an assessment cannot be completed — the SSP is a prerequisite, not a point deduction.</p>
+    <div class="review-summary" id="review-summary"></div>
     <h3 style="margin:24px 0 12px;font-size:1.1rem">By Family</h3>
     <div class="table-wrap">
       <table class="family-table" id="family-summary">
@@ -363,11 +378,17 @@ tr.obj-row.hidden{display:none}
         <option value="Partial">Partial</option>
         <option value="Met">Met</option>
       </select>
+      <select id="filter-review" aria-label="Filter by review status">
+        <option value="">All review states</option>
+        <option value="overdue">⚠ Overdue</option>
+        <option value="soon">Due ≤ 30 days</option>
+        <option value="unset">No review date</option>
+      </select>
       <input type="search" id="search-ctrl" placeholder="Search — try MFA, antivirus, backup, USB…" aria-label="Search controls" title="Searches control text, assessment objectives, Microsoft mapping, HIPAA and clusters. Understands shorthand like MFA, antivirus, VPN, USB.">
     </div>
     <div class="table-wrap">
       <table class="ctrl-table" id="ctrl-table">
-        <thead><tr><th>Family</th><th>ID</th><th title="SPRS weight per DoD Assessment Methodology Annex A">Wt</th><th>Requirement</th><th title="Indicative mapping to Microsoft capabilities (Defender, Intune, Entra ID, Purview) — see disclaimer for sources">Microsoft Stack</th><th title="Indicative HIPAA Security Rule overlap (45 CFR Part 164) — one-way and not audit-grade; see the Overlap tab">HIPAA</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th>Reviewed</th></tr></thead>
+        <thead><tr><th>Family</th><th>ID</th><th title="SPRS weight per DoD Assessment Methodology Annex A">Wt</th><th>Requirement</th><th title="Indicative mapping to Microsoft capabilities (Defender, Intune, Entra ID, Purview) — see disclaimer for sources">Microsoft Stack</th><th title="Indicative HIPAA Security Rule overlap (45 CFR Part 164) — one-way and not audit-grade; see the Overlap tab">HIPAA</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th title="Last reviewed, how often it should be reviewed, and the resulting next-due date. Frequencies are suggestions — change any of them.">Review cycle</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -430,6 +451,7 @@ tr.obj-row.hidden{display:none}
       <details class="faq-item"><summary>Can I use the online tracker and still download my saved data?</summary><div class="faq-body">Yes. Work in the app, then use Export (.xlsx / JSON) any time to save a copy. Import brings it back.</div></details>
       <details class="faq-item"><summary>What are the [a], [b], [c] items under each control?</summary><div class="faq-body">Those are the <strong>assessment objectives</strong> from <a href="https://csrc.nist.gov/pubs/sp/800/171/a/final" target="_blank" rel="noopener">NIST SP 800-171A</a> — the individual determination statements an assessor checks for each requirement. Expand a control in the Control Tracker to mark each one Met / Not Met / N/A. The control's overall status rolls up automatically: all applicable objectives Met → <strong>Met</strong>, some Met → <strong>Partial</strong>, none Met → <strong>Gap</strong>. Objectives marked N/A are excluded from the rollup. Note that SPRS scoring stays per-control per the DoD methodology — it isn't scored per objective.</div></details>
       <details class="faq-item"><summary>Does being 800-171 compliant make me HIPAA compliant?</summary><div class="faq-body"><strong>No.</strong> There's substantial overlap — the Overlap tab shows which HIPAA Security Rule standards your 800-171 work supports — but 800-171 leaves real HIPAA gaps. The biggest is <strong>contingency planning</strong> (§164.308(a)(7): disaster recovery, emergency mode operation, criticality analysis), which 800-171 Rev 2 has no family for. Business associate contract content (§164.314) and documentation availability (§164.316(b)(2)(ii)) are also uncovered. The crosswalk is also <em>one-way</em>: implementing MFA satisfies §164.312(d), but HIPAA doesn't require MFA. Treat it as a planning aid, not a compliance claim.</div></details>
+      <details class="faq-item"><summary>How does the review cycle / audit frequency work?</summary><div class="faq-body">Every control has a <strong>suggested review frequency</strong> — Monthly, Quarterly or Annual — based on how operational it is (vulnerability scanning is monthly; the SSP is annual). <strong>These are suggestions, not requirements, and you can change any of them</strong> to Monthly, Quarterly, Semi-annual, Annual, Continuous or As needed. Set a <em>Last Reviewed</em> date and the tracker computes the <strong>next due date</strong> and flags anything <strong>overdue</strong> or due within 30 days. The dashboard summarises how many reviews are overdue, and you can filter the tracker by review state. NIST doesn't prescribe most of these intervals — your own policy and contract do.</div></details>
       <details class="faq-item"><summary>I can't remember the control number — how do I find it?</summary><div class="faq-body">Press <strong>⌘K</strong> (or <strong>Ctrl+K</strong>), or click <strong>Search</strong> in the top bar, and type what you remember in plain language. It understands the shorthand people actually use — <strong>MFA</strong> finds the multifactor controls, <strong>antivirus</strong> finds the malicious-code ones, <strong>VPN</strong> finds remote access, <strong>USB</strong> finds portable storage, <strong>screen lock</strong> finds session lock. It searches control text, all 320 assessment objectives, the Microsoft mapping, HIPAA citations and cluster names, and tells you which one matched. Hit ↵ to jump straight to that control.</div></details>
       <details class="faq-item"><summary>What is the Overlap tab for?</summary><div class="faq-body">Two things. <strong>Implementation clusters</strong> group controls that one project usually closes together — a single MFA rollout covers requirements in both 3.5 and 3.7, so you can plan by effort instead of control number. (These groupings are ours, not NIST's.) <strong>HIPAA overlap</strong> shows which HIPAA Security Rule standards your 800-171 controls support, plus the requirements they don't cover.</div></details>
       <details class="faq-item"><summary>Is the SPRS score official?</summary><div class="faq-body">No. It's a self-assessment estimate calculated per the NIST SP 800-171 DoD Assessment Methodology (Annex A weights). It is not an official SPRS submission, and this tool does not grant CMMC certification. Always confirm against the official methodology and your contractual requirements.</div></details>
@@ -481,7 +503,7 @@ tr.obj-row.hidden{display:none}
 
   <div class="trust-line">
     <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
-    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.7 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.8 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
   </div>
 
   <div class="disclaimer">
@@ -1057,6 +1079,64 @@ const HIPAA_GAPS = [
 ];
 function hipaaFor(id) { return HIPAA_MAP[id] || []; }
 
+// ===== Suggested review frequency =====
+// Editorial suggestions by this tool (not from NIST) — a sensible starting cadence
+// based on how operational each control is. Every control's frequency is editable.
+// M = Monthly, Q = Quarterly, A = Annual.
+const FREQ_LABELS = {M:'Monthly', Q:'Quarterly', S:'Semi-annual', A:'Annual', C:'Continuous', N:'As needed'};
+const FREQ_MONTHS = {M:1, Q:3, S:6, A:12};
+const REVIEW_FREQ = {
+"3.1.1":"Q","3.1.2":"Q","3.1.3":"A","3.1.4":"A","3.1.5":"Q","3.1.6":"Q","3.1.7":"Q","3.1.8":"A","3.1.9":"A","3.1.10":"A","3.1.11":"A",
+"3.1.12":"Q","3.1.13":"A","3.1.14":"A","3.1.15":"Q","3.1.16":"Q","3.1.17":"A","3.1.18":"Q","3.1.19":"A","3.1.20":"Q","3.1.21":"Q","3.1.22":"Q",
+"3.2.1":"A","3.2.2":"A","3.2.3":"A",
+"3.3.1":"A","3.3.2":"A","3.3.3":"M","3.3.4":"M","3.3.5":"M","3.3.6":"A","3.3.7":"A","3.3.8":"Q","3.3.9":"Q",
+"3.4.1":"Q","3.4.2":"Q","3.4.3":"Q","3.4.4":"Q","3.4.5":"A","3.4.6":"Q","3.4.7":"Q","3.4.8":"Q","3.4.9":"Q",
+"3.5.1":"Q","3.5.2":"A","3.5.3":"Q","3.5.4":"A","3.5.5":"A","3.5.6":"Q","3.5.7":"A","3.5.8":"A","3.5.9":"A","3.5.10":"A","3.5.11":"A",
+"3.6.1":"A","3.6.2":"Q","3.6.3":"A",
+"3.7.1":"M","3.7.2":"A","3.7.3":"A","3.7.4":"A","3.7.5":"A","3.7.6":"A",
+"3.8.1":"A","3.8.2":"A","3.8.3":"A","3.8.4":"A","3.8.5":"A","3.8.6":"A","3.8.7":"Q","3.8.8":"Q","3.8.9":"Q",
+"3.9.1":"A","3.9.2":"Q",
+"3.10.1":"Q","3.10.2":"A","3.10.3":"Q","3.10.4":"Q","3.10.5":"Q","3.10.6":"A",
+"3.11.1":"A","3.11.2":"M","3.11.3":"M",
+"3.12.1":"A","3.12.2":"Q","3.12.3":"M","3.12.4":"A",
+"3.13.1":"Q","3.13.2":"A","3.13.3":"A","3.13.4":"A","3.13.5":"A","3.13.6":"Q","3.13.7":"A","3.13.8":"A","3.13.9":"A","3.13.10":"A",
+"3.13.11":"A","3.13.12":"A","3.13.13":"A","3.13.14":"A","3.13.15":"A","3.13.16":"A",
+"3.14.1":"M","3.14.2":"M","3.14.3":"M","3.14.4":"M","3.14.5":"M","3.14.6":"M","3.14.7":"M"
+};
+function defaultFreq(id) { return REVIEW_FREQ[id] || 'A'; }
+
+function addMonths(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  const dt = new Date(y, m - 1 + n, d);
+  return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+}
+function nextDue(c) {
+  const f = c.freq || defaultFreq(c.id);
+  if (!FREQ_MONTHS[f] || !c.lastReviewed) return null;
+  return addMonths(c.lastReviewed, FREQ_MONTHS[f]);
+}
+// 'ongoing' | 'unset' | 'overdue' | 'soon' | 'ok'
+function reviewState(c) {
+  const f = c.freq || defaultFreq(c.id);
+  if (f === 'C' || f === 'N') return 'ongoing';
+  if (!c.lastReviewed) return 'unset';
+  const due = nextDue(c);
+  if (!due) return 'unset';
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const days = Math.round((new Date(due + 'T00:00:00') - today) / 86400000);
+  return days < 0 ? 'overdue' : days <= 30 ? 'soon' : 'ok';
+}
+
+function dueBadge(c) {
+  const st = reviewState(c), due = nextDue(c);
+  if (st === 'ongoing') return '<span class="due due-ok">Ongoing</span>';
+  if (st === 'unset') return '<span class="due due-unset">No review date</span>';
+  if (st === 'overdue') return `<span class="due due-over" title="Review was due ${due}">⚠ Overdue · ${due}</span>`;
+  if (st === 'soon') return `<span class="due due-soon" title="Due within 30 days">Due ${due}</span>`;
+  return `<span class="due due-ok">Due ${due}</span>`;
+}
+
 // Default access review items
 const DEFAULT_REVIEW_ITEMS = [
   "Verify active user accounts match current personnel roster",
@@ -1083,7 +1163,8 @@ function getDefaultState() {
       notes: '',
       evidence: '',
       lastReviewed: '',
-      objStatus: {}
+      objStatus: {},
+      freq: defaultFreq(c.id)
     })),
     poam: [],
     accessReview: DEFAULT_REVIEW_ITEMS.map((item, i) => ({
@@ -1102,6 +1183,7 @@ function migrateState(s) {
   if (s && Array.isArray(s.controls)) {
     s.controls.forEach(c => {
       if (!c.objStatus || typeof c.objStatus !== 'object') c.objStatus = {};
+      if (!c.freq || !FREQ_LABELS[c.freq]) c.freq = defaultFreq(c.id);
     });
   }
   return s;
@@ -1214,6 +1296,20 @@ function renderDashboard() {
     (scopeLevel === 'L1' ? '<strong>Note:</strong> Level 1 scope is active for the counts above, but the SPRS score is always calculated over all 110 controls. ' : '') +
     'SPRS score is a self-assessment estimate per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal)">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> — not an official SPRS submission.';
 
+  // Review-cycle summary
+  const rs = {overdue:0, soon:0, unset:0};
+  scoped.forEach(c => { const s = reviewState(c); if (rs[s] !== undefined) rs[s]++; });
+  const revEl = document.getElementById('review-summary');
+  if (rs.overdue || rs.soon || rs.unset) {
+    const bits = [];
+    if (rs.overdue) bits.push(`<a class="over" data-review="overdue">⚠ ${rs.overdue} review${rs.overdue>1?'s':''} overdue</a>`);
+    if (rs.soon) bits.push(`<a class="soon" data-review="soon">${rs.soon} due within 30 days</a>`);
+    if (rs.unset) bits.push(`<a class="unset" data-review="unset">${rs.unset} with no review date</a>`);
+    revEl.innerHTML = bits.join('<span style="color:var(--line)">·</span>');
+  } else {
+    revEl.innerHTML = '<span style="color:var(--met);font-weight:700">✓ All reviews up to date</span>';
+  }
+
   // SSP prerequisite warning
   const ssp = state.controls.find(c => c.id === '3.12.4');
   document.getElementById('ssp-warning').style.display = (ssp && ssp.status !== 'Met') ? 'block' : 'none';
@@ -1252,6 +1348,7 @@ function renderTracker() {
   const familyFilter = document.getElementById('filter-family').value;
   const statusFilter = document.getElementById('filter-status').value;
   const search = document.getElementById('search-ctrl').value.toLowerCase();
+  const reviewFilter = document.getElementById('filter-review').value;
   
   const tbody = document.querySelector('#ctrl-table tbody');
   tbody.innerHTML = '';
@@ -1260,6 +1357,7 @@ function renderTracker() {
     if (!inScope(c)) return;
     if (familyFilter && c.family !== familyFilter) return;
     if (statusFilter && c.status !== statusFilter) return;
+    if (reviewFilter && reviewState(c) !== reviewFilter) return;
     if (search && !matchesQuery(c, search)) return;
 
     const statusClass = c.status === 'Met' ? 'pill-met' : c.status === 'Partial' ? 'pill-partial' : c.status === 'Gap' ? 'pill-gap' : 'pill-notstarted';
@@ -1291,7 +1389,13 @@ function renderTracker() {
       <td><input type="text" data-idx="${i}" data-field="owner" value="${esc(c.owner)}" placeholder="Owner" aria-label="Owner for ${c.id}"></td>
       <td><textarea data-idx="${i}" data-field="notes" placeholder="Notes" aria-label="Notes for ${c.id}">${esc(c.notes)}</textarea></td>
       <td><input type="text" data-idx="${i}" data-field="evidence" value="${esc(c.evidence)}" placeholder="Evidence location" aria-label="Evidence for ${c.id}"></td>
-      <td><input type="date" data-idx="${i}" data-field="lastReviewed" value="${c.lastReviewed}" aria-label="Last reviewed for ${c.id}"></td>
+      <td class="review-cell">
+        <input type="date" data-idx="${i}" data-field="lastReviewed" value="${c.lastReviewed}" aria-label="Last reviewed for ${c.id}" title="Date last reviewed">
+        <select data-idx="${i}" data-field="freq" aria-label="Review frequency for ${c.id}" title="Suggested cadence — change it to suit your environment">
+          ${Object.keys(FREQ_LABELS).map(k => `<option value="${k}"${(c.freq || defaultFreq(c.id)) === k ? ' selected' : ''}>${FREQ_LABELS[k]}</option>`).join('')}
+        </select>
+        ${dueBadge(c)}
+      </td>
     `;
     tbody.appendChild(tr);
 
@@ -1342,6 +1446,8 @@ document.getElementById('ctrl-table').addEventListener('change', e => {
   if (idx >= 0 && field) {
     state.controls[idx][field] = el.value;
     saveState();
+    // these drive the computed next-due badge and the dashboard review counts
+    if (field === 'freq' || field === 'lastReviewed' || field === 'status') { renderTracker(); renderDashboard(); }
   }
 });
 document.getElementById('ctrl-table').addEventListener('input', e => {
@@ -1388,6 +1494,7 @@ document.getElementById('ctrl-table').addEventListener('change', e => {
 
 document.getElementById('filter-family').addEventListener('change', renderTracker);
 document.getElementById('filter-status').addEventListener('change', renderTracker);
+document.getElementById('filter-review').addEventListener('change', renderTracker);
 document.getElementById('search-ctrl').addEventListener('input', renderTracker);
 
 // ===== Access Review =====
@@ -1632,7 +1739,10 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
     'Owner': c.owner,
     'Implementation Notes': c.notes,
     'Evidence Location': c.evidence,
-    'Last Reviewed': c.lastReviewed
+    'Last Reviewed': c.lastReviewed,
+    'Review Frequency': FREQ_LABELS[c.freq || defaultFreq(c.id)],
+    'Next Review Due': nextDue(c) || '',
+    'Review Status': reviewState(c) === 'overdue' ? 'OVERDUE' : reviewState(c) === 'soon' ? 'Due within 30 days' : reviewState(c) === 'unset' ? 'No review date' : reviewState(c) === 'ongoing' ? 'Ongoing' : 'OK'
   }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ctrlData), 'Control Tracker');
   
@@ -1745,6 +1855,10 @@ document.getElementById('import-file').addEventListener('change', async e => {
           if (row['Implementation Notes'] !== undefined) ctrl.notes = row['Implementation Notes'] || '';
           if (row['Evidence Location'] !== undefined) ctrl.evidence = row['Evidence Location'] || '';
           if (row['Last Reviewed'] !== undefined) ctrl.lastReviewed = row['Last Reviewed'] || '';
+          if (row['Review Frequency']) {
+            const k = Object.keys(FREQ_LABELS).find(x => FREQ_LABELS[x] === row['Review Frequency']);
+            if (k) ctrl.freq = k;
+          }
         }
       });
     }
@@ -1967,6 +2081,18 @@ function doReset(){
 document.addEventListener('click', e => {
   const goto = e.target.dataset && e.target.dataset.goto;
   if (goto) { const t = document.querySelector(`.tabs button[data-tab="${goto}"]`); if (t) t.click(); }
+});
+
+// Dashboard review summary → jump to the tracker filtered to that review state
+document.getElementById('review-summary').addEventListener('click', e => {
+  const a = e.target.closest('[data-review]');
+  if (!a) return;
+  document.querySelector('.tabs button[data-tab="tracker"]').click();
+  document.getElementById('filter-family').value = '';
+  document.getElementById('filter-status').value = '';
+  document.getElementById('search-ctrl').value = '';
+  document.getElementById('filter-review').value = a.dataset.review;
+  renderTracker();
 });
 
 document.getElementById('reset-btn').addEventListener('click', openResetModal);
