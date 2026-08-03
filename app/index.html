@@ -384,6 +384,15 @@ tr.obj-row.hidden{display:none}
         <option value="Partial">Partial</option>
         <option value="Met">Met</option>
       </select>
+      <select id="filter-freq" aria-label="Filter by review frequency" title="Show only controls on a given review cadence — e.g. all your Monthly controls">
+        <option value="">All frequencies</option>
+        <option value="M">Monthly</option>
+        <option value="Q">Quarterly</option>
+        <option value="S">Semi-annual</option>
+        <option value="A">Annual</option>
+        <option value="C">Continuous</option>
+        <option value="N">As needed</option>
+      </select>
       <select id="filter-review" aria-label="Filter by review status">
         <option value="">All review states</option>
         <option value="overdue">⚠ Overdue</option>
@@ -1355,6 +1364,7 @@ function renderTracker() {
   const statusFilter = document.getElementById('filter-status').value;
   const search = document.getElementById('search-ctrl').value.toLowerCase();
   const reviewFilter = document.getElementById('filter-review').value;
+  const freqFilter = document.getElementById('filter-freq').value;
   
   const tbody = document.querySelector('#ctrl-table tbody');
   tbody.innerHTML = '';
@@ -1363,6 +1373,7 @@ function renderTracker() {
     if (!inScope(c)) return;
     if (familyFilter && c.family !== familyFilter) return;
     if (statusFilter && c.status !== statusFilter) return;
+    if (freqFilter && (c.freq || defaultFreq(c.id)) !== freqFilter) return;
     if (reviewFilter && reviewState(c) !== reviewFilter) return;
     if (search && !matchesQuery(c, search)) return;
 
@@ -1512,6 +1523,7 @@ document.getElementById('ctrl-table').addEventListener('change', e => {
 document.getElementById('filter-family').addEventListener('change', renderTracker);
 document.getElementById('filter-status').addEventListener('change', renderTracker);
 document.getElementById('filter-review').addEventListener('change', renderTracker);
+document.getElementById('filter-freq').addEventListener('change', renderTracker);
 document.getElementById('search-ctrl').addEventListener('input', renderTracker);
 
 // ===== Access Review =====
@@ -1734,6 +1746,8 @@ document.getElementById('panel-overlap').addEventListener('click', e => {
   document.querySelector('.tabs button[data-tab="tracker"]').click();
   document.getElementById('filter-family').value = '';
   document.getElementById('filter-status').value = '';
+  document.getElementById('filter-freq').value = '';
+  document.getElementById('filter-review').value = '';
   document.getElementById('search-ctrl').value = id;
   renderTracker();
 });
@@ -2061,6 +2075,8 @@ function palGo(i) {
   document.querySelector('.tabs button[data-tab="tracker"]').click();
   document.getElementById('filter-family').value = '';
   document.getElementById('filter-status').value = '';
+  document.getElementById('filter-freq').value = '';
+  document.getElementById('filter-review').value = '';
   document.getElementById('search-ctrl').value = h.c.id;
   expandedObjs.add(h.c.id);
   renderTracker();
@@ -2108,6 +2124,7 @@ document.getElementById('review-summary').addEventListener('click', e => {
   document.getElementById('filter-family').value = '';
   document.getElementById('filter-status').value = '';
   document.getElementById('search-ctrl').value = '';
+  document.getElementById('filter-freq').value = '';
   document.getElementById('filter-review').value = a.dataset.review;
   renderTracker();
 });
