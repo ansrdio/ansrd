@@ -82,7 +82,15 @@ header .inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;jus
 .ctrl-table textarea{font-family:var(--mono);font-size:.72rem;padding:6px 8px;border:1px solid var(--line);border-radius:4px;width:100%;min-height:56px;line-height:1.5;resize:vertical;background:var(--card);overflow:hidden}
 /* The tracker is column-dense, so give the free-text fields real room. */
 .ctrl-table .notes-col{min-width:320px}
-.ctrl-table .evidence-col{min-width:170px}
+.ctrl-table .evidence-col{min-width:210px}
+.ev-item{display:flex;align-items:center;gap:4px;margin-bottom:4px}
+.ev-item input{flex:1;min-width:0}
+.ev-open{flex:none;color:var(--teal);text-decoration:none;font-weight:700;padding:3px 6px;border:1px solid var(--line);border-radius:4px;line-height:1}
+.ev-open:hover{border-color:var(--teal);background:#eaf3f1}
+.ev-del{flex:none;font-family:var(--mono);font-size:.72rem;border:1px solid #f0dede;background:#fff;color:var(--gap);border-radius:4px;cursor:pointer;padding:3px 7px;line-height:1}
+.ev-del:hover{background:#f6e0e0}
+.ev-add{font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--teal);background:transparent;border:1px dashed var(--line);border-radius:4px;padding:3px 9px;cursor:pointer}
+.ev-add:hover{border-color:var(--teal);background:rgba(15,107,107,.05)}
 .ctrl-table .owner-col{min-width:115px}
 /* Roomy while you're actually typing */
 .ctrl-table textarea:focus{min-height:150px;border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,107,107,.10)}
@@ -518,7 +526,7 @@ tr.obj-row.hidden{display:none}
 
   <div class="trust-line">
     <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
-    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.8 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.9 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
   </div>
 
   <div class="disclaimer">
@@ -1179,6 +1187,7 @@ function getDefaultState() {
       evidence: '',
       lastReviewed: '',
       objStatus: {},
+      evidenceItems: [],
       freq: defaultFreq(c.id)
     })),
     poam: [],
@@ -1199,6 +1208,10 @@ function migrateState(s) {
     s.controls.forEach(c => {
       if (!c.objStatus || typeof c.objStatus !== 'object') c.objStatus = {};
       if (!c.freq || !FREQ_LABELS[c.freq]) c.freq = defaultFreq(c.id);
+      // Migrate the old single evidence string into the multi-item list.
+      if (!Array.isArray(c.evidenceItems)) {
+        c.evidenceItems = (c.evidence && c.evidence.trim()) ? [c.evidence.trim()] : [];
+      }
     });
   }
   return s;
@@ -1405,7 +1418,7 @@ function renderTracker() {
       </select>${derived}</td>
       <td class="owner-col"><input type="text" data-idx="${i}" data-field="owner" value="${esc(c.owner)}" placeholder="Owner" aria-label="Owner for ${c.id}"></td>
       <td class="notes-col"><textarea data-idx="${i}" data-field="notes" placeholder="Implementation notes…" aria-label="Notes for ${c.id}">${esc(c.notes)}</textarea></td>
-      <td class="evidence-col"><input type="text" data-idx="${i}" data-field="evidence" value="${esc(c.evidence)}" placeholder="Evidence location" aria-label="Evidence for ${c.id}"></td>
+      <td class="evidence-col">${evidenceCell(c, i)}</td>
       <td class="review-cell">
         <input type="date" data-idx="${i}" data-field="lastReviewed" value="${c.lastReviewed}" aria-label="Last reviewed for ${c.id}" title="Date last reviewed">
         <select data-idx="${i}" data-field="freq" aria-label="Review frequency for ${c.id}" title="Suggested cadence — change it to suit your environment">
@@ -1457,6 +1470,19 @@ function autoGrowAll() {
 }
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function isUrl(s) { return /^https?:\/\//i.test((s || '').trim()); }
+
+// Evidence cell: a list of pointers (URL / path / ticket). URLs render clickable.
+function evidenceCell(c, i) {
+  const items = c.evidenceItems || [];
+  const rows = items.map((v, ii) => `
+    <div class="ev-item">
+      <input type="text" data-ev-idx="${i}" data-ev-i="${ii}" value="${esc(v)}" placeholder="URL, path, or ticket" aria-label="Evidence ${ii + 1} for ${c.id}">
+      ${isUrl(v) ? `<a class="ev-open" href="${esc(v.trim())}" target="_blank" rel="noopener noreferrer" title="Open ${esc(v.trim())}" aria-label="Open evidence link">↗</a>` : ''}
+      <button class="ev-del" data-ev-del="${i}" data-ev-i="${ii}" title="Remove" aria-label="Remove evidence ${ii + 1}">×</button>
+    </div>`).join('');
+  return rows + `<button class="ev-add" data-ev-add="${i}">+ evidence</button>`;
+}
 
 // Populate family filter
 (function() {
@@ -1518,6 +1544,36 @@ document.getElementById('ctrl-table').addEventListener('change', e => {
   if (el.value) c.objStatus[el.dataset.objKey] = el.value; else delete c.objStatus[el.dataset.objKey];
   applyRollup(c);
   saveState(); renderTracker(); renderDashboard();
+});
+
+// Evidence pointers (multi-item, URL-aware)
+document.getElementById('ctrl-table').addEventListener('input', e => {
+  const el = e.target;
+  if (el.dataset.evIdx === undefined || el.dataset.evI === undefined) return;
+  const ci = +el.dataset.evIdx, ii = +el.dataset.evI;
+  if (state.controls[ci] && state.controls[ci].evidenceItems) {
+    state.controls[ci].evidenceItems[ii] = el.value;
+    saveState();
+  }
+});
+document.getElementById('ctrl-table').addEventListener('change', e => {
+  // on blur, re-render just enough to show/hide the ↗ open-link affordance
+  if (e.target.dataset.evIdx !== undefined) renderTracker();
+});
+document.getElementById('ctrl-table').addEventListener('click', e => {
+  const add = e.target.closest('[data-ev-add]');
+  const del = e.target.closest('[data-ev-del]');
+  if (add) {
+    const ci = +add.dataset.evAdd;
+    state.controls[ci].evidenceItems.push('');
+    saveState(); renderTracker();
+    const inputs = document.querySelectorAll(`input[data-ev-idx="${ci}"]`);
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  } else if (del) {
+    const ci = +del.dataset.evDel, ii = +del.dataset.evI;
+    state.controls[ci].evidenceItems.splice(ii, 1);
+    saveState(); renderTracker();
+  }
 });
 
 document.getElementById('filter-family').addEventListener('change', renderTracker);
@@ -1769,7 +1825,7 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
     'Objectives Met': objsFor(c.id).length ? (objProgress(c).met + '/' + objProgress(c).total) : '',
     'Owner': c.owner,
     'Implementation Notes': c.notes,
-    'Evidence Location': c.evidence,
+    'Evidence Location': (c.evidenceItems || []).filter(v => v && v.trim()).join(' ; '),
     'Last Reviewed': c.lastReviewed,
     'Review Frequency': FREQ_LABELS[c.freq || defaultFreq(c.id)],
     'Next Review Due': nextDue(c) || '',
@@ -1884,7 +1940,10 @@ document.getElementById('import-file').addEventListener('change', async e => {
           if (row['Status']) ctrl.status = row['Status'];
           if (row['Owner'] !== undefined) ctrl.owner = row['Owner'] || '';
           if (row['Implementation Notes'] !== undefined) ctrl.notes = row['Implementation Notes'] || '';
-          if (row['Evidence Location'] !== undefined) ctrl.evidence = row['Evidence Location'] || '';
+          if (row['Evidence Location'] !== undefined) {
+            const raw = String(row['Evidence Location'] || '');
+            ctrl.evidenceItems = raw.split(/\s*;\s*/).map(s => s.trim()).filter(Boolean);
+          }
           if (row['Last Reviewed'] !== undefined) ctrl.lastReviewed = row['Last Reviewed'] || '';
           if (row['Review Frequency']) {
             const k = Object.keys(FREQ_LABELS).find(x => FREQ_LABELS[x] === row['Review Frequency']);

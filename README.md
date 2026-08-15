@@ -12,7 +12,8 @@ On the hosted version (ansrd.io), the only third-party request is a cookieless [
 
 ## Features
 
-- **110 controls** across all 14 families, each Met / Partial / Gap / Not Started, with owner, notes, evidence, and review date.
+- **110 controls** across all 14 families, each Met / Partial / Gap / Not Started, with owner, notes, and review date.
+- **Evidence pointers** — attach multiple locations per control (a URL, a file-share path, a ticket ref); URLs render clickable. Nothing is uploaded — you point to where your proof lives, keeping the no-backend model intact.
 - **320 assessment objectives** — every control expands to its `[a] [b] [c]` determination statements from [NIST SP 800-171A](https://csrc.nist.gov/pubs/sp/800/171/a/final), each individually markable Met / Not Met / N/A. The control status **rolls up automatically**: all applicable objectives Met → Met, some → Partial, none → Gap (N/A excluded). This is how assessors actually work a control. SPRS remains scored per-control per the DoD methodology, not per objective.
 - **Readiness %** dashboard with a per-family breakdown.
 - **Review cycle** — each control carries a *suggested* audit frequency (Monthly / Quarterly / Annual, based on how operational it is), fully editable per control (also Semi-annual / Continuous / As needed). Set a *Last Reviewed* date and it computes the **next due date**, flags **overdue** and **due within 30 days**, summarises this on the dashboard, and lets you filter the tracker by review state. *Suggestions only — NIST doesn't prescribe most intervals; your policy and contract do.*
