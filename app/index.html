@@ -544,7 +544,9 @@ tr.obj-row.hidden{display:none}
   </div>
 
   <div class="app-footer">
-    <a href="https://github.com/ansrdio/ansrd/issues" target="_blank" rel="noopener">Suggestions / Feedback ↗</a>
+    <a id="email-feedback" href="#">✉ Send feedback</a>
+    <span class="sep">·</span>
+    <a href="https://github.com/ansrdio/ansrd/issues" target="_blank" rel="noopener">Issues on GitHub ↗</a>
     <span class="sep">·</span>
     <a data-goto="privacy">Privacy &amp; Your Data</a>
     <span class="sep">·</span>
@@ -2174,6 +2176,24 @@ document.addEventListener('click', e => {
   const goto = e.target.dataset && e.target.dataset.goto;
   if (goto) { const t = document.querySelector(`.tabs button[data-tab="${goto}"]`); if (t) t.click(); }
 });
+
+// Feedback: open the user's own mail client, prefilled (no form, nothing collected on our side)
+(function () {
+  const a = document.getElementById('email-feedback');
+  if (!a) return;
+  const subject = 'ansrd tracker — feedback';
+  const body = [
+    'What were you trying to do when you used it?',
+    '',
+    '1. Did anything confuse you, or make you stop?',
+    '2. What was useful?',
+    '3. What did you expect that was missing?',
+    '4. Would you use this for real work — why / why not?',
+    '5. Anything else, or bugs?',
+    ''
+  ].join('\n');
+  a.href = 'mailto:info@ansrd.io?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+})();
 
 // Dashboard review summary → jump to the tracker filtered to that review state
 document.getElementById('review-summary').addEventListener('click', e => {
