@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIPAA Documentation Gap Check — Free, 2-Minute Self-Assessment</title>
+<meta name="description" content="Would your HIPAA documentation survive an OCR request? A free, private, 2-minute self-check for small healthcare practices and business associates. Nothing collected — runs entirely in your browser.">
+<link rel="canonical" href="https://ansrd.io/hipaa-check/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ansrd.io/hipaa-check/">
+<meta property="og:title" content="Would your HIPAA documentation survive an OCR request?">
+<meta property="og:description" content="A free, private, 2-minute documentation gap-check for small practices and business associates. No signup, nothing collected.">
+<meta property="og:image" content="https://ansrd.io/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{
+  --ink:#10222e;--paper:#f6f4ef;--surface:#fff;--surface-2:#fbfaf7;--line:#cdd6db;--hair:#eceae4;
+  --teal:#0f6b6b;--teal-deep:#0a4a4a;--amber:#b3801f;--muted:#5d6b73;
+  --good:#1f7a4d;--good-bg:#e3f1e9;--warn:#9a7400;--warn-bg:#f5ecd2;--crit:#a32a2a;--crit-bg:#f6e0e0;
+  --shadow:0 1px 2px rgba(16,34,46,.05),0 10px 30px rgba(16,34,46,.08);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --mono:"SFMono-Regular",ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e9eeec;--paper:#0e1b23;--surface:#152731;--surface-2:#12222b;--line:#283b44;--hair:#20323b;
+  --teal:#4fb6ac;--teal-deep:#74cabf;--amber:#d7a548;--muted:#9fb0b5;
+  --good:#5cc08a;--good-bg:#153027;--warn:#d7b756;--warn-bg:#2c2917;--crit:#e59090;--crit-bg:#331f1f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.34);
+}}
+:root[data-theme="dark"]{
+  --ink:#e9eeec;--paper:#0e1b23;--surface:#152731;--surface-2:#12222b;--line:#283b44;--hair:#20323b;
+  --teal:#4fb6ac;--teal-deep:#74cabf;--amber:#d7a548;--muted:#9fb0b5;
+  --good:#5cc08a;--good-bg:#153027;--warn:#d7b756;--warn-bg:#2c2917;--crit:#e59090;--crit-bg:#331f1f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:17px}
+a{color:var(--teal)}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);font-weight:700}
+
+header.top{border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(6px);position:sticky;top:0;z-index:10}
+header .inner{max-width:820px;margin:0 auto;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;text-decoration:none;color:var(--ink);font-size:.98rem}
+.glyph{width:22px;height:22px;border:2px solid var(--teal);border-radius:5px;position:relative;flex:none}
+.glyph::before{content:"";position:absolute;inset:4px 4px auto 4px;height:2px;background:var(--teal)}
+.glyph::after{content:"";position:absolute;inset:auto 4px 4px 4px;height:2px;background:var(--amber)}
+header .inner a.back{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-decoration:none}
+header .inner a.back:hover{color:var(--teal)}
+
+.wrap{max-width:820px;margin:0 auto;padding:0 22px}
+.hero{padding:52px 0 12px}
+.hero h1{font-size:clamp(1.9rem,5.2vw,2.9rem);line-height:1.08;font-weight:600;letter-spacing:-.015em;text-wrap:balance;max-width:20ch}
+.hero .lede{font-size:1.12rem;color:var(--muted);max-width:56ch;margin-top:18px}
+.trust{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:16px;display:flex;flex-wrap:wrap;gap:6px 16px}
+.trust b{color:var(--ink);font-weight:600}
+
+.fearbox{background:var(--crit-bg);border:1px solid transparent;border-left:4px solid var(--crit);border-radius:10px;padding:16px 20px;margin:26px 0 8px;max-width:100%}
+.fearbox strong{color:var(--crit)}
+.fearbox p{font-size:.94rem;line-height:1.55}
+
+.progress{position:sticky;top:57px;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);padding:12px 0;margin-top:20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:14px}
+.progress .bar{flex:1;height:6px;background:var(--hair);border-radius:4px;overflow:hidden}
+.progress .bar span{display:block;height:100%;background:var(--teal);width:0;border-radius:4px;transition:width .25s}
+.progress .count{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0;box-shadow:var(--shadow)}
+.q .qnum{font-family:var(--mono);font-size:.66rem;color:var(--teal);font-weight:700;letter-spacing:.06em}
+.q h3{font-size:1.08rem;font-weight:600;margin:6px 0 4px;letter-spacing:-.005em}
+.q .cite{font-family:var(--mono);font-size:.64rem;color:var(--muted);margin-bottom:14px}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:460px){.opts{grid-template-columns:1fr}}
+.opts button{font-family:var(--mono);font-size:.8rem;font-weight:600;padding:11px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer;transition:.12s;min-height:44px}
+.opts button:hover{border-color:var(--teal)}
+.opts button[aria-pressed="true"][data-v="2"]{background:var(--good-bg);border-color:var(--good);color:var(--good)}
+.opts button[aria-pressed="true"][data-v="1"]{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.opts button[aria-pressed="true"][data-v="0"]{background:var(--crit-bg);border-color:var(--crit);color:var(--crit)}
+
+.submit-row{margin:24px 0 8px;text-align:center}
+.btn{font-family:var(--mono);font-size:.86rem;font-weight:700;padding:14px 26px;border-radius:9px;border:1.5px solid var(--teal);background:var(--teal);color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:9px}
+.btn:hover{background:var(--teal-deep);border-color:var(--teal-deep)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--teal)}
+.btn-ghost:hover{background:transparent;border-color:var(--teal-deep);color:var(--teal-deep)}
+
+/* result */
+.result{display:none;margin:16px 0 8px;scroll-margin-top:80px}
+.result.show{display:block}
+.score-card{border-radius:14px;padding:26px 24px;text-align:center;border:1px solid var(--line);box-shadow:var(--shadow)}
+.score-card.r-crit{background:var(--crit-bg);border-color:var(--crit)}
+.score-card.r-warn{background:var(--warn-bg);border-color:var(--warn)}
+.score-card.r-good{background:var(--good-bg);border-color:var(--good)}
+.score-card .band{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.score-card.r-crit .band{color:var(--crit)}.score-card.r-warn .band{color:var(--warn)}.score-card.r-good .band{color:var(--good)}
+.score-card .headline{font-size:1.5rem;font-weight:600;margin:8px 0 4px;letter-spacing:-.01em}
+.score-card .sub{color:var(--muted);font-size:.95rem;max-width:48ch;margin:0 auto}
+.gaps{margin:22px 0}
+.gaps h2{font-size:1.15rem;margin-bottom:4px}
+.gaps .intro{color:var(--muted);font-size:.92rem;margin-bottom:14px}
+.gap{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:9px;padding:13px 16px;margin-bottom:10px}
+.gap .g-top{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.gap h4{font-size:.98rem;font-weight:700}
+.gap .g-cite{font-family:var(--mono);font-size:.62rem;color:var(--muted);white-space:nowrap}
+.gap p{font-size:.88rem;color:var(--muted);margin-top:4px;line-height:1.5}
+.gap.miss{border-left-color:var(--crit)}
+.gap.partial{border-left-color:var(--warn)}
+.none-note{background:var(--good-bg);border:1px solid var(--good);border-radius:9px;padding:14px 18px;color:var(--good);font-size:.92rem}
+
+.cta{background:var(--ink);color:var(--paper);border-radius:14px;padding:28px 26px;margin:24px 0;text-align:center}
+:root[data-theme="dark"] .cta,:root:not([data-theme="light"]) .cta{background:var(--surface);border:1px solid var(--line)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .cta{background:var(--surface);border:1px solid var(--line)}}
+.cta .eyebrow{color:var(--amber)}
+.cta h2{font-size:1.4rem;font-weight:600;margin:8px 0 8px;text-wrap:balance}
+.cta p{opacity:.86;max-width:52ch;margin:0 auto 18px;font-size:.98rem}
+.cta .btn{background:var(--teal);border-color:var(--teal)}
+.cta .btn:hover{background:var(--teal-deep);border-color:var(--teal-deep)}
+.cta .fineprint{font-family:var(--mono);font-size:.66rem;opacity:.7;margin-top:14px}
+
+.foot{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 60px}
+.foot p{font-family:var(--mono);font-size:.68rem;color:var(--muted);line-height:1.7;max-width:70ch}
+.foot a{color:var(--teal)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto;transition:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <a class="brand" href="/"><span class="glyph" aria-hidden="true"></span> ANSRd</a>
+    <a class="back" href="/app/">Full compliance tracker →</a>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">HIPAA Documentation Gap Check</span>
+    <h1>Would your HIPAA documentation survive an OCR request?</h1>
+    <p class="lede">Eight questions, about two minutes. A plain-language look at whether your practice's HIPAA paperwork is actually defensible — or just "somewhere."</p>
+    <div class="trust">
+      <span>✓ <b>Free</b></span><span>✓ <b>No sign-up</b></span><span>✓ <b>Nothing collected</b> — runs in your browser</span>
+    </div>
+    <div class="fearbox">
+      <p><strong>Why this matters right now:</strong> The HHS Office for Civil Rights has an active <em>Risk Analysis Initiative</em> — and it's settling with <strong>small</strong> practices, not just hospitals ($25,000–$350,000 per case). A missing or incomplete risk analysis is the single most-cited HIPAA Security Rule violation. The paperwork is what they ask for first.</p>
+    </div>
+  </section>
+
+  <div class="progress" aria-hidden="true">
+    <div class="bar"><span id="pbar"></span></div>
+    <div class="count" id="pcount">0 / 8 answered</div>
+  </div>
+
+  <section id="quiz" aria-label="HIPAA documentation questions"></section>
+
+  <div class="submit-row">
+    <button class="btn" id="showResult" disabled>See my result</button>
+  </div>
+
+  <section class="result" id="result" aria-live="polite">
+    <div class="score-card" id="scoreCard">
+      <div class="band" id="scoreBand"></div>
+      <div class="headline" id="scoreHead"></div>
+      <div class="sub" id="scoreSub"></div>
+    </div>
+    <div class="gaps" id="gapList"></div>
+    <div class="cta">
+      <span class="eyebrow">Done for you</span>
+      <h2 id="ctaHead">Close the gaps before OCR asks.</h2>
+      <p>These are exactly the items an auditor requests first. I help small practices and business associates turn scattered paperwork into an audit-ready record — the risk analysis, policies, BAAs, and evidence, done for you and kept current. Not software to learn.</p>
+      <a class="btn" id="bookBtn" href="#">Book a free 20-minute review →</a>
+      <div class="fineprint">No obligation. If your documentation is already solid, I'll tell you.</div>
+    </div>
+    <div class="submit-row"><button class="btn btn-ghost" id="againBtn">↻ Start over</button></div>
+  </section>
+</div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Indicative self-check based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. <strong>Not legal advice</strong> — confirm against your own risk analysis and counsel. <strong>Privacy:</strong> your answers are scored entirely in your browser and never leave your device; we collect no personal data. We use privacy-friendly, cookieless analytics that count anonymous page visits only.<br>
+    Built by ANSRd · <a href="/app/">Full NIST 800-171 / CMMC + HIPAA tracker</a> · <a href="/">ansrd.io</a></p>
+  </div>
+</footer>
+
+<script>
+// Book link — swap the mailto for a scheduling link (e.g. Calendly) when ready.
+var BOOK_MAILTO = "mailto:info@ansrd.io?subject=" + encodeURIComponent("HIPAA documentation review request") +
+  "&body=" + encodeURIComponent("Hi — I ran the HIPAA documentation gap check and would like a free 20-minute review.\n\nPractice / organization:\nRole:\nBiggest concern:\n");
+
+var QUESTIONS = [
+  {q:"Do you have a written Security Risk Analysis completed or updated in the last 12 months?",
+   cite:"§164.308(a)(1)(ii)(A) — Risk Analysis",
+   name:"Current Security Risk Analysis",
+   why:"The #1 most-cited HIPAA violation and the focus of OCR's active enforcement initiative. 'We did one a few years ago' is a finding, not a defense."},
+  {q:"Do you have written HIPAA policies and procedures, reviewed within the last year?",
+   cite:"§164.316 — Policies, Procedures & Documentation",
+   name:"Current written policies & procedures",
+   why:"Written, current policies are required — and they're the first thing an auditor asks to see. Verbal understanding doesn't count."},
+  {q:"Do you have a signed Business Associate Agreement with every vendor that touches PHI (billing, IT, cloud, email, shredding)?",
+   cite:"§164.308(b)(1), §164.314(a) — Business Associate Contracts",
+   name:"Complete Business Associate Agreements",
+   why:"Every vendor handling PHI needs a signed BAA. Missing BAAs are common, avoidable, and expensive when a vendor is breached."},
+  {q:"Is your workforce's HIPAA security training documented within the last year?",
+   cite:"§164.308(a)(5) — Security Awareness & Training",
+   name:"Documented workforce training",
+   why:"Periodic, documented training is required. 'We talked about it at a staff meeting' is not documentation."},
+  {q:"Do you have a written contingency plan — data backup and a disaster-recovery procedure?",
+   cite:"§164.308(a)(7) — Contingency Plan",
+   name:"Written contingency & backup plan",
+   why:"Ransomware and outages make this the line between a bad day and a reportable breach. A written, tested plan is required."},
+  {q:"Do you have a written breach / incident response procedure, and know your 60-day notification duty?",
+   cite:"§164.308(a)(6) + Breach Notification Rule",
+   name:"Breach & incident response plan",
+   why:"Improvising during an incident is how a small event becomes a large penalty — and the notification clock is unforgiving."},
+  {q:"Do you document who can access PHI, and promptly remove access when someone leaves?",
+   cite:"§164.308(a)(3)/(4) — Access Management",
+   name:"Access management & offboarding",
+   why:"Lingering access for former staff and vendors is a frequent audit finding and a real breach path."},
+  {q:"Is your HIPAA documentation retained and readily available (6-year retention)?",
+   cite:"§164.316(b)(2) — Retention & Availability",
+   name:"Documentation retention & availability",
+   why:"HIPAA documentation must be kept six years and produced on request. Scattered or outdated files won't survive one."}
+];
+
+var answers = {};
+var quiz = document.getElementById('quiz');
+QUESTIONS.forEach(function(item, i){
+  var el = document.createElement('div');
+  el.className = 'q';
+  el.innerHTML =
+    '<div class="qnum">Question ' + (i+1) + ' of ' + QUESTIONS.length + '</div>' +
+    '<h3>' + item.q + '</h3>' +
+    '<div class="cite">' + item.cite + '</div>' +
+    '<div class="opts" role="group">' +
+      '<button type="button" data-i="'+i+'" data-v="2" aria-pressed="false">Yes</button>' +
+      '<button type="button" data-i="'+i+'" data-v="1" aria-pressed="false">Partly</button>' +
+      '<button type="button" data-i="'+i+'" data-v="0" aria-pressed="false">No / Unsure</button>' +
+    '</div>';
+  quiz.appendChild(el);
+});
+
+quiz.addEventListener('click', function(e){
+  var b = e.target.closest('button[data-i]');
+  if(!b) return;
+  var i = +b.dataset.i;
+  answers[i] = +b.dataset.v;
+  b.parentNode.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x===b ? 'true':'false'); });
+  updateProgress();
+});
+
+function updateProgress(){
+  var n = Object.keys(answers).length;
+  document.getElementById('pbar').style.width = (n/QUESTIONS.length*100) + '%';
+  document.getElementById('pcount').textContent = n + ' / ' + QUESTIONS.length + ' answered';
+  document.getElementById('showResult').disabled = n < QUESTIONS.length;
+}
+
+document.getElementById('showResult').addEventListener('click', function(){
+  var score = 0, miss = [], partial = [];
+  QUESTIONS.forEach(function(item, i){
+    var v = answers[i];
+    score += v;
+    if(v===0) miss.push(item);
+    else if(v===1) partial.push(item);
+  });
+  var max = QUESTIONS.length*2;
+  var band, cls, head, sub;
+  if(score <= 6){ band='High exposure'; cls='r-crit';
+    head='Your documentation likely would not hold up.';
+    sub='Several of the exact items OCR asks for first are missing. This is the profile that draws penalties — and it is very fixable.'; }
+  else if(score <= 12){ band='Gaps to close'; cls='r-warn';
+    head='You have a foundation, with real gaps.';
+    sub='Some key documentation is in place, but there are holes an auditor would find. Closing them now is far cheaper than explaining them later.'; }
+  else { band='Reasonably documented'; cls='r-good';
+    head='You are in good shape — keep it current.';
+    sub='Your core documentation appears in place. The main risk now is drift: HIPAA requires it stay current and available, so an annual refresh matters.'; }
+
+  var card = document.getElementById('scoreCard');
+  card.className = 'score-card ' + cls;
+  document.getElementById('scoreBand').textContent = band + ' · ' + score + ' / ' + max;
+  document.getElementById('scoreHead').textContent = head;
+  document.getElementById('scoreSub').textContent = sub;
+
+  var gaps = document.getElementById('gapList');
+  var need = miss.length + partial.length;
+  if(need === 0){
+    gaps.innerHTML = '<div class="none-note">✓ You answered yes to all eight areas. Strong — the work now is keeping it reviewed and dated so it stays defensible.</div>';
+    document.getElementById('ctaHead').textContent = 'Keep it audit-ready.';
+  } else {
+    var html = '<h2>' + need + ' area' + (need>1?'s':'') + ' to close</h2>' +
+      '<p class="intro">These are the items an OCR auditor requests first, in priority order.</p>';
+    miss.concat(partial).forEach(function(item){
+      var isMiss = miss.indexOf(item) > -1;
+      html += '<div class="gap ' + (isMiss?'miss':'partial') + '">' +
+        '<div class="g-top"><h4>' + item.name + (isMiss?'':' — partial') + '</h4>' +
+        '<span class="g-cite">' + item.cite.split(' — ')[0] + '</span></div>' +
+        '<p>' + item.why + '</p></div>';
+    });
+    gaps.innerHTML = html;
+    document.getElementById('ctaHead').textContent = 'Close these ' + need + ' gap' + (need>1?'s':'') + ' before OCR asks.';
+  }
+
+  document.getElementById('bookBtn').setAttribute('href', BOOK_MAILTO);
+  var r = document.getElementById('result');
+  r.classList.add('show');
+  r.scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.getElementById('againBtn').addEventListener('click', function(){
+  answers = {};
+  document.querySelectorAll('.opts button').forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+  document.getElementById('result').classList.remove('show');
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+</script>
+<!-- Vercel Web Analytics (first-party, cookieless, no PII) -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
