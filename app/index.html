@@ -291,6 +291,24 @@ mark{background:#fdf0c8;color:inherit;padding:0 1px;border-radius:2px}
 #hipaa-table td{vertical-align:middle}
 #hipaa-table .chips{gap:4px}
 
+/* HIPAA-only requirements tracker */
+.hgap-block{max-width:900px;margin:16px 0 6px}
+.hgap-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.hgap-head>span:first-child{font-size:1.02rem;font-weight:700}
+.hgap-count{font-family:var(--mono);font-size:.68rem;font-weight:700;color:var(--teal-deep);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+.hgap-table{width:100%;border-collapse:separate;border-spacing:0;font-size:.82rem;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.hgap-table th,.hgap-table td{padding:9px 12px;text-align:left;border-bottom:1px solid #eee;vertical-align:top}
+.hgap-table th{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:#fbfaf7}
+.hgap-table tr:last-child td{border-bottom:none}
+.hgap-table tr.hg-met td{background:#f6faf7}
+.hgap-table select{font-family:var(--mono);font-size:.72rem;padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:var(--card)}
+.hg-req{font-family:var(--mono);font-size:.58rem;font-weight:700;padding:1px 5px;border-radius:4px}
+.hg-required{background:#f6e0e0;color:var(--gap)}
+.hg-addressable{background:#f5ecd2;color:var(--partial)}
+.hgap-note{font-family:var(--mono);font-size:.66rem;color:var(--muted);line-height:1.55;margin-top:10px;max-width:820px}
+.hgap-note a{color:var(--teal)}
+@media(max-width:768px){.hgap-table select{min-height:44px}}
+
 /* --- Assessment objectives (NIST SP 800-171A) --- */
 .obj-toggle{font-family:var(--mono);font-size:.62rem;font-weight:700;padding:2px 6px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--teal);cursor:pointer;white-space:nowrap;line-height:1.4}
 .obj-toggle:hover{border-color:var(--teal);background:#eaf3f1}
@@ -526,7 +544,7 @@ tr.obj-row.hidden{display:none}
 
   <div class="trust-line">
     <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
-    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.9 · updated July 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.10 · updated August 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a></div>
   </div>
 
   <div class="disclaimer">
@@ -1095,12 +1113,22 @@ const HIPAA_MAP = {
 // Mappings that are weak, catch-all, or analogy-based — surfaced honestly in the UI.
 const HIPAA_LOW_CONF = new Set(["3.1.3","3.1.9","3.1.14","3.1.16","3.1.20","3.3.4","3.3.7","3.4.1","3.4.2","3.4.3","3.4.4","3.4.5","3.4.6","3.4.7","3.4.8","3.4.9","3.13.2","3.13.4","3.13.5","3.13.10","3.13.11"]);
 // HIPAA Security Rule requirements that 800-171 does NOT meaningfully cover.
-const HIPAA_GAPS = [
-  ["164.308(a)(7)(i)","Contingency Plan"],["164.308(a)(7)(ii)(B)","Disaster Recovery Plan"],
-  ["164.308(a)(7)(ii)(C)","Emergency Mode Operation Plan"],["164.308(a)(7)(ii)(E)","Applications and Data Criticality Analysis"],
-  ["164.312(c)(2)","Mechanism to Authenticate ePHI"],["164.314(a)(2)","Business Associate Contract content requirements"],
-  ["164.308(a)(4)(ii)(A)","Isolating Health Care Clearinghouse Functions (applies only to a clearinghouse operating within a larger organization)"],
-  ["164.314(b)","Requirements for Group Health Plans"],["164.316(b)(2)(ii)","Documentation — Availability"]
+// ===== HIPAA-only requirements =====
+// HIPAA Security Rule requirements with NO meaningful NIST 800-171 counterpart —
+// mostly contingency planning. Descriptions are faithful to the CFR text; "req" is
+// HIPAA's own Required / Addressable classification. These are a SUPPLEMENT: they are
+// NOT part of the SPRS score, the 110-control readiness, or CMMC — an 800-171-compliant
+// org must still address them separately. Source: 45 CFR §164.308/312/314/316;
+// contingency-planning methodology per NIST SP 800-34 Rev 1.
+const HIPAA_GAP_ITEMS = [
+  {c:"164.308(a)(7)(i)", n:"Contingency Plan", req:"Required", d:"Establish (and implement as needed) policies and procedures for responding to an emergency or other occurrence — fire, vandalism, system failure, natural disaster — that damages systems containing ePHI."},
+  {c:"164.308(a)(7)(ii)(B)", n:"Disaster Recovery Plan", req:"Required", d:"Establish (and implement as needed) procedures to restore any loss of data."},
+  {c:"164.308(a)(7)(ii)(C)", n:"Emergency Mode Operation Plan", req:"Required", d:"Establish (and implement as needed) procedures to enable continuation of critical business processes for protection of the security of ePHI while operating in emergency mode."},
+  {c:"164.308(a)(7)(ii)(E)", n:"Applications & Data Criticality Analysis", req:"Addressable", d:"Assess the relative criticality of specific applications and data in support of the other contingency-plan components."},
+  {c:"164.312(c)(2)", n:"Mechanism to Authenticate ePHI", req:"Addressable", d:"Implement electronic mechanisms to corroborate that ePHI has not been altered or destroyed in an unauthorized manner."},
+  {c:"164.314(a)(2)", n:"Business Associate Contract content", req:"Required", d:"BA contracts must require the business associate to comply with the Security Rule, ensure its subcontractors do the same, and report security incidents to the covered entity."},
+  {c:"164.314(b)", n:"Group Health Plan requirements", req:"Required", d:"Plan documents must require the plan sponsor to reasonably safeguard ePHI it creates, receives, maintains, or transmits on behalf of the group health plan."},
+  {c:"164.316(b)(2)(ii)", n:"Documentation — Availability", req:"Required", d:"Make documentation available to those persons responsible for implementing the procedures to which it pertains."}
 ];
 function hipaaFor(id) { return HIPAA_MAP[id] || []; }
 
@@ -1193,6 +1221,7 @@ function getDefaultState() {
       freq: defaultFreq(c.id)
     })),
     poam: [],
+    hipaaGaps: {},
     accessReview: DEFAULT_REVIEW_ITEMS.map((item, i) => ({
       id: i + 1,
       item,
@@ -1206,6 +1235,7 @@ function getDefaultState() {
 
 // Bring older saved/imported state up to the current schema without losing anything.
 function migrateState(s) {
+  if (s && (!s.hipaaGaps || typeof s.hipaaGaps !== 'object')) s.hipaaGaps = {};
   if (s && Array.isArray(s.controls)) {
     s.controls.forEach(c => {
       if (!c.objStatus || typeof c.objStatus !== 'object') c.objStatus = {};
@@ -1786,15 +1816,49 @@ function renderHipaa() {
 
   // Controls with no HIPAA counterpart + HIPAA requirements 800-171 misses
   const noMap = Object.keys(HIPAA_MAP).filter(id => !hipaaFor(id).length);
+  const hg = state.hipaaGaps || {};
+  const metCount = HIPAA_GAP_ITEMS.filter(g => hg[g.c] === 'Met').length;
+  const gapRows = HIPAA_GAP_ITEMS.map(g => {
+    const v = hg[g.c] || '';
+    return `<tr class="${v === 'Met' ? 'hg-met' : ''}">
+      <td><div style="font-weight:600">${g.n}</div><div class="mono-cit">§${g.c} · <span class="hg-req hg-${g.req.toLowerCase()}">${g.req}</span></div></td>
+      <td style="font-size:.82rem;color:var(--muted);line-height:1.5">${esc(g.d)}</td>
+      <td><select data-hgap="${g.c}" aria-label="Status for HIPAA ${g.c}">
+        <option value=""${v===''?' selected':''}>—</option>
+        <option value="Met"${v==='Met'?' selected':''}>Met</option>
+        <option value="Not Met"${v==='Not Met'?' selected':''}>Not Met</option>
+        <option value="N/A"${v==='N/A'?' selected':''}>N/A</option>
+      </select></td>
+    </tr>`;
+  }).join('');
+
   document.getElementById('hipaa-gapbox').innerHTML = `
     <div class="gapbox">
       <strong>⚠ 800-171 compliance is not HIPAA compliance.</strong>
-      These Security Rule requirements have little or no 800-171 counterpart — you must address them separately:
-      <ul>${HIPAA_GAPS.map(g => `<li><span class="mono-cit">§${g[0]}</span> ${g[1]}</li>`).join('')}</ul>
-      Contingency planning is the biggest gap: 800-171 Rev 2 has no contingency-planning family.
-      <div style="margin-top:10px">Conversely, these 800-171 controls have no meaningful HIPAA Security Rule counterpart: ${noMap.map(id => `<span class="chip notstarted" data-jump="${id}">${id}</span>`).join(' ')}</div>
-    </div>`;
+      The requirements below have little or no 800-171 counterpart — <strong>contingency planning is the biggest gap</strong> (800-171 Rev 2 has no contingency family). If you're a covered entity or business associate, track them here. They are <em>supplemental</em>: not part of your SPRS score, the 110-control readiness, or CMMC.
+    </div>
+    <div class="hgap-block">
+      <div class="hgap-head">
+        <span>HIPAA-only requirements</span>
+        <span class="hgap-count">${metCount}/${HIPAA_GAP_ITEMS.length} met</span>
+      </div>
+      <div class="table-wrap"><table class="hgap-table">
+        <thead><tr><th>Requirement</th><th>What it requires — 45 CFR text</th><th>Status</th></tr></thead>
+        <tbody>${gapRows}</tbody>
+      </table></div>
+      <p class="hgap-note">Text faithful to 45 CFR §164.308 / 312 / 314 / 316; contingency-planning methodology per <a href="https://csrc.nist.gov/pubs/sp/800/34/r1/final" target="_blank" rel="noopener">NIST SP 800-34 Rev 1</a>. <strong>“Addressable” is not optional</strong> — you must implement it, or document why an equivalent alternative is reasonable and appropriate. Not legal advice; confirm against your own risk analysis.</p>
+    </div>
+    <div class="gapbox" style="margin-top:14px">Conversely, these 800-171 controls have no meaningful HIPAA Security Rule counterpart: ${noMap.map(id => `<span class="chip notstarted" data-jump="${id}">${id}</span>`).join(' ')}</div>`;
 }
+
+// Track a HIPAA-only requirement (separate from the scored 800-171 set)
+document.getElementById('panel-overlap').addEventListener('change', e => {
+  const sel = e.target.closest('[data-hgap]');
+  if (!sel) return;
+  state.hipaaGaps[sel.dataset.hgap] = sel.value;
+  saveState();
+  renderHipaa();
+});
 
 // Click a control chip → jump to it in the Control Tracker
 document.getElementById('panel-overlap').addEventListener('click', e => {
@@ -1879,12 +1943,16 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
       'Confidence': HIPAA_LOW_CONF.has(c.id) ? 'Low - weak/catch-all mapping' : 'Indicative'
     }));
   });
-  HIPAA_GAPS.forEach(g => hipData.push({
-    'Control ID': '(none)', 'Control Status': '',
-    'HIPAA Citation': '45 CFR §' + g[0], 'HIPAA Standard': g[1],
-    'Confidence': 'NOT COVERED by NIST 800-171 - address separately'
-  }));
   if (hipData.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hipData), 'HIPAA Crosswalk');
+
+  // HIPAA-only requirements sheet (not covered by 800-171, tracked separately)
+  const hgData = HIPAA_GAP_ITEMS.map(g => ({
+    'HIPAA Citation': '45 CFR §' + g.c, 'Requirement': g.n,
+    'Required / Addressable': g.req, 'What it requires': g.d,
+    'Status': (state.hipaaGaps && state.hipaaGaps[g.c]) || '',
+    'Note': 'HIPAA-only - not part of the SPRS score or the 110-control NIST 800-171 readiness'
+  }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hgData), 'HIPAA-Only Requirements');
   
   // Access Review sheet
   const revData = state.accessReview.map((r,i) => ({
