@@ -119,6 +119,19 @@ header .inner a.back:hover{color:var(--teal)}
 .cta .btn:hover{background:var(--teal-deep);border-color:var(--teal-deep)}
 .cta .fineprint{font-family:var(--mono);font-size:.66rem;opacity:.7;margin-top:14px}
 
+/* capture form */
+.capture{max-width:520px;margin:18px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;box-shadow:var(--shadow)}
+.cap-head{font-family:var(--mono);font-size:.74rem;font-weight:700;color:var(--ink);margin-bottom:12px;text-align:center}
+.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:460px){.cap-grid{grid-template-columns:1fr}}
+.capture input,.capture textarea{width:100%;font-family:var(--serif);font-size:.95rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--ink);margin-bottom:10px}
+.capture textarea{resize:vertical;min-height:52px}
+.capture input:focus,.capture textarea:focus{border-color:var(--teal);outline:none}
+.capture .btn{width:100%;justify-content:center;margin-top:2px}
+.cap-status{font-family:var(--mono);font-size:.72rem;text-align:center;margin-top:10px;min-height:1em}
+.cap-status.err{color:var(--crit)}
+.cap-done{font-family:var(--mono);font-size:.92rem;font-weight:700;color:var(--good);text-align:center;padding:8px 0}
+
 .foot{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 60px}
 .foot p{font-family:var(--mono);font-size:.68rem;color:var(--muted);line-height:1.7;max-width:70ch}
 .foot a{color:var(--teal)}
@@ -167,9 +180,6 @@ header .inner a.back:hover{color:var(--teal)}
       <div class="sub" id="scoreSub"></div>
     </div>
     <div class="gaps" id="gapList"></div>
-    <div style="text-align:center;margin:4px 0 2px">
-      <a class="btn btn-ghost" id="emailResultsBtn" href="#">✉ Email my results</a>
-    </div>
     <div class="cta">
       <span class="eyebrow">Done for you</span>
       <h2 id="ctaHead">Close the gaps before OCR asks.</h2>
@@ -177,6 +187,17 @@ header .inner a.back:hover{color:var(--teal)}
       <a class="btn" id="bookBtn" href="#">Book a free review →</a>
       <div class="fineprint">No obligation. If your documentation is already solid, I'll tell you.</div>
     </div>
+    <form class="capture" id="captureForm">
+      <div class="cap-head">Prefer I reach out? Send your results and I&rsquo;ll be in touch.</div>
+      <div class="cap-grid">
+        <input type="text" id="capName" placeholder="Your name" autocomplete="name">
+        <input type="email" id="capEmail" placeholder="Email *" autocomplete="email" required>
+      </div>
+      <input type="text" id="capPractice" placeholder="Practice / organization (optional)">
+      <textarea id="capMsg" rows="2" placeholder="Anything you&rsquo;d like me to know (optional)"></textarea>
+      <button type="submit" class="btn" id="capSend">Send my results &rarr;</button>
+      <div class="cap-status" id="capStatus" role="status" aria-live="polite"></div>
+    </form>
     <div class="submit-row"><button class="btn btn-ghost" id="againBtn">↻ Start over</button></div>
   </section>
 </div>
@@ -184,7 +205,7 @@ header .inner a.back:hover{color:var(--teal)}
 
 <footer class="foot">
   <div class="wrap">
-    <p>Indicative self-check based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. <strong>Not legal advice</strong> — confirm against your own risk analysis and counsel. <strong>Privacy:</strong> your answers are scored entirely in your browser and never leave your device; we collect no personal data. We use privacy-friendly, cookieless analytics that count anonymous page visits only.<br>
+    <p>Indicative self-check based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. <strong>Not legal advice</strong> — confirm against your own risk analysis and counsel. <strong>Privacy:</strong> your answers are scored entirely in your browser &mdash; nothing is sent anywhere unless <em>you</em> choose to submit your details for a review, which come only to us. We use privacy-friendly, cookieless analytics that count anonymous page visits only.<br>
     Built by ANSRd · <a href="/app/">Full NIST 800-171 / CMMC + HIPAA tracker</a> · <a href="/">ansrd.io</a></p>
   </div>
 </footer>
@@ -195,6 +216,15 @@ header .inner a.back:hover{color:var(--teal)}
 // scheduling link (recommended — works for everyone, no mail app needed, and it
 // captures name/email/time). Leave it "" to fall back to the email option.
 var BOOK_URL = "https://calendly.com/ansrd-info/30min";
+
+// ── Lead capture (see submissions in your own dashboard) ────────────────────
+// PASTE YOUR FORMSPREE ENDPOINT BELOW to capture "Send my results" submissions
+// (name, email, practice, message + their gap results) reliably — you'll see
+// every one by email and in the Formspree dashboard. Create a free form at
+// formspree.io, then paste its endpoint here. Leave "" and it falls back to a
+// best-effort email draft.
+var FORM_ENDPOINT = "";  // e.g. "https://formspree.io/f/xxxxxxxx"
+var resultText = "";     // filled when results are shown, sent with the form
 
 var BOOK_MAILTO = "mailto:info@ansrd.io?subject=" + encodeURIComponent("HIPAA documentation review request") +
   "&body=" + encodeURIComponent("Hi — I ran the HIPAA documentation gap check and would like a free 20-minute review.\n\nPractice / organization:\nRole:\nBiggest concern:\n");
@@ -321,10 +351,10 @@ document.getElementById('showResult').addEventListener('click', function(){
     bookBtn.setAttribute('href', BOOK_MAILTO);
   }
 
-  // Build a shareable "email my results" mailto (nothing is auto-collected — the user chooses to send)
-  var lines = ['My HIPAA Documentation Gap Check results:', '', band + ' — ' + score + ' / ' + max, ''];
+  // Capture the result text so the "Send my results" form can include it
+  var lines = ['HIPAA gap-check result: ' + band + ' — ' + score + ' / ' + max, ''];
   if (miss.length + partial.length === 0) {
-    lines.push('I answered yes to all eight areas.');
+    lines.push('Answered yes to all eight areas.');
   } else {
     lines.push('Areas needing attention:');
     miss.concat(partial).forEach(function(item){
@@ -332,9 +362,7 @@ document.getElementById('showResult').addEventListener('click', function(){
       lines.push('- ' + item.name + (isMiss ? ' (No / Unsure)' : ' (Partial)') + '  [' + item.cite.split(' — ')[0] + ']');
     });
   }
-  lines.push('', 'Name:', 'Practice / organization:', 'Best way to reach me:');
-  document.getElementById('emailResultsBtn').setAttribute('href',
-    'mailto:info@ansrd.io?subject=' + encodeURIComponent('My HIPAA gap-check results') + '&body=' + encodeURIComponent(lines.join('\n')));
+  resultText = lines.join('\n');
 
   var r = document.getElementById('result');
   r.classList.add('show');
@@ -347,6 +375,38 @@ document.getElementById('againBtn').addEventListener('click', function(){
   document.getElementById('result').classList.remove('show');
   updateProgress();
   window.scrollTo({top:0, behavior:'smooth'});
+});
+
+// "Send my results" — reliable capture (posts to your form service; nothing is
+// sent unless the visitor chooses to submit).
+document.getElementById('captureForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var status = document.getElementById('capStatus');
+  status.className = 'cap-status';
+  var email = document.getElementById('capEmail').value.trim();
+  if (!email) { status.textContent = 'Please add an email so I can reach you.'; status.className = 'cap-status err'; return; }
+  var payload = {
+    name: document.getElementById('capName').value.trim(),
+    email: email,
+    practice: document.getElementById('capPractice').value.trim(),
+    message: document.getElementById('capMsg').value.trim(),
+    _subject: 'HIPAA gap-check lead',
+    results: resultText
+  };
+  if (!FORM_ENDPOINT) {
+    // Not configured yet — best-effort fallback to an email draft.
+    window.location.href = 'mailto:info@ansrd.io?subject=' + encodeURIComponent('HIPAA gap-check results') +
+      '&body=' + encodeURIComponent('Name: ' + payload.name + '\nEmail: ' + payload.email + '\nPractice: ' + payload.practice + '\nMessage: ' + payload.message + '\n\n' + resultText);
+    return;
+  }
+  var send = document.getElementById('capSend');
+  send.disabled = true; status.textContent = 'Sending…';
+  fetch(FORM_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(payload) })
+    .then(function(r){
+      if (r.ok) { document.getElementById('captureForm').innerHTML = '<div class="cap-done">✓ Thanks — I’ll be in touch shortly.</div>'; }
+      else { status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; }
+    })
+    .catch(function(){ status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; });
 });
 </script>
 <!-- Vercel Web Analytics (first-party, cookieless, no PII) -->
