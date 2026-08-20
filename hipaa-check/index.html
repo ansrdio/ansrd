@@ -190,7 +190,12 @@ header .inner a.back:hover{color:var(--teal)}
 </footer>
 
 <script>
-// Book link — swap the mailto for a scheduling link (e.g. Calendly) when ready.
+// ── Booking link ──────────────────────────────────────────────────────────
+// PASTE YOUR CALENDLY / CAL.COM LINK BELOW to make "Book a review" a one-tap
+// scheduling link (recommended — works for everyone, no mail app needed, and it
+// captures name/email/time). Leave it "" to fall back to the email option.
+var BOOK_URL = "";  // e.g. "https://calendly.com/your-name/hipaa-review"
+
 var BOOK_MAILTO = "mailto:info@ansrd.io?subject=" + encodeURIComponent("HIPAA documentation review request") +
   "&body=" + encodeURIComponent("Hi — I ran the HIPAA documentation gap check and would like a free 20-minute review.\n\nPractice / organization:\nRole:\nBiggest concern:\n");
 
@@ -307,7 +312,14 @@ document.getElementById('showResult').addEventListener('click', function(){
     document.getElementById('ctaHead').textContent = 'Close these ' + need + ' gap' + (need>1?'s':'') + ' before OCR asks.';
   }
 
-  document.getElementById('bookBtn').setAttribute('href', BOOK_MAILTO);
+  var bookBtn = document.getElementById('bookBtn');
+  if (BOOK_URL) {
+    bookBtn.setAttribute('href', BOOK_URL);
+    bookBtn.setAttribute('target', '_blank');
+    bookBtn.setAttribute('rel', 'noopener');
+  } else {
+    bookBtn.setAttribute('href', BOOK_MAILTO);
+  }
 
   // Build a shareable "email my results" mailto (nothing is auto-collected — the user chooses to send)
   var lines = ['My HIPAA Documentation Gap Check results:', '', band + ' — ' + score + ' / ' + max, ''];
