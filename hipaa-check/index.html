@@ -167,6 +167,9 @@ header .inner a.back:hover{color:var(--teal)}
       <div class="sub" id="scoreSub"></div>
     </div>
     <div class="gaps" id="gapList"></div>
+    <div style="text-align:center;margin:4px 0 2px">
+      <a class="btn btn-ghost" id="emailResultsBtn" href="#">✉ Email my results</a>
+    </div>
     <div class="cta">
       <span class="eyebrow">Done for you</span>
       <h2 id="ctaHead">Close the gaps before OCR asks.</h2>
@@ -305,6 +308,22 @@ document.getElementById('showResult').addEventListener('click', function(){
   }
 
   document.getElementById('bookBtn').setAttribute('href', BOOK_MAILTO);
+
+  // Build a shareable "email my results" mailto (nothing is auto-collected — the user chooses to send)
+  var lines = ['My HIPAA Documentation Gap Check results:', '', band + ' — ' + score + ' / ' + max, ''];
+  if (miss.length + partial.length === 0) {
+    lines.push('I answered yes to all eight areas.');
+  } else {
+    lines.push('Areas needing attention:');
+    miss.concat(partial).forEach(function(item){
+      var isMiss = miss.indexOf(item) > -1;
+      lines.push('- ' + item.name + (isMiss ? ' (No / Unsure)' : ' (Partial)') + '  [' + item.cite.split(' — ')[0] + ']');
+    });
+  }
+  lines.push('', 'Name:', 'Practice / organization:', 'Best way to reach me:');
+  document.getElementById('emailResultsBtn').setAttribute('href',
+    'mailto:info@ansrd.io?subject=' + encodeURIComponent('My HIPAA gap-check results') + '&body=' + encodeURIComponent(lines.join('\n')));
+
   var r = document.getElementById('result');
   r.classList.add('show');
   r.scrollIntoView({behavior:'smooth', block:'start'});
