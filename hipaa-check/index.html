@@ -270,6 +270,9 @@ QUESTIONS.forEach(function(item, i){
 
 // Anonymous, no-PII funnel events (Vercel custom events; no-op if unavailable)
 function track(name){ try{ if(window.va) window.va('event', { name: name }); }catch(e){} }
+// Campaign attribution: ?ref= on the outreach link tags who converted. Used ONLY on opt-in actions
+// (booking + the results form) — never on the anonymous funnel events, so passive visits stay anonymous.
+var REF = (function(){ try{ return (new URLSearchParams(location.search).get('ref') || '').slice(0,60); }catch(e){ return ''; } })();
 var started = false;
 
 quiz.addEventListener('click', function(e){
@@ -336,7 +339,8 @@ document.getElementById('showResult').addEventListener('click', function(){
 
   var bookBtn = document.getElementById('bookBtn');
   if (BOOK_URL) {
-    bookBtn.setAttribute('href', BOOK_URL);
+    var bookHref = BOOK_URL + (REF ? (BOOK_URL.indexOf('?') > -1 ? '&' : '?') + 'utm_source=hipaa-check&utm_content=' + encodeURIComponent(REF) : '');
+    bookBtn.setAttribute('href', bookHref);
     bookBtn.setAttribute('target', '_blank');
     bookBtn.setAttribute('rel', 'noopener');
   } else {
@@ -383,7 +387,8 @@ document.getElementById('captureForm').addEventListener('submit', function(e){
     name: document.getElementById('capName').value.trim(),
     email: email,
     practice: document.getElementById('capPractice').value.trim(),
-    _subject: 'HIPAA gap-check lead — send action plan',
+    ref: REF,
+    _subject: 'HIPAA gap-check lead — send action plan' + (REF ? ' [' + REF + ']' : ''),
     results: resultText
   };
   if (!FORM_ENDPOINT) {
