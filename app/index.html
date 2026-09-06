@@ -1524,6 +1524,11 @@ function evidenceCell(c, i) {
 })();
 
 // Event delegation for tracker
+// ===== Anonymous usage events (Vercel; counts only, no data content) =====
+function track(name){ try{ if(window.va) window.va('event', { name: name }); }catch(e){} }
+var _assessStarted = false;
+function trackControlUpdate(){ if(!_assessStarted){ _assessStarted = true; track('assessment_started'); } track('control_updated'); }
+
 document.getElementById('ctrl-table').addEventListener('change', e => {
   const el = e.target;
   const idx = parseInt(el.dataset.idx);
@@ -1531,6 +1536,7 @@ document.getElementById('ctrl-table').addEventListener('change', e => {
   if (idx >= 0 && field) {
     state.controls[idx][field] = el.value;
     saveState();
+    if (field === 'status') trackControlUpdate();
     // these drive the computed next-due badge and the dashboard review counts
     if (field === 'freq' || field === 'lastReviewed' || field === 'status') { renderTracker(); renderDashboard(); }
   }
@@ -1562,7 +1568,7 @@ document.getElementById('ctrl-table').addEventListener('click', e => {
     const val = bulk.dataset.objVal;
     if (!c.objStatus) c.objStatus = {};
     objsFor(c.id).forEach(o => { if (val) c.objStatus[o.k] = val; else delete c.objStatus[o.k]; });
-    applyRollup(c);
+    applyRollup(c); trackControlUpdate();
     saveState(); renderTracker(); renderDashboard();
   }
 });
@@ -1574,7 +1580,7 @@ document.getElementById('ctrl-table').addEventListener('change', e => {
   if (!c) return;
   if (!c.objStatus) c.objStatus = {};
   if (el.value) c.objStatus[el.dataset.objKey] = el.value; else delete c.objStatus[el.dataset.objKey];
-  applyRollup(c);
+  applyRollup(c); trackControlUpdate();
   saveState(); renderTracker(); renderDashboard();
 });
 
@@ -1876,6 +1882,7 @@ document.getElementById('panel-overlap').addEventListener('click', e => {
 
 // ===== Export XLSX =====
 document.getElementById('export-xlsx').addEventListener('click', () => {
+  track('assessment_exported'); track('workbook_downloaded');
   const wb = XLSX.utils.book_new();
   
   // Control Tracker sheet
@@ -1971,6 +1978,7 @@ document.getElementById('export-xlsx').addEventListener('click', () => {
 
 // ===== Export JSON =====
 document.getElementById('export-json').addEventListener('click', () => {
+  track('assessment_exported');
   const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

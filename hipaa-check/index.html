@@ -281,7 +281,7 @@ quiz.addEventListener('click', function(e){
   var i = +b.dataset.i;
   answers[i] = +b.dataset.v;
   b.parentNode.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', x===b ? 'true':'false'); });
-  if(!started){ started = true; track('gapcheck_started'); }
+  if(!started){ started = true; track('hipaa_started'); }
   updateProgress();
 });
 
@@ -360,7 +360,7 @@ document.getElementById('showResult').addEventListener('click', function(){
     });
   }
   resultText = lines.join('\n');
-  track('gapcheck_result_' + (cls==='r-crit'?'high':(cls==='r-warn'?'gaps':'ok')));
+  track('hipaa_completed'); track('results_generated');
 
   var r = document.getElementById('result');
   r.classList.add('show');
@@ -401,7 +401,7 @@ document.getElementById('captureForm').addEventListener('submit', function(e){
   send.disabled = true; status.textContent = 'Sending…';
   fetch(FORM_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(payload) })
     .then(function(r){
-      if (r.ok) { document.getElementById('captureForm').innerHTML = '<div class="cap-done">✓ Thanks — I’ll email your prioritized action plan shortly.</div>'; track('gapcheck_lead_submit'); }
+      if (r.ok) { document.getElementById('captureForm').innerHTML = '<div class="cap-done">✓ Thanks — I’ll email your prioritized action plan shortly.</div>'; track('action_plan_requested'); }
       else { status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; }
     })
     .catch(function(){ status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; });
