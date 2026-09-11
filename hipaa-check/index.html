@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
-<title>HIPAA Documentation Gap Check — Free, 2-Minute Self-Assessment</title>
-<meta name="description" content="Would your HIPAA documentation survive an OCR request? A free, private, 2-minute self-check for small healthcare practices and business associates. Nothing collected — runs entirely in your browser.">
+<title>HIPAA Documentation Support</title>
+<meta name="description" content="HIPAA documentation support for independent healthcare practices: review your current documentation, identify what needs attention, and agree practical next steps with a healthcare information security professional. Optional 2-minute self-check runs in your browser.">
 <link rel="canonical" href="https://ansrd.io/hipaa-check/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ansrd.io/hipaa-check/">
-<meta property="og:title" content="Would your HIPAA documentation survive an OCR request?">
-<meta property="og:description" content="A free, private, 2-minute documentation gap-check for small practices and business associates. No signup, nothing collected.">
+<meta property="og:title" content="HIPAA documentation support for independent practices">
+<meta property="og:description" content="Review your HIPAA documentation, identify what needs attention, and agree practical next steps. Optional 2-minute self-check, no signup, runs in your browser.">
 <meta property="og:image" content="https://ansrd.io/og-image.svg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -48,9 +48,6 @@ header .inner a.back:hover{color:var(--teal)}
 .trust{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:16px;display:flex;flex-wrap:wrap;gap:6px 16px}
 .trust b{color:var(--ink);font-weight:600}
 
-.fearbox{background:var(--crit-bg);border:1px solid transparent;border-left:4px solid var(--crit);border-radius:10px;padding:16px 20px;margin:26px 0 8px;max-width:100%}
-.fearbox strong{color:var(--crit)}
-.fearbox p{font-size:.94rem;line-height:1.55}
 
 .progress{position:sticky;top:57px;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);padding:12px 0;margin-top:20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:14px}
 .progress .bar{flex:1;height:6px;background:var(--hair);border-radius:4px;overflow:hidden}
@@ -87,6 +84,11 @@ header .inner a.back:hover{color:var(--teal)}
 .score-card.r-crit .band{color:var(--crit)}.score-card.r-warn .band{color:var(--warn)}.score-card.r-good .band{color:var(--good)}
 .score-card .headline{font-size:1.5rem;font-weight:600;margin:8px 0 4px;letter-spacing:-.01em}
 .score-card .sub{color:var(--muted);font-size:.95rem;max-width:48ch;margin:0 auto}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.hero-note{font-size:.9rem;color:var(--muted);margin-top:16px;max-width:60ch;line-height:1.5}
+.result-title{font-size:1.55rem;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
+.result-note{color:var(--muted);font-size:.92rem;max-width:60ch;margin:0 0 18px;line-height:1.5}
+.cap-disc{display:block;font-family:-apple-system,system-ui,sans-serif;font-weight:400;font-size:.78rem;color:var(--muted);margin-top:8px;text-transform:none;letter-spacing:0;line-height:1.45;text-align:left}
 .gaps{margin:22px 0}
 .gaps h2{font-size:1.15rem;margin-bottom:4px}
 .gaps .intro{color:var(--muted);font-size:.92rem;margin-bottom:14px}
@@ -139,11 +141,16 @@ header .inner a.back:hover{color:var(--teal)}
 <main>
 <div class="wrap">
   <section class="hero">
-    <span class="eyebrow">HIPAA Documentation Gap Check</span>
-    <h1>Would your HIPAA documentation survive an OCR request?</h1>
-    <p class="lede">Eight questions, about two minutes. A plain-language look at whether your practice's HIPAA paperwork is actually defensible — or just "somewhere."</p>
+    <span class="eyebrow">HIPAA Documentation Support</span>
+    <h1>HIPAA documentation support for independent practices</h1>
+    <p class="lede">Review your current documentation, identify work that needs attention, and agree on practical next steps with a healthcare information security professional.</p>
+    <div class="hero-actions">
+      <a class="btn" id="heroBook" href="#">Book a free HIPAA documentation review</a>
+      <a class="btn btn-ghost" href="#quiz">Start the two-minute self-check</a>
+    </div>
+    <p class="hero-note">The free review is a 15-minute introductory conversation. Its output is a short next-step summary — not a completed risk analysis or a compliance guarantee. The self-check below is optional and runs entirely in your browser.</p>
     <div class="trust">
-      <span>✓ <b>Free</b></span><span>✓ <b>No sign-up</b></span><span>✓ <b>Nothing collected</b> — runs in your browser</span>
+      <span>✓ <b>Free</b></span><span>✓ <b>No sign-up</b></span><span>✓ <b>Runs in your browser</b></span>
     </div>
   </section>
 
@@ -154,15 +161,13 @@ header .inner a.back:hover{color:var(--teal)}
 
   <section id="quiz" aria-label="HIPAA documentation questions"></section>
 
-  <div class="fearbox">
-    <p><strong>Why this matters right now:</strong> The HHS Office for Civil Rights has an active <em>Risk Analysis Initiative</em> — and it's settling with <strong>small</strong> practices, not just hospitals ($25,000–$350,000 per case). A missing or incomplete risk analysis is the single most-cited HIPAA Security Rule violation. The paperwork is what they ask for first.</p>
-  </div>
-
   <div class="submit-row">
     <button class="btn" id="showResult" disabled>See my result</button>
   </div>
 
   <section class="result" id="result" aria-live="polite">
+    <h2 class="result-title">Your documentation review summary</h2>
+    <p class="result-note">This reflects your self-reported answers and points to areas that may need attention. It is an indicative self-check, not a completed risk analysis or a compliance determination.</p>
     <div class="score-card" id="scoreCard">
       <div class="band" id="scoreBand"></div>
       <div class="headline" id="scoreHead"></div>
@@ -170,20 +175,20 @@ header .inner a.back:hover{color:var(--teal)}
     </div>
     <div class="gaps" id="gapList"></div>
     <div class="cta">
-      <span class="eyebrow">Done for you</span>
-      <h2 id="ctaHead">Close the gaps before OCR asks.</h2>
-      <p>These are exactly the items an auditor requests first. I help small practices and business associates turn scattered paperwork into an audit-ready record — the risk analysis, policies, BAAs, and evidence, done for you and kept current. Not software to learn.</p>
-      <a class="btn" id="bookBtn" href="#">Book a free review →</a>
-      <div class="fineprint">No obligation. If your documentation is already solid, I'll tell you.</div>
+      <span class="eyebrow">Next step</span>
+      <h2 id="ctaHead">Discuss these results in a free HIPAA documentation review.</h2>
+      <p>A 15-minute conversation with a healthcare information security professional: we walk through what you have, what needs attention, and a practical next step. No obligation. Any full risk analysis, policy drafting, or remediation would be scoped separately if you want it.</p>
+      <a class="btn" id="bookBtn" href="#">Book a free HIPAA documentation review</a>
+      <div class="fineprint">If your documentation is already in good shape, I'll tell you.</div>
     </div>
     <form class="capture" id="captureForm">
-      <div class="cap-head">Want the fixes, not just the gaps? Share your results and I&rsquo;ll email you a <strong>prioritized action plan</strong> to close them &mdash; free, no obligation.</div>
+      <div class="cap-head">Prefer email? Send your review summary and request a free HIPAA documentation review.<span class="cap-disc">What's sent: the review summary above (the areas flagged), plus the name, email, and practice you enter here. No individual answers beyond that, and no patient information &mdash; please don't include any.</span></div>
       <div class="cap-grid">
         <input type="text" id="capName" placeholder="Your name (optional)" autocomplete="name">
         <input type="email" id="capEmail" placeholder="Email *" autocomplete="email" required>
       </div>
       <input type="text" id="capPractice" placeholder="Practice / organization (optional)">
-      <button type="submit" class="btn" id="capSend">Send my results &amp; get my plan &rarr;</button>
+      <button type="submit" class="btn" id="capSend">Send my summary and request a free review</button>
       <div class="cap-status" id="capStatus" role="status" aria-live="polite"></div>
     </form>
     <div class="submit-row"><button class="btn btn-ghost" id="againBtn">↻ Start over</button></div>
@@ -193,7 +198,7 @@ header .inner a.back:hover{color:var(--teal)}
 
 <footer class="foot">
   <div class="wrap">
-    <p>Indicative self-check based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. <strong>Not legal advice</strong> — confirm against your own risk analysis and counsel. <strong>Privacy:</strong> your answers are scored entirely in your browser and are never uploaded. If you choose to share your results for an action plan, they come only to us. We keep anonymous, cookieless usage counts (for example, that a check was completed) &mdash; never your answers or any personal data.<br>
+    <p>Indicative self-check based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. <strong>Not legal advice</strong> — confirm against your own risk analysis and counsel. <strong>Privacy:</strong> your answers are scored entirely in your browser and are never uploaded. If you choose to share your summary to request a review, it comes only to us. We keep anonymous, cookieless usage counts (for example, that a check was completed) &mdash; never your answers or any personal data.<br>
     Built by ANSRd · <a href="/app/">Full NIST 800-171 / CMMC + HIPAA tracker</a> · <a href="/">ansrd.io</a></p>
   </div>
 </footer>
@@ -215,17 +220,17 @@ var FORM_ENDPOINT = "https://formspree.io/f/xeajnano";
 var resultText = "";     // filled when results are shown, sent with the form
 
 var BOOK_MAILTO = "mailto:info@ansrd.io?subject=" + encodeURIComponent("HIPAA documentation review request") +
-  "&body=" + encodeURIComponent("Hi — I ran the HIPAA documentation gap check and would like a free 20-minute review.\n\nPractice / organization:\nRole:\nBiggest concern:\n");
+  "&body=" + encodeURIComponent("Hi — I ran the HIPAA documentation self-check and would like a free 15-minute review.\n\nPractice / organization:\nRole:\nWhat you'd like to look at first:\n");
 
 var QUESTIONS = [
   {q:"Do you have a written Security Risk Analysis completed or updated in the last 12 months?",
    cite:"§164.308(a)(1)(ii)(A) — Risk Analysis",
    name:"Current Security Risk Analysis",
-   why:"The #1 most-cited HIPAA violation and the focus of OCR's active enforcement initiative. 'We did one a few years ago' is a finding, not a defense."},
+   why:"The most commonly cited Security Rule gap. A risk analysis from a few years ago is usually not considered current; HIPAA expects it reviewed and kept up to date."},
   {q:"Do you have written HIPAA policies and procedures, reviewed within the last year?",
    cite:"§164.316 — Policies, Procedures & Documentation",
    name:"Current written policies & procedures",
-   why:"Written, current policies are required — and they're the first thing an auditor asks to see. Verbal understanding doesn't count."},
+   why:"Written, current policies are required under the Security Rule, and they're typically the first documents requested in a review. Verbal understanding doesn't count."},
   {q:"Do you have a signed Business Associate Agreement with every vendor that touches PHI (billing, IT, cloud, email, shredding)?",
    cite:"§164.308(b)(1), §164.314(a) — Business Associate Contracts",
    name:"Complete Business Associate Agreements",
@@ -241,7 +246,7 @@ var QUESTIONS = [
   {q:"Do you have a written breach / incident response procedure, and know your 60-day notification duty?",
    cite:"§164.308(a)(6) + Breach Notification Rule",
    name:"Breach & incident response plan",
-   why:"Improvising during an incident is how a small event becomes a large penalty — and the notification clock is unforgiving."},
+   why:"A written, tested plan is what keeps a ransomware event or outage from turning into a reportable breach, and the 60-day notification window is short."},
   {q:"Do you document who can access PHI, and promptly remove access when someone leaves?",
    cite:"§164.308(a)(3)/(4) — Access Management",
    name:"Access management & offboarding",
@@ -276,6 +281,12 @@ function track(name){ try{ if(window.va) window.va('event', { name: name }); }ca
 var REF = (function(){ try{ return (new URLSearchParams(location.search).get('ref') || '').slice(0,60); }catch(e){ return ''; } })();
 var started = false;
 
+// Booking link: Calendly if set, else an email fallback. ?ref= rides the opt-in click only.
+function bookHrefStr(){ return BOOK_URL ? (BOOK_URL + (REF ? (BOOK_URL.indexOf('?') > -1 ? '&' : '?') + 'utm_source=hipaa-check&utm_content=' + encodeURIComponent(REF) : '')) : BOOK_MAILTO; }
+function applyBook(el){ if(!el) return; el.setAttribute('href', bookHrefStr()); if(BOOK_URL){ el.setAttribute('target','_blank'); el.setAttribute('rel','noopener'); } el.addEventListener('click', function(){ track('gapcheck_book_click'); }); }
+applyBook(document.getElementById('heroBook'));
+applyBook(document.getElementById('bookBtn'));
+
 quiz.addEventListener('click', function(e){
   var b = e.target.closest('button[data-i]');
   if(!b) return;
@@ -303,15 +314,15 @@ document.getElementById('showResult').addEventListener('click', function(){
   });
   var max = QUESTIONS.length*2;
   var band, cls, head, sub;
-  if(score <= 6){ band='High exposure'; cls='r-crit';
-    head='Your documentation likely would not hold up.';
-    sub='Several of the exact items OCR asks for first are missing. This is the profile that draws penalties — and it is very fixable.'; }
-  else if(score <= 12){ band='Gaps to close'; cls='r-warn';
-    head='You have a foundation, with real gaps.';
-    sub='Some key documentation is in place, but there are holes an auditor would find. Closing them now is far cheaper than explaining them later.'; }
+  if(score <= 6){ band='Several areas to address'; cls='r-crit';
+    head='Several core documents appear to be missing.';
+    sub='A number of the items HIPAA calls for are not yet in place. These are common to complete, and a documentation review can help you prioritise them.'; }
+  else if(score <= 12){ band='Some gaps to close'; cls='r-warn';
+    head='You have a foundation, with gaps.';
+    sub='Some key documentation is in place and some needs attention. A review can help you sort out what to complete first.'; }
   else { band='Reasonably documented'; cls='r-good';
-    head='You are in good shape — keep it current.';
-    sub='Your core documentation appears in place. The main risk now is drift: HIPAA requires it stay current and available, so an annual refresh matters.'; }
+    head='Your core documentation appears in place.';
+    sub='The main task now is keeping it current and available, since HIPAA requires documentation stay up to date. An annual refresh helps.'; }
 
   var card = document.getElementById('scoreCard');
   card.className = 'score-card ' + cls;
@@ -322,11 +333,11 @@ document.getElementById('showResult').addEventListener('click', function(){
   var gaps = document.getElementById('gapList');
   var need = miss.length + partial.length;
   if(need === 0){
-    gaps.innerHTML = '<div class="none-note">✓ You answered yes to all eight areas. Strong — the work now is keeping it reviewed and dated so it stays defensible.</div>';
-    document.getElementById('ctaHead').textContent = 'Keep it audit-ready.';
+    gaps.innerHTML = '<div class="none-note">✓ You answered yes to all eight areas. Strong — the work now is keeping it reviewed and dated so it stays current.</div>';
+    document.getElementById('ctaHead').textContent = 'Discuss keeping it current in a free review.';
   } else {
-    var html = '<h2>' + need + ' area' + (need>1?'s':'') + ' to close</h2>' +
-      '<p class="intro">These are the items an OCR auditor requests first, in priority order.</p>';
+    var html = '<h2>' + need + ' area' + (need>1?'s':'') + ' to review</h2>' +
+      '<p class="intro">These are the areas to review first, in priority order.</p>';
     miss.concat(partial).forEach(function(item){
       var isMiss = miss.indexOf(item) > -1;
       html += '<div class="gap ' + (isMiss?'miss':'partial') + '">' +
@@ -335,19 +346,8 @@ document.getElementById('showResult').addEventListener('click', function(){
         '<p>' + item.why + '</p></div>';
     });
     gaps.innerHTML = html;
-    document.getElementById('ctaHead').textContent = 'Close these ' + need + ' gap' + (need>1?'s':'') + ' before OCR asks.';
+    document.getElementById('ctaHead').textContent = 'Discuss these results in a free HIPAA documentation review.';
   }
-
-  var bookBtn = document.getElementById('bookBtn');
-  if (BOOK_URL) {
-    var bookHref = BOOK_URL + (REF ? (BOOK_URL.indexOf('?') > -1 ? '&' : '?') + 'utm_source=hipaa-check&utm_content=' + encodeURIComponent(REF) : '');
-    bookBtn.setAttribute('href', bookHref);
-    bookBtn.setAttribute('target', '_blank');
-    bookBtn.setAttribute('rel', 'noopener');
-  } else {
-    bookBtn.setAttribute('href', BOOK_MAILTO);
-  }
-  bookBtn.onclick = function(){ track('gapcheck_book_click'); };
 
   // Capture the result text so the "Send my results" form can include it
   var lines = ['HIPAA gap-check result: ' + band + ' — ' + score + ' / ' + max, ''];
@@ -389,7 +389,7 @@ document.getElementById('captureForm').addEventListener('submit', function(e){
     email: email,
     practice: document.getElementById('capPractice').value.trim(),
     ref: REF,
-    _subject: 'HIPAA gap-check lead — send action plan' + (REF ? ' [' + REF + ']' : ''),
+    _subject: 'HIPAA documentation review request' + (REF ? ' [' + REF + ']' : ''),
     results: resultText
   };
   if (!FORM_ENDPOINT) {
@@ -402,7 +402,7 @@ document.getElementById('captureForm').addEventListener('submit', function(e){
   send.disabled = true; status.textContent = 'Sending…';
   fetch(FORM_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(payload) })
     .then(function(r){
-      if (r.ok) { document.getElementById('captureForm').innerHTML = '<div class="cap-done">✓ Thanks — I’ll email your prioritized action plan shortly.</div>'; track('action_plan_requested'); }
+      if (r.ok) { document.getElementById('captureForm').innerHTML = '<div class="cap-done">✓ Thanks — I’ll follow up shortly about a free documentation review.</div>'; track('action_plan_requested'); }
       else { status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; }
     })
     .catch(function(){ status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; });
