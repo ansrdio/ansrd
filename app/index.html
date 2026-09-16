@@ -317,6 +317,7 @@ mark{background:#fdf0c8;color:inherit;padding:0 1px;border-radius:2px}
 .obj-count{font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-left:4px}
 tr.obj-row>td{background:#fbfaf7;padding:0 12px 12px;border-bottom:1px solid #eee}
 tr.obj-row.hidden{display:none}
+.na-warn{border:1.5px solid var(--gap)!important;background:#fdecea!important}
 .obj-panel{border-left:3px solid var(--teal);padding:10px 0 4px 14px;margin-top:2px}
 .obj-panel .obj-head{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .obj-item{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px dotted #e3e3e3}
@@ -356,7 +357,7 @@ tr.obj-row.hidden{display:none}
       <span id="save-indicator" class="save-indicator" title="Your data is saved in this browser only — use Export to back it up">✓ Saved locally</span>
       <select id="scope-level" aria-label="CMMC level scope" title="Filter the tracker and dashboard by CMMC level" style="font-family:var(--mono);font-size:.72rem;padding:7px 10px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font-weight:600">
         <option value="L2">Level 2 · 110 controls</option>
-        <option value="L1">Level 1 · 17 controls</option>
+        <option value="L1">Level 1 · 15 requirements</option>
       </select>
       <span class="export-group" title="Download your progress as a file — your backup, and the way to move data between devices.">
         <span class="grp-label" aria-hidden="true">Back&nbsp;up</span>
@@ -375,25 +376,26 @@ tr.obj-row.hidden{display:none}
     <div class="empty-hint" id="empty-hint" style="display:none">Your progress saves automatically in this browser — <strong>nothing is uploaded</strong>. Set each control's status in the <a data-goto="tracker">Control Tracker</a>; use <a id="hint-export">Export</a> to back it up. See <a data-goto="privacy">Privacy &amp; Your Data</a>.</div>
     <div class="dash-grid">
       <div class="dash-card score-card"><div class="num" id="score-pct">0%</div><div class="lbl">Readiness Score</div></div>
-      <div class="dash-card" title="NIST SP 800-171 DoD Assessment (Basic) self-assessment score: start at 110, subtract each unimplemented control's weighted value (1, 3, or 5 points) per the DoD Assessment Methodology v1.2.1. Range: −203 to 110. This is a self-assessment estimate — not an official SPRS submission.">
+      <div class="dash-card" id="sprs-card" title="NIST SP 800-171 DoD Assessment (Basic) self-assessment score: start at 110, subtract each unimplemented control's weighted value (1, 3, or 5 points) per the DoD Assessment Methodology v1.2.1. Range: −203 to 110. This is a self-assessment estimate — not an official SPRS submission. Applies to Level 2 (NIST SP 800-171) only.">
         <div class="num" id="sprs-score" style="color:var(--teal-deep)">110</div>
         <div class="lbl">SPRS Score (est.) <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none" aria-label="DoD Assessment Methodology (opens in new tab)">ⓘ</a></div>
       </div>
-      <div class="dash-card"><div class="num" id="count-met">0</div><div class="lbl">Met</div></div>
-      <div class="dash-card"><div class="num" id="count-partial">0</div><div class="lbl">Partial</div></div>
+      <div class="dash-card"><div class="num" id="count-met">0</div><div class="lbl" id="lbl-met">Met</div></div>
+      <div class="dash-card"><div class="num" id="count-partial">0</div><div class="lbl" id="lbl-partial">Partial</div></div>
     </div>
     <div class="dash-grid3">
-      <div class="dash-card"><div class="num" id="count-gap">0</div><div class="lbl">Gap</div></div>
+      <div class="dash-card" id="card-gap"><div class="num" id="count-gap">0</div><div class="lbl" id="lbl-gap">Gap</div></div>
       <div class="dash-card"><div class="num" id="count-notstarted">0</div><div class="lbl">Not Started</div></div>
-      <div class="dash-card"><div class="num" id="count-total">110</div><div class="lbl">Controls in Scope</div></div>
+      <div class="dash-card"><div class="num" id="count-total">110</div><div class="lbl" id="lbl-total">Controls in Scope</div></div>
     </div>
     <p id="sprs-note" style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:8px">SPRS score is a self-assessment estimate over all 110 controls per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal)">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> — not an official SPRS submission.</p>
+    <p id="l1-note" style="display:none;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:8px">CMMC <strong>Level 1</strong> is assessed against the <strong>15 safeguarding requirements of FAR 52.204-21</strong> for the protection of Federal Contract Information (FCI). Each requirement is evaluated through its <strong>assessment objectives</strong> (from the CMMC Level 1 Assessment Guide) and rolls up to a finding of <strong>MET</strong>, <strong>NOT MET</strong>, or <strong>N/A</strong>; <em>Not started</em> is an internal pre-assessment state, not a CMMC finding. Level 1 requires an <strong>annual self-assessment and annual affirmation</strong>, entered into SPRS. There is <strong>no SPRS numerical score</strong> at Level 1 (the −203 to 110 methodology applies to Level 2 / NIST SP 800-171), and <strong>CMMC Level 1 POA&amp;Ms are not permitted</strong> (this does not stop you from keeping internal corrective-action or operational remediation plans). The Readiness % below counts MET and documented-N/A requirements as satisfied; it is an application-generated indicator, not an official CMMC or SPRS score.</p>
     <p id="ssp-warning" style="display:none;font-family:var(--mono);font-size:.7rem;color:var(--gap);margin-bottom:8px">⚠ 3.12.4 (System Security Plan) is not Met. Per the DoD methodology, without an SSP an assessment cannot be completed — the SSP is a prerequisite, not a point deduction.</p>
     <div class="review-summary" id="review-summary"></div>
     <h3 style="margin:24px 0 12px;font-size:1.1rem">By Family</h3>
     <div class="table-wrap">
       <table class="family-table" id="family-summary">
-        <thead><tr><th>Family</th><th>Controls</th><th>Met</th><th>Partial</th><th>Gap</th><th>Not Started</th><th>Score</th><th>SPRS Pts Lost</th></tr></thead>
+        <thead id="family-thead"><tr><th>Family</th><th>Controls</th><th>Met</th><th>Partial</th><th>Gap</th><th>Not Started</th><th>Score</th><th>SPRS Pts Lost</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -429,7 +431,7 @@ tr.obj-row.hidden{display:none}
     </div>
     <div class="table-wrap">
       <table class="ctrl-table" id="ctrl-table">
-        <thead><tr><th>Family</th><th>ID</th><th title="SPRS weight per DoD Assessment Methodology Annex A">Wt</th><th>Requirement</th><th title="Indicative mapping to Microsoft capabilities (Defender, Intune, Entra ID, Purview) — see disclaimer for sources">Microsoft Stack</th><th title="Indicative HIPAA Security Rule overlap (45 CFR Part 164) — one-way and not audit-grade; see the Overlap tab">HIPAA</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th title="Last reviewed, how often it should be reviewed, and the resulting next-due date. Frequencies are suggestions — change any of them.">Review cycle</th></tr></thead>
+        <thead id="ctrl-thead"><tr><th>Family</th><th>ID</th><th title="SPRS weight per DoD Assessment Methodology Annex A">Wt</th><th>Requirement</th><th title="Indicative mapping to Microsoft capabilities (Defender, Intune, Entra ID, Purview) — see disclaimer for sources">Microsoft Stack</th><th title="Indicative HIPAA Security Rule overlap (45 CFR Part 164) — one-way and not audit-grade; see the Overlap tab">HIPAA</th><th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th><th title="Last reviewed, how often it should be reviewed, and the resulting next-due date. Frequencies are suggestions — change any of them.">Review cycle</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -449,19 +451,27 @@ tr.obj-row.hidden{display:none}
 
   <!-- POA&M Panel -->
   <div class="panel" id="panel-poam" role="tabpanel" aria-label="Plan of Action and Milestones">
-    <p style="color:var(--muted);margin-bottom:16px;font-size:.9rem">Track gaps, assign owners, set target dates, and monitor remediation progress.</p>
-    <div class="table-wrap">
-      <table class="poam-table" id="poam-table">
-        <thead><tr><th>#</th><th>Control ID</th><th>Weakness / Gap</th><th>Owner</th><th>Remediation Action</th><th>Target Date</th><th>Status</th><th></th></tr></thead>
-        <tbody></tbody>
-      </table>
+    <div id="poam-l1-notice" style="display:none;background:var(--gap-bg,#fdecea);border:1px solid var(--gap);border-left:4px solid var(--gap);border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:.88rem;color:var(--ink)">
+      <strong>CMMC Level 1 POA&amp;Ms are not permitted.</strong> Level 1 requirements are assessed MET / NOT MET / N/A across the 15 FAR 52.204-21 requirements; every requirement must be MET (or a documented N/A) for Level 1. A NOT MET requirement is an unresolved gap to remediate before Level 1 is met — track it in the Control Tracker, not here. This restriction applies to the formal CMMC POA&amp;M only; you can still keep internal corrective-action or operational remediation plans. The POA&amp;M tab here is a Level 2 (NIST SP 800-171) feature; switch the level selector to Level 2 to use it.
     </div>
-    <button class="add-row-btn" id="add-poam-row">+ Add POA&amp;M item</button>
+    <div id="poam-content">
+      <p style="color:var(--muted);margin-bottom:16px;font-size:.9rem">Track gaps, assign owners, set target dates, and monitor remediation progress.</p>
+      <div class="table-wrap">
+        <table class="poam-table" id="poam-table">
+          <thead><tr><th>#</th><th>Control ID</th><th>Weakness / Gap</th><th>Owner</th><th>Remediation Action</th><th>Target Date</th><th>Status</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" id="add-poam-row">+ Add POA&amp;M item</button>
+    </div>
   </div>
 
   <!-- Roadmap Panel -->
   <div class="panel" id="panel-roadmap" role="tabpanel" aria-label="Compliance Roadmap">
-    <p style="color:var(--muted);margin-bottom:16px;font-size:.9rem">A phased path to compliance, generated from your open POA&amp;M items — sequenced by target date, highest-weight (SPRS) gaps first within each phase.</p>
+    <div id="roadmap-l1-note" style="display:none;background:var(--gap-bg,#fdecea);border:1px solid var(--gap);border-left:4px solid var(--gap);border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:.88rem;color:var(--ink)">
+      <strong>The roadmap is a Level 2 feature.</strong> It is generated from formal CMMC POA&amp;M items, which are not permitted at CMMC Level 1 (keeping internal corrective-action plans is still fine). At Level 1, remediate any NOT MET requirement directly in the Control Tracker until all 15 FAR 52.204-21 requirements are MET or a documented N/A.
+    </div>
+    <p id="roadmap-intro" style="color:var(--muted);margin-bottom:16px;font-size:.9rem">A phased path to compliance, generated from your open POA&amp;M items — sequenced by target date, highest-weight (SPRS) gaps first within each phase.</p>
     <div id="roadmap-content"></div>
   </div>
 
@@ -763,9 +773,109 @@ function computeSprs(controls){
   return Math.max(score, -203);
 }
 
-// ===== CMMC Level 1 — the 17 controls derived from FAR 52.204-21 =====
-// Marked with an asterisk in Annex A of the DoD Assessment Methodology.
+// ===== CMMC Level 1 crosswalk set =====
+// The 17 NIST SP 800-171 Rev. 2 controls that the 15 FAR 52.204-21 safeguarding
+// requirements crosswalk to (FAR (ix) maps to three: 3.10.3/3.10.4/3.10.5). This set is
+// used ONLY to tag those controls in the Level 2 view; Level 1 itself is assessed against
+// the 15 FAR requirements in FAR_L1 below, not against this 800-171 subset.
 const CMMC_L1 = new Set(["3.1.1","3.1.2","3.1.20","3.1.22","3.5.1","3.5.2","3.8.3","3.10.1","3.10.3","3.10.4","3.10.5","3.13.1","3.13.5","3.14.1","3.14.2","3.14.4","3.14.5"]);
+
+// ===== CMMC Level 1 — the 15 safeguarding requirements of FAR 52.204-21(b)(1) =====
+// Requirement text is verbatim from FAR 52.204-21(b)(1)(i)–(xv) (acquisition.gov, public domain).
+// Sources of truth:
+//   • Program facts — 15 requirements for protecting Federal Contract Information (FCI), annual
+//     self-assessment and annual affirmation, results entered into SPRS, and CMMC Level 1 POA&Ms
+//     not permitted: DoW CMMC About page.
+//   • Assessment model — the MET / NOT MET / NOT APPLICABLE finding scale, objective-level findings,
+//     and roll-up logic (one NOT MET objective ⇒ requirement NOT MET; an N/A objective counts like MET):
+//     CMMC Level 1 Assessment Guide v2.13 (objectives are the NIST SP 800-171A determination statements).
+// There is no SPRS numerical score at Level 1 (that methodology is Level 2 / NIST SP 800-171). `xw` is a
+// reference crosswalk to the NIST SP 800-171 Rev. 2 controls each requirement maps to — reference only,
+// not an L1 assessment unit. `guidance` is an ANSRd plain-language note, not verbatim DoD/CMMC text.
+const FAR_L1 = [
+  {id:"AC.L1-b.1.i",  ref:"(i)",  domain:"Access Control", xw:["3.1.1"],
+   req:"Limit information system access to authorized users, processes acting on behalf of authorized users, or devices (including other information systems).",
+   guidance:"Ensure only approved people, service/system accounts, and devices can access systems that handle FCI, based on identity."},
+  {id:"AC.L1-b.1.ii", ref:"(ii)", domain:"Access Control", xw:["3.1.2"],
+   req:"Limit information system access to the types of transactions and functions that authorized users are permitted to execute.",
+   guidance:"Restrict each authorized user to the transactions and functions their role permits (least privilege)."},
+  {id:"AC.L1-b.1.iii",ref:"(iii)",domain:"Access Control", xw:["3.1.20"],
+   req:"Verify and control/limit connections to and use of external information systems.",
+   guidance:"Know and control how your systems connect to and use external systems (partner networks, cloud, personal devices)."},
+  {id:"AC.L1-b.1.iv", ref:"(iv)", domain:"Access Control", xw:["3.1.22"],
+   req:"Control information posted or processed on publicly accessible information systems.",
+   guidance:"Review and control what is posted to or processed on publicly accessible systems (e.g., your website) so FCI is not exposed."},
+  {id:"IA.L1-b.1.v",  ref:"(v)",  domain:"Identification and Authentication", xw:["3.5.1"],
+   req:"Identify information system users, processes acting on behalf of users, or devices.",
+   guidance:"Assign a unique identifier to each user, process, and device before granting access."},
+  {id:"IA.L1-b.1.vi", ref:"(vi)", domain:"Identification and Authentication", xw:["3.5.2"],
+   req:"Authenticate (or verify) the identities of those users, processes, or devices, as a prerequisite to allowing access to organizational information systems.",
+   guidance:"Verify identities (passwords, tokens, certificates, etc.) before allowing access."},
+  {id:"MP.L1-b.1.vii",ref:"(vii)",domain:"Media Protection", xw:["3.8.3"],
+   req:"Sanitize or destroy information system media containing Federal Contract Information before disposal or release for reuse.",
+   guidance:"Wipe or destroy media (drives, paper, disks) containing FCI before disposing of it or reusing it."},
+  {id:"PE.L1-b.1.viii",ref:"(viii)",domain:"Physical Protection", xw:["3.10.1"],
+   req:"Limit physical access to organizational information systems, equipment, and the respective operating environments to authorized individuals.",
+   guidance:"Limit who can physically enter areas holding systems, equipment, and operating environments to authorized individuals."},
+  {id:"PE.L1-b.1.ix", ref:"(ix)", domain:"Physical Protection", xw:["3.10.3","3.10.4","3.10.5"],
+   req:"Escort visitors and monitor visitor activity; maintain audit logs of physical access; and control and manage physical access devices.",
+   guidance:"Escort and monitor visitors, keep audit logs of physical access, and control/manage physical access devices (keys, badges, locks). One Level 1 requirement; crosswalks to NIST 3.10.3, 3.10.4 and 3.10.5."},
+  {id:"SC.L1-b.1.x",  ref:"(x)",  domain:"System and Communications Protection", xw:["3.13.1"],
+   req:"Monitor, control, and protect organizational communications (i.e., information transmitted or received by organizational information systems) at the external boundaries and key internal boundaries of the information systems.",
+   guidance:"Monitor, control, and protect communications at your network's external boundary and key internal boundaries (e.g., firewalls)."},
+  {id:"SC.L1-b.1.xi", ref:"(xi)", domain:"System and Communications Protection", xw:["3.13.5"],
+   req:"Implement subnetworks for publicly accessible system components that are physically or logically separated from internal networks.",
+   guidance:"Place publicly accessible components (e.g., web servers) on subnetworks separated from your internal network (e.g., a DMZ)."},
+  {id:"SI.L1-b.1.xii",ref:"(xii)",domain:"System and Information Integrity", xw:["3.14.1"],
+   req:"Identify, report, and correct information and information system flaws in a timely manner.",
+   guidance:"Identify, report, and fix system flaws (patching, vulnerability remediation) in a timely manner."},
+  {id:"SI.L1-b.1.xiii",ref:"(xiii)",domain:"System and Information Integrity", xw:["3.14.2"],
+   req:"Provide protection from malicious code at appropriate locations within organizational information systems.",
+   guidance:"Deploy anti-malware protection at appropriate points across your systems."},
+  {id:"SI.L1-b.1.xiv",ref:"(xiv)",domain:"System and Information Integrity", xw:["3.14.4"],
+   req:"Update malicious code protection mechanisms when new releases are available.",
+   guidance:"Keep anti-malware definitions and mechanisms updated as new releases become available."},
+  {id:"SI.L1-b.1.xv", ref:"(xv)", domain:"System and Information Integrity", xw:["3.14.5"],
+   req:"Perform periodic scans of the information system and real-time scans of files from external sources as files are downloaded, opened, or executed.",
+   guidance:"Run periodic system scans and real-time scans of files from external sources when downloaded, opened, or executed."}
+];
+const FAR_L1_IDS = FAR_L1.map(f => f.id);
+
+// Level 1 assessment objectives = the NIST SP 800-171A determination statements for each
+// requirement's crosswalked control(s) — the same objectives the CMMC Level 1 Assessment Guide uses.
+// (OBJECTIVES/objsFor are defined below; these run only at render/migrate time, after parse.)
+function farDef(id) { return FAR_L1.find(x => x.id === id); }
+function farObjectives(id) {
+  const def = farDef(id);
+  if (!def) return [];
+  const list = [];
+  def.xw.forEach(ctrl => objsFor(ctrl).forEach(o => list.push({ ctrl, k: o.k, key: ctrl + '[' + o.k + ']', t: o.t })));
+  return list;
+}
+// Roll requirement status up from its objectives, per the CMMC Level 1 Assessment Guide v2.13:
+//   N/A         → requirement-level N/A (the requirement itself does not apply; rationale documented);
+//   Not Met     → one or more applicable objectives are NOT MET;
+//   Met         → all objectives are MET or N/A;
+//   Not Started → objectives not yet fully assessed (internal pre-assessment state only, not a CMMC finding).
+function farRollup(f) {
+  if (f.reqNa) return 'N/A';
+  const objs = farObjectives(f.id);
+  const st = f.objStatus || {};
+  const vals = objs.map(o => st[o.key] || '');
+  if (vals.some(v => v === 'Not Met')) return 'Not Met';
+  if (vals.length && vals.every(v => v === 'Met' || v === 'N/A')) return 'Met';
+  return 'Not Started';
+}
+function applyFarRollup(f) { f.status = farRollup(f); }
+function farObjProgress(f) {
+  const objs = farObjectives(f.id);
+  const st = f.objStatus || {};
+  return {
+    met: objs.filter(o => st[o.key] === 'Met').length,
+    na: objs.filter(o => st[o.key] === 'N/A').length,
+    total: objs.length
+  };
+}
 
 // ===== Microsoft-stack mapping (Defender / Intune / Entra ID / Purview) =====
 // Authored from: Microsoft Product Placemat for CMMC 2.0, Microsoft Technical Reference Guide
@@ -1221,6 +1331,11 @@ function getDefaultState() {
       freq: defaultFreq(c.id)
     })),
     poam: [],
+    far: FAR_L1.map(f => ({
+      id: f.id, status: 'Not Started', owner: '', notes: '', evidence: '',
+      evidenceItems: [], lastReviewed: '', freq: 'A',
+      objStatus: {}, objNa: {}, reqNa: false, reqNaRationale: ''
+    })),
     hipaaGaps: {},
     accessReview: DEFAULT_REVIEW_ITEMS.map((item, i) => ({
       id: i + 1,
@@ -1236,6 +1351,32 @@ function getDefaultState() {
 // Bring older saved/imported state up to the current schema without losing anything.
 function migrateState(s) {
   if (s && (!s.hipaaGaps || typeof s.hipaaGaps !== 'object')) s.hipaaGaps = {};
+  // Level 1 (FAR 52.204-21) assessment state — separate from the 110-control Level 2 model.
+  // Rebuild against the canonical 15 requirements so older files (which had no `far`, or an
+  // obsolete 17-item Level 1 subset) load without error and carry forward any saved fields.
+  if (s) {
+    const byId = {};
+    if (Array.isArray(s.far)) s.far.forEach(f => { if (f && f.id) byId[f.id] = f; });
+    s.far = FAR_L1.map(f => {
+      const p = byId[f.id] || {};
+      const item = {
+        id: f.id,
+        status: 'Not Started',
+        owner: p.owner || '',
+        notes: p.notes || '',
+        evidence: p.evidence || '',
+        evidenceItems: Array.isArray(p.evidenceItems) ? p.evidenceItems : (p.evidence ? [p.evidence] : []),
+        lastReviewed: p.lastReviewed || '',
+        freq: (p.freq && FREQ_LABELS[p.freq]) ? p.freq : 'A',
+        objStatus: (p.objStatus && typeof p.objStatus === 'object') ? p.objStatus : {},
+        objNa: (p.objNa && typeof p.objNa === 'object') ? p.objNa : {},
+        reqNa: p.reqNa === true,
+        reqNaRationale: p.reqNaRationale || ''
+      };
+      applyFarRollup(item); // requirement status is derived from its objectives (or requirement-level N/A)
+      return item;
+    });
+  }
   if (s && Array.isArray(s.controls)) {
     s.controls.forEach(c => {
       if (!c.objStatus || typeof c.objStatus !== 'object') c.objStatus = {};
@@ -1279,11 +1420,58 @@ const SCOPE_KEY = 'ansrd-scope-level';
 let scopeLevel = localStorage.getItem(SCOPE_KEY) === 'L1' ? 'L1' : 'L2';
 
 function inScope(c) { return scopeLevel === 'L2' || CMMC_L1.has(c.id); }
+const isL1 = () => scopeLevel === 'L1';
+
+// Tracker column header — Level 2 (110 controls) vs Level 1 (15 FAR requirements).
+const THEAD_L2 = document.getElementById('ctrl-thead').innerHTML;
+const THEAD_L1 = '<tr><th>Domain</th><th>Practice</th><th title="FAR 52.204-21(b)(1) subparagraph">FAR §</th><th>Requirement</th>'
+  + '<th title="Reference crosswalk only — Microsoft capabilities that can help implement this safeguard. Not a CMMC requirement, assessment criterion, or evidence of compliance.">Microsoft Stack (ref)</th>'
+  + '<th title="Reference crosswalk only — indicative HIPAA Security Rule overlap. Not a CMMC requirement or evidence of compliance.">HIPAA (ref)</th>'
+  + '<th>Status</th><th>Owner</th><th>Notes</th><th>Evidence</th>'
+  + '<th title="Last reviewed, cadence, and next-due date. Level 1 requires at least an annual self-assessment.">Review cycle</th></tr>';
+function setTrackerHeader() { document.getElementById('ctrl-thead').innerHTML = isL1() ? THEAD_L1 : THEAD_L2; }
+
+// Family/status filter options differ by model (110 NIST families vs 6 FAR domains; 4-state vs MET/NOT MET).
+function populateFilters() {
+  const famSel = document.getElementById('filter-family');
+  const stSel = document.getElementById('filter-status');
+  const famVal = famSel.value, stVal = stSel.value;
+  if (isL1()) {
+    const doms = [...new Set(FAR_L1.map(f => f.domain))];
+    famSel.innerHTML = '<option value="">All Domains</option>' + doms.map(d => `<option value="${d}">${d}</option>`).join('');
+    stSel.innerHTML = '<option value="">All Statuses</option><option value="Met">Met</option><option value="Not Met">Not Met</option><option value="N/A">N/A</option><option value="Not Started">Not Started (internal)</option>';
+  } else {
+    const fam = [...new Set(CONTROLS.map(c => c.family))];
+    famSel.innerHTML = '<option value="">All Families</option>' + fam.map(f => `<option value="${f}">${f}</option>`).join('');
+    stSel.innerHTML = '<option value="">All Statuses</option><option value="Not Started">Not Started</option><option value="Gap">Gap</option><option value="Partial">Partial</option><option value="Met">Met</option>';
+  }
+  // preserve selection if still valid
+  if ([...famSel.options].some(o => o.value === famVal)) famSel.value = famVal;
+  if ([...stSel.options].some(o => o.value === stVal)) stSel.value = stVal;
+}
+
+// Show/hide the Level-1 vs Level-2 UI: the formal CMMC POA&M is not permitted at Level 1, and the roadmap is built from POA&Ms.
+function applyScopeUI() {
+  const l1 = isL1();
+  const notice = document.getElementById('poam-l1-notice');
+  const content = document.getElementById('poam-content');
+  if (notice) notice.style.display = l1 ? 'block' : 'none';
+  if (content) content.style.display = l1 ? 'none' : 'block';
+  const rmNote = document.getElementById('roadmap-l1-note');
+  const rmIntro = document.getElementById('roadmap-intro');
+  const rmContent = document.getElementById('roadmap-content');
+  if (rmNote) rmNote.style.display = l1 ? 'block' : 'none';
+  if (rmIntro) rmIntro.style.display = l1 ? 'none' : 'block';
+  if (rmContent) rmContent.style.display = l1 ? 'none' : 'block';
+  setTrackerHeader();
+  populateFilters();
+}
 
 document.getElementById('scope-level').value = scopeLevel;
 document.getElementById('scope-level').addEventListener('change', e => {
   scopeLevel = e.target.value === 'L1' ? 'L1' : 'L2';
   localStorage.setItem(SCOPE_KEY, scopeLevel);
+  applyScopeUI();
   renderDashboard();
   renderTracker();
 });
@@ -1329,7 +1517,88 @@ function sprsDeduction(c) {
   return sprsWeight(c.id);
 }
 
+// ===== Level 1 dashboard — MET / NOT MET / N/A over the 15 FAR requirements. No SPRS score. =====
+function renderDashboardL1() {
+  // Hide Level-2-only chrome; show the Level 1 explainer.
+  document.getElementById('sprs-card').style.display = 'none';
+  document.getElementById('sprs-note').style.display = 'none';
+  document.getElementById('ssp-warning').style.display = 'none';
+  document.getElementById('l1-note').style.display = 'block';
+  document.getElementById('card-gap').style.display = '';       // repurposed as the N/A tile
+  document.getElementById('lbl-total').textContent = 'Requirements in Scope';
+  document.getElementById('lbl-met').textContent = 'Met';
+  document.getElementById('lbl-partial').textContent = 'Not Met';
+  document.getElementById('lbl-gap').textContent = 'N/A';
+  document.getElementById('family-thead').innerHTML = '<tr><th>Domain</th><th>Requirements</th><th>Met</th><th>Not Met</th><th>N/A</th><th>Not Started</th><th>Readiness</th></tr>';
+
+  const total = FAR_L1.length; // 15
+  const met = state.far.filter(f => f.status === 'Met').length;
+  const notMet = state.far.filter(f => f.status === 'Not Met').length;
+  const na = state.far.filter(f => f.status === 'N/A').length;
+  const notStarted = state.far.filter(f => f.status === 'Not Started').length;
+
+  document.getElementById('count-met').textContent = met;
+  document.getElementById('count-partial').textContent = notMet;
+  document.getElementById('count-gap').textContent = na;
+  document.getElementById('count-notstarted').textContent = notStarted;
+  document.getElementById('count-total').textContent = total;
+  // Readiness counts MET and properly-documented N/A requirements as satisfied (unofficial indicator).
+  document.getElementById('score-pct').textContent = Math.round(((met + na) / total) * 100) + '%';
+
+  document.getElementById('empty-hint').style.display =
+    (met === 0 && notMet === 0 && na === 0) ? 'block' : 'none';
+
+  // Review-cycle summary over the 15 requirements
+  const rs = {overdue:0, soon:0, unset:0};
+  state.far.forEach(f => { const s = reviewState(f); if (rs[s] !== undefined) rs[s]++; });
+  const revEl = document.getElementById('review-summary');
+  if (rs.overdue || rs.soon || rs.unset) {
+    const bits = [];
+    if (rs.overdue) bits.push(`<a class="over" data-review="overdue">⚠ ${rs.overdue} review${rs.overdue>1?'s':''} overdue</a>`);
+    if (rs.soon) bits.push(`<a class="soon" data-review="soon">${rs.soon} due within 30 days</a>`);
+    if (rs.unset) bits.push(`<a class="unset" data-review="unset">${rs.unset} with no review date</a>`);
+    revEl.innerHTML = bits.join('<span style="color:var(--line)">·</span>');
+  } else {
+    revEl.innerHTML = '<span style="color:var(--met);font-weight:700">✓ All reviews up to date</span>';
+  }
+
+  // Domain breakdown (MET / NOT MET / N/A / Not Started, readiness %)
+  const doms = {};
+  FAR_L1.forEach((def, i) => {
+    const f = state.far[i];
+    if (!doms[def.domain]) doms[def.domain] = {total:0, Met:0, 'Not Met':0, 'N/A':0, 'Not Started':0};
+    doms[def.domain].total++;
+    doms[def.domain][f.status]++;
+  });
+  const tbody = document.querySelector('#family-summary tbody');
+  tbody.innerHTML = '';
+  Object.entries(doms).forEach(([name, d]) => {
+    const pct = Math.round(((d.Met + d['N/A']) / d.total) * 100);
+    tbody.innerHTML += `<tr>
+      <td style="font-weight:600">${name}</td>
+      <td>${d.total}</td>
+      <td><span class="pill pill-met">${d.Met}</span></td>
+      <td><span class="pill pill-gap">${d['Not Met']}</span></td>
+      <td><span class="pill pill-partial">${d['N/A']}</span></td>
+      <td><span class="pill pill-notstarted">${d['Not Started']}</span></td>
+      <td style="font-family:var(--mono);font-weight:600">${pct}%</td>
+    </tr>`;
+  });
+}
+
 function renderDashboard() {
+  if (isL1()) return renderDashboardL1();
+  // Restore Level 2 dashboard chrome (in case we came from Level 1)
+  document.getElementById('sprs-card').style.display = '';
+  document.getElementById('sprs-note').style.display = '';
+  document.getElementById('l1-note').style.display = 'none';
+  document.getElementById('card-gap').style.display = '';
+  document.getElementById('lbl-total').textContent = 'Controls in Scope';
+  document.getElementById('lbl-met').textContent = 'Met';
+  document.getElementById('lbl-partial').textContent = 'Partial';
+  document.getElementById('lbl-gap').textContent = 'Gap';
+  document.getElementById('family-thead').innerHTML = '<tr><th>Family</th><th>Controls</th><th>Met</th><th>Partial</th><th>Gap</th><th>Not Started</th><th>Score</th><th>SPRS Pts Lost</th></tr>';
+
   const scoped = state.controls.filter(inScope);
   const counts = {Met:0, Partial:0, Gap:0, 'Not Started':0};
   scoped.forEach(c => { counts[c.status] = (counts[c.status]||0) + 1; });
@@ -1353,8 +1622,7 @@ function renderDashboard() {
   sprsEl.textContent = sprs;
   sprsEl.style.color = sprs >= 88 ? 'var(--met)' : sprs >= 0 ? 'var(--partial)' : 'var(--gap)';
   document.getElementById('sprs-note').innerHTML =
-    (scopeLevel === 'L1' ? '<strong>Note:</strong> Level 1 scope is active for the counts above, but the SPRS score is always calculated over all 110 controls. ' : '') +
-    'SPRS score is a self-assessment estimate per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal)">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> — not an official SPRS submission.';
+    'SPRS score is a self-assessment estimate per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal)">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> — not an official SPRS submission (Level 2 / NIST SP 800-171).';
 
   // Review-cycle summary
   const rs = {overdue:0, soon:0, unset:0};
@@ -1404,7 +1672,101 @@ function renderDashboard() {
 // Which controls have their objectives panel open (view state — not persisted)
 const expandedObjs = new Set();
 
+// ===== Level 1 tracker — the 15 FAR 52.204-21 requirements, assessed via their objectives =====
+const FAR_STATUS_META = {
+  'Met': {cls:'pill-met', label:'MET'},
+  'Not Met': {cls:'pill-gap', label:'NOT MET'},
+  'N/A': {cls:'pill-partial', label:'N/A'},
+  'Not Started': {cls:'pill-notstarted', label:'Not started'}
+};
+function renderFarTracker() {
+  const domFilter = document.getElementById('filter-family').value;
+  const statusFilter = document.getElementById('filter-status').value;
+  const search = document.getElementById('search-ctrl').value.toLowerCase();
+  const reviewFilter = document.getElementById('filter-review').value;
+  const freqFilter = document.getElementById('filter-freq').value;
+  const tbody = document.querySelector('#ctrl-table tbody');
+  tbody.innerHTML = '';
+  state.far.forEach((f, i) => {
+    const def = FAR_L1[i];
+    if (!def) return;
+    if (domFilter && def.domain !== domFilter) return;
+    if (statusFilter && f.status !== statusFilter) return;
+    if (freqFilter && (f.freq || 'A') !== freqFilter) return;
+    if (reviewFilter && reviewState(f) !== reviewFilter) return;
+    const objs = farObjectives(def.id);
+    if (search && !(def.req.toLowerCase().includes(search) || def.id.toLowerCase().includes(search) || def.guidance.toLowerCase().includes(search) || def.domain.toLowerCase().includes(search) || def.xw.join(' ').includes(search) || objs.some(o => o.t.toLowerCase().includes(search)))) return;
+    const xwRef = def.xw.join(', ');
+    const ms = def.xw.map(id => MS_MAP[id]).filter(Boolean).join('; ') || '—';
+    const hip = [...new Set(def.xw.flatMap(id => hipaaFor(id)))];
+    const hipCell = hip.length ? hip.map(x => '§' + x).join('<br>') : '—';
+    const prog = farObjProgress(f);
+    const expanded = expandedObjs.has(def.id);
+    const meta = FAR_STATUS_META[f.status] || FAR_STATUS_META['Not Started'];
+    const naWarn = f.reqNa && !f.reqNaRationale.trim();
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="family-col">${def.domain}</td>
+      <td class="id-col" title="Official CMMC Level 1 practice identifier">${def.id}<div style="font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:3px;font-weight:400">NIST ${xwRef}<br><span style="opacity:.7">crosswalk (ref)</span></div></td>
+      <td class="id-col" title="FAR 52.204-21(b)(1) subparagraph">${def.ref}</td>
+      <td class="req-col">${def.req}
+        <div style="margin-top:6px"><button class="obj-toggle${expanded ? ' open' : ''}" data-far-obj-toggle="${def.id}" aria-expanded="${expanded}" title="Show the assessment objectives (CMMC Level 1 Assessment Guide) for ${def.id}"><span class="caret">▶</span> ${objs.length} objective${objs.length > 1 ? 's' : ''}<span class="obj-count">${prog.met + prog.na}/${objs.length} met/N-A</span></button></div>
+        <div style="margin-top:8px;font-size:.7rem;color:var(--muted);line-height:1.45;border-left:2px solid var(--line);padding-left:8px"><span style="font-family:var(--mono);font-size:.55rem;text-transform:uppercase;letter-spacing:.05em;color:var(--teal);font-weight:700">ANSRd Implementation Guidance</span> — plain-language note, not official DoD/CMMC text<br>${def.guidance}</div>
+      </td>
+      <td style="font-family:var(--mono);font-size:.68rem;color:var(--muted);max-width:220px">${ms}<div style="font-size:.55rem;opacity:.7;margin-top:3px">reference / implementation aid — not a CMMC requirement or proof of compliance</div></td>
+      <td style="font-family:var(--mono);font-size:.64rem;color:var(--muted);max-width:150px">${hipCell}<div style="font-size:.55rem;opacity:.7;margin-top:3px">reference only</div></td>
+      <td>
+        <span class="pill ${meta.cls}" title="Requirement finding — derived from its objectives">${meta.label}</span>
+        <span class="derived-note">from objectives</span>
+        <label style="display:flex;align-items:center;gap:5px;margin-top:7px;font-size:.62rem;font-family:var(--mono);color:var(--muted);cursor:pointer"><input type="checkbox" data-far-reqna="${def.id}"${f.reqNa ? ' checked' : ''}> Requirement N/A</label>
+        ${f.reqNa ? `<textarea data-far="${def.id}" data-field="reqNaRationale" placeholder="Required: why does this requirement not apply?" aria-label="N/A rationale for ${def.id}"${naWarn ? ' class="na-warn"' : ''} style="margin-top:4px;width:100%;min-height:34px;font-size:.68rem">${esc(f.reqNaRationale)}</textarea>` : ''}
+      </td>
+      <td class="owner-col"><input type="text" data-far="${def.id}" data-field="owner" value="${esc(f.owner)}" placeholder="Owner" aria-label="Owner for ${def.id}"></td>
+      <td class="notes-col"><textarea data-far="${def.id}" data-field="notes" placeholder="Implementation notes…" aria-label="Notes for ${def.id}">${esc(f.notes)}</textarea></td>
+      <td class="evidence-col"><textarea data-far="${def.id}" data-field="evidence" placeholder="Evidence reference(s)…" aria-label="Evidence for ${def.id}">${esc(f.evidence)}</textarea></td>
+      <td class="review-cell">
+        <input type="date" data-far="${def.id}" data-field="lastReviewed" value="${f.lastReviewed}" aria-label="Last reviewed for ${def.id}" title="Date last reviewed">
+        <select data-far="${def.id}" data-field="freq" aria-label="Review frequency for ${def.id}" title="Level 1 requires at least an annual self-assessment">
+          ${Object.keys(FREQ_LABELS).map(k => `<option value="${k}"${(f.freq || 'A') === k ? ' selected' : ''}>${FREQ_LABELS[k]}</option>`).join('')}
+        </select>
+        ${dueBadge(f)}
+      </td>`;
+    tbody.appendChild(tr);
+
+    // Objectives sub-row (from the CMMC Level 1 Assessment Guide / NIST SP 800-171A)
+    const otr = document.createElement('tr');
+    otr.className = 'obj-row' + (expanded ? '' : ' hidden');
+    const disabled = f.reqNa ? ' disabled' : '';
+    otr.innerHTML = `<td colspan="11"><div class="obj-panel">
+      <div class="obj-head">Assessment objectives — CMMC Level 1 Assessment Guide (NIST SP 800-171A determination statements)${f.reqNa ? ' · requirement marked N/A' : ''}. Determine if:</div>
+      ${objs.map(o => {
+        const v = (f.objStatus || {})[o.key] || '';
+        const na = (f.objNa || {})[o.key] || '';
+        return `<div class="obj-item${v === 'Met' ? ' met' : ''}">
+          <span class="obj-key">${o.key}</span>
+          <span class="obj-text">${esc(o.t)}</span>
+          <select data-far-obj-id="${def.id}" data-far-obj-key="${o.key}" aria-label="Finding for ${o.key}"${disabled}>
+            <option value=""${v === '' ? ' selected' : ''}>—</option>
+            <option value="Met"${v === 'Met' ? ' selected' : ''}>Met</option>
+            <option value="Not Met"${v === 'Not Met' ? ' selected' : ''}>Not Met</option>
+            <option value="N/A"${v === 'N/A' ? ' selected' : ''}>N/A</option>
+          </select>
+        </div>${v === 'N/A' ? `<div style="margin:0 0 8px 0"><input type="text" data-far-objna="${def.id}" data-far-objna-key="${o.key}" value="${esc(na)}" placeholder="Required: why does this objective not apply?" aria-label="N/A rationale for ${o.key}"${na.trim() ? '' : ' class="na-warn"'} style="width:100%;font-size:.66rem;font-family:var(--mono)"></div>` : ''}`;
+      }).join('')}
+      <div class="obj-bulk">
+        <button data-far-obj-all="${def.id}" data-far-obj-val="Met"${disabled}>Mark all Met</button>
+        <button data-far-obj-all="${def.id}" data-far-obj-val="Not Met"${disabled}>Mark all Not Met</button>
+        <button data-far-obj-all="${def.id}" data-far-obj-val="N/A"${disabled}>Mark all N/A</button>
+        <button data-far-obj-all="${def.id}" data-far-obj-val=""${disabled}>Clear</button>
+      </div>
+    </div></td>`;
+    tbody.appendChild(otr);
+  });
+}
+
 function renderTracker() {
+  if (isL1()) return renderFarTracker();
   const familyFilter = document.getElementById('filter-family').value;
   const statusFilter = document.getElementById('filter-status').value;
   const search = document.getElementById('search-ctrl').value.toLowerCase();
@@ -1516,12 +1878,7 @@ function evidenceCell(c, i) {
   return rows + `<button class="ev-add" data-ev-add="${i}">+ evidence</button>`;
 }
 
-// Populate family filter
-(function() {
-  const fam = [...new Set(CONTROLS.map(c => c.family))];
-  const sel = document.getElementById('filter-family');
-  fam.forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; sel.appendChild(o); });
-})();
+// Filters (family/status) are populated by populateFilters() per the active level (see applyScopeUI).
 
 // Event delegation for tracker
 // ===== Anonymous usage events (Vercel; counts only, no data content) =====
@@ -1549,6 +1906,89 @@ document.getElementById('ctrl-table').addEventListener('input', e => {
     state.controls[idx][field] = el.value;
     saveState();
     if (el.tagName === 'TEXTAREA') autoGrow(el);
+  }
+});
+
+// ===== Level 1 (FAR) field handlers — write to state.far, never state.controls =====
+document.getElementById('ctrl-table').addEventListener('change', e => {
+  const el = e.target;
+  const fid = el.dataset.far, field = el.dataset.field;
+  if (!fid || !field) return;
+  const f = state.far.find(x => x.id === fid);
+  if (!f) return;
+  f[field] = el.value;
+  if (field === 'evidence') f.evidenceItems = el.value.split('\n').map(s => s.trim()).filter(Boolean);
+  saveState();
+  if (field === 'status') trackControlUpdate();
+  if (field === 'freq' || field === 'lastReviewed' || field === 'status') { renderTracker(); renderDashboard(); }
+});
+document.getElementById('ctrl-table').addEventListener('input', e => {
+  const el = e.target;
+  const fid = el.dataset.far, field = el.dataset.field;
+  if (!fid || !field) return;
+  if (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type === 'text')) {
+    const f = state.far.find(x => x.id === fid);
+    if (!f) return;
+    f[field] = el.value;
+    if (field === 'evidence') f.evidenceItems = el.value.split('\n').map(s => s.trim()).filter(Boolean);
+    saveState();
+    if (el.tagName === 'TEXTAREA') autoGrow(el);
+  }
+});
+
+// ===== Level 1 objectives — expand, assess (MET/NOT MET/N/A), N/A rationale, bulk, requirement N/A =====
+document.getElementById('ctrl-table').addEventListener('click', e => {
+  const toggle = e.target.closest('[data-far-obj-toggle]');
+  if (toggle) {
+    const id = toggle.dataset.farObjToggle;
+    if (expandedObjs.has(id)) expandedObjs.delete(id); else expandedObjs.add(id);
+    renderFarTracker();
+    return;
+  }
+  const bulk = e.target.closest('[data-far-obj-all]');
+  if (bulk) {
+    const f = state.far.find(x => x.id === bulk.dataset.farObjAll);
+    if (!f || f.reqNa) return;
+    const val = bulk.dataset.farObjVal;
+    if (!f.objStatus) f.objStatus = {};
+    farObjectives(f.id).forEach(o => {
+      if (val) f.objStatus[o.key] = val; else delete f.objStatus[o.key];
+      if (val !== 'N/A' && f.objNa) delete f.objNa[o.key];
+    });
+    applyFarRollup(f); trackControlUpdate();
+    saveState(); renderFarTracker(); renderDashboard();
+  }
+});
+document.getElementById('ctrl-table').addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset.farObjId && el.dataset.farObjKey) {           // objective finding
+    const f = state.far.find(x => x.id === el.dataset.farObjId);
+    if (!f) return;
+    if (!f.objStatus) f.objStatus = {};
+    const key = el.dataset.farObjKey;
+    if (el.value) f.objStatus[key] = el.value; else delete f.objStatus[key];
+    if (el.value !== 'N/A' && f.objNa) delete f.objNa[key];
+    applyFarRollup(f); trackControlUpdate();
+    saveState(); renderFarTracker(); renderDashboard();
+    return;
+  }
+  if (el.dataset.farReqna) {                                    // requirement-level N/A toggle
+    const f = state.far.find(x => x.id === el.dataset.farReqna);
+    if (!f) return;
+    f.reqNa = el.checked;
+    applyFarRollup(f); trackControlUpdate();
+    saveState(); renderFarTracker(); renderDashboard();
+    return;
+  }
+});
+document.getElementById('ctrl-table').addEventListener('input', e => {
+  const el = e.target;
+  if (el.dataset.farObjna && el.dataset.farObjnaKey) {         // objective N/A rationale
+    const f = state.far.find(x => x.id === el.dataset.farObjna);
+    if (!f) return;
+    if (!f.objNa) f.objNa = {};
+    f.objNa[el.dataset.farObjnaKey] = el.value;
+    saveState();
   }
 });
 
@@ -1697,6 +2137,7 @@ document.getElementById('poam-table').addEventListener('input', e => {
   if (idx >= 0 && field && (el.tagName==='TEXTAREA'||el.tagName==='INPUT')) { state.poam[idx][field] = el.value; saveState(); }
 });
 document.getElementById('add-poam-row').addEventListener('click', () => {
+  if (isL1()) return; // POA&Ms are not permitted at CMMC Level 1
   state.poam.push({controlId:'', weakness:'', owner:'', remediation:'', targetDate:'', status:'Open'});
   saveState(); renderPoam();
 });
@@ -1881,10 +2322,77 @@ document.getElementById('panel-overlap').addEventListener('click', e => {
 });
 
 // ===== Export XLSX =====
+// ===== Level 1 export — the 15 FAR 52.204-21 requirements. No SPRS score, no POA&M. =====
+function exportL1Xlsx() {
+  const wb = XLSX.utils.book_new();
+  const finding = s => s === 'Met' ? 'MET' : s === 'Not Met' ? 'NOT MET' : s === 'N/A' ? 'N/A' : 'Not started (not a CMMC finding)';
+  const rows = FAR_L1.map((def, i) => {
+    const f = state.far[i];
+    return {
+      'Domain': def.domain,
+      'CMMC L1 Practice (official)': def.id,
+      'FAR 52.204-21(b)(1)': def.ref,
+      'Requirement (official FAR text)': def.req,
+      'Finding': finding(f.status),
+      'Requirement N/A rationale': f.reqNa ? (f.reqNaRationale || '(N/A selected — no rationale provided)') : '',
+      'Owner': f.owner,
+      'Implementation Notes': f.notes,
+      'Evidence Reference': (f.evidenceItems && f.evidenceItems.length ? f.evidenceItems.join(' ; ') : (f.evidence || '')),
+      'ANSRd Implementation Guidance (not official)': def.guidance,
+      'Last Reviewed': f.lastReviewed,
+      'Review Frequency': FREQ_LABELS[f.freq || 'A'],
+      'Next Review Due': nextDue(f) || '',
+      'Review Status': reviewState(f) === 'overdue' ? 'OVERDUE' : reviewState(f) === 'soon' ? 'Due within 30 days' : reviewState(f) === 'unset' ? 'No review date' : reviewState(f) === 'ongoing' ? 'Ongoing' : 'OK',
+      'NIST 800-171 Crosswalk (reference only)': def.xw.join(', '),
+      'Microsoft Stack (reference only)': def.xw.map(id => MS_MAP[id]).filter(Boolean).join('; '),
+      'HIPAA Overlap (reference only)': [...new Set(def.xw.flatMap(id => hipaaFor(id)))].map(x => '§' + x).join('; ')
+    };
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'CMMC L1 (FAR 52.204-21)');
+
+  // Assessment Objectives sheet (from the CMMC Level 1 Assessment Guide / NIST SP 800-171A)
+  const objRows = [];
+  FAR_L1.forEach((def, i) => {
+    const f = state.far[i];
+    farObjectives(def.id).forEach(o => {
+      const v = (f.objStatus || {})[o.key] || '';
+      objRows.push({
+        'CMMC L1 Practice': def.id,
+        'Objective': o.key,
+        'Determination Statement (NIST SP 800-171A)': o.t,
+        'Finding': f.reqNa ? 'N/A (requirement marked N/A)' : (v === 'Met' ? 'MET' : v === 'Not Met' ? 'NOT MET' : v === 'N/A' ? 'N/A' : 'Not assessed'),
+        'N/A rationale': v === 'N/A' ? ((f.objNa || {})[o.key] || '(N/A selected — no rationale provided)') : (f.reqNa ? f.reqNaRationale : '')
+      });
+    });
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(objRows), 'Assessment Objectives');
+
+  const met = state.far.filter(f => f.status === 'Met').length;
+  const notMet = state.far.filter(f => f.status === 'Not Met').length;
+  const na = state.far.filter(f => f.status === 'N/A').length;
+  const notStarted = state.far.filter(f => f.status === 'Not Started').length;
+  const summary = [
+    {'Item':'CMMC Level','Value':'Level 1 — Basic Safeguarding of Federal Contract Information (FCI)'},
+    {'Item':'Source','Value':'FAR 52.204-21(b)(1) — 15 safeguarding requirements; objectives per CMMC Level 1 Assessment Guide'},
+    {'Item':'Assessment method','Value':'Per requirement, rolled up from its assessment objectives: finding of MET, NOT MET, or N/A.'},
+    {'Item':'Requirements Met','Value':met + ' / ' + FAR_L1.length},
+    {'Item':'Requirements Not Met','Value':notMet},
+    {'Item':'Requirements N/A','Value':na},
+    {'Item':'Not yet assessed (internal only)','Value':notStarted},
+    {'Item':'Application readiness (unofficial)','Value':Math.round(((met + na) / FAR_L1.length) * 100) + '%  — MET + documented N/A counted as satisfied. Application-generated indicator, NOT an official CMMC or SPRS score.'},
+    {'Item':'SPRS numerical score','Value':'Not applicable at Level 1. The −203 to 110 methodology applies to Level 2 / NIST SP 800-171 only.'},
+    {'Item':'CMMC POA&M','Value':'CMMC Level 1 POA&Ms are not permitted. (This does not restrict internal corrective-action or operational remediation plans.)'},
+    {'Item':'Cadence','Value':'Annual self-assessment and annual affirmation of compliance; results/affirmation entered into SPRS.'}
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summary), 'Summary');
+  XLSX.writeFile(wb, 'CMMC_Level1_FAR_52.204-21_Assessment.xlsx');
+}
+
 document.getElementById('export-xlsx').addEventListener('click', () => {
   track('assessment_exported'); track('workbook_downloaded');
+  if (isL1()) return exportL1Xlsx();
   const wb = XLSX.utils.book_new();
-  
+
   // Control Tracker sheet
   const ctrlData = state.controls.map(c => ({
     'Family': c.family,
@@ -2306,6 +2814,7 @@ syncHeaderHeight();
 
 // ===== Render All =====
 function renderAll() {
+  applyScopeUI();
   renderDashboard();
   renderTracker();
   renderAccessReview();
