@@ -134,7 +134,7 @@ header .inner a.back:hover{color:var(--teal)}
 <header class="top">
   <div class="inner">
     <a class="brand" href="/"><span class="glyph" aria-hidden="true"></span> ANSRd</a>
-    <a class="back" href="/app/">Full compliance tracker →</a>
+    <a class="back" href="/app/">NIST 800-171 / CMMC Readiness Tracker →</a>
   </div>
 </header>
 
@@ -198,8 +198,8 @@ header .inner a.back:hover{color:var(--teal)}
 
 <footer class="foot">
   <div class="wrap">
-    <p>Indicative self-check based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. <strong>Not legal advice</strong> — confirm against your own risk analysis and counsel. <strong>Privacy:</strong> your answers are scored entirely in your browser and are never uploaded. If you choose to share your summary to request a review, it comes only to us. We keep anonymous, cookieless usage counts (for example, that a check was completed) &mdash; never your answers or any personal data.<br>
-    Built by ANSRd · <a href="/app/">Full NIST 800-171 / CMMC + HIPAA tracker</a> · <a href="/">ansrd.io</a></p>
+    <p>This is an <strong>indicative documentation self-check</strong> based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. It is <strong>not a HIPAA audit, not a certification, and not legal advice</strong>, and completing eight questions cannot establish compliance. For any formal compliance determination, rely on the actual HIPAA Rules, current HHS/OCR guidance, your specific facts, and qualified legal or compliance advice. <strong>Privacy:</strong> Your assessment answers are processed locally in your browser and are not transmitted to ANSRd as assessment content. If you voluntarily request a review or submit a summary, the information you choose to submit is sent to ANSRd for that purpose. We use Vercel Analytics to collect limited, non-assessment usage telemetry such as page visits, approximate geographic information, device/browser information, referrers, and anonymous interaction-event counts. Assessment answers are not included in those analytics events. See <a href="/app/#privacy">Privacy</a> for details.<br>
+    Built by ANSRd · <a href="/app/">NIST 800-171 / CMMC Readiness Tracker</a> · <a href="/">ansrd.io</a></p>
   </div>
 </footer>
 
@@ -223,38 +223,41 @@ var BOOK_MAILTO = "mailto:info@ansrd.io?subject=" + encodeURIComponent("HIPAA do
   "&body=" + encodeURIComponent("Hi — I ran the HIPAA documentation self-check and would like a free 15-minute review.\n\nPractice / organization:\nRole:\nWhat you'd like to look at first:\n");
 
 var QUESTIONS = [
-  {q:"Do you have a written Security Risk Analysis completed or updated in the last 12 months?",
+  {q:"Do you have a current, documented Security Risk Analysis that is reviewed and updated when changes in your environment or operations warrant it?",
    cite:"§164.308(a)(1)(ii)(A) — Risk Analysis",
    name:"Current Security Risk Analysis",
-   why:"The most commonly cited Security Rule gap. A risk analysis from a few years ago is usually not considered current; HIPAA expects it reviewed and kept up to date."},
-  {q:"Do you have written HIPAA policies and procedures, reviewed within the last year?",
+   why:"The most commonly cited Security Rule gap. HIPAA does not set a fixed frequency — your risk analysis should be documented, current, and updated when your environment or operations change."},
+  {q:"Do you maintain written HIPAA policies and procedures that are current and updated as needed when environmental or operational changes affect them?",
    cite:"§164.316 — Policies, Procedures & Documentation",
    name:"Current written policies & procedures",
-   why:"Written, current policies are required under the Security Rule, and they're typically the first documents requested in a review. Verbal understanding doesn't count."},
-  {q:"Do you have a signed Business Associate Agreement with every vendor that touches PHI (billing, IT, cloud, email, shredding)?",
-   cite:"§164.308(b)(1), §164.314(a) — Business Associate Contracts",
-   name:"Complete Business Associate Agreements",
-   why:"Every vendor handling PHI needs a signed BAA. Missing BAAs are common, avoidable, and expensive when a vendor is breached."},
-  {q:"Is your workforce's HIPAA security training documented within the last year?",
+   why:"Written policies and procedures are required under the Security Rule and are typically the first documents requested in a review. HIPAA does not mandate one universal review interval; keep them current and update them as needed."},
+  {q:"For each vendor or service provider that meets HIPAA's definition of a business associate, do you have the appropriate written Business Associate Agreement or other required arrangement?",
+   cite:"§164.308(b), §164.314(a) — Business Associate Arrangements",
+   name:"Business Associate Agreements",
+   note:"Not every vendor relationship involving PHI necessarily requires a BAA; applicability depends on the function, service, and relationship under HIPAA.",
+   why:"Where a vendor is a business associate, a written BAA (or other required arrangement) must be in place. Whether a given vendor is a business associate depends on what it does with PHI — not every vendor that encounters PHI is one."},
+  {q:"Do you document your workforce security-awareness and training activities, including periodic security updates as appropriate?",
    cite:"§164.308(a)(5) — Security Awareness & Training",
    name:"Documented workforce training",
-   why:"Periodic, documented training is required. 'We talked about it at a staff meeting' is not documentation."},
+   why:"The Security Rule requires a security-awareness and training program with periodic security updates. It does not set a universal annual interval; keep the activity documented and appropriate to your environment."},
   {q:"Do you have a written contingency plan — data backup and a disaster-recovery procedure?",
    cite:"§164.308(a)(7) — Contingency Plan",
    name:"Written contingency & backup plan",
-   why:"Ransomware and outages make this the line between a bad day and a reportable breach. A written, tested plan is required."},
-  {q:"Do you have a written breach / incident response procedure, and know your 60-day notification duty?",
+   why:"The Security Rule requires a contingency plan, including data-backup and disaster-recovery procedures, so an outage or ransomware event is less likely to become a reportable breach."},
+  {q:"Do you have a written security-incident and breach-response procedure that addresses applicable HIPAA notification requirements and deadlines?",
    cite:"§164.308(a)(6) + Breach Notification Rule",
-   name:"Breach & incident response plan",
-   why:"A written, tested plan is what keeps a ransomware event or outage from turning into a reportable breach, and the 60-day notification window is short."},
-  {q:"Do you document who can access PHI, and promptly remove access when someone leaves?",
+   name:"Security-incident & breach-response plan",
+   note:"Notification obligations and deadlines depend on the circumstances and size of the breach. For example, individual notice generally must be provided without unreasonable delay and no later than 60 days after discovery, while reporting to HHS differs for breaches affecting fewer than 500 individuals.",
+   why:"A written procedure should cover detecting and responding to incidents and the applicable notification requirements — which vary by the circumstances and size of the breach."},
+  {q:"Do you document who is authorized to access ePHI and remove or modify access when it is no longer appropriate, including when workforce members leave or change roles?",
    cite:"§164.308(a)(3)/(4) — Access Management",
    name:"Access management & offboarding",
-   why:"Lingering access for former staff and vendors is a frequent audit finding and a real breach path."},
-  {q:"Is your HIPAA documentation retained and readily available (6-year retention)?",
+   why:"Lingering or excessive access for former or reassigned workforce members (and vendors) is a frequent finding and a real breach path."},
+  {q:"Do you retain required HIPAA documentation for the applicable six-year retention period and keep it available to those responsible for implementing the documented procedures?",
    cite:"§164.316(b)(2) — Retention & Availability",
    name:"Documentation retention & availability",
-   why:"HIPAA documentation must be kept six years and produced on request. Scattered or outdated files won't survive one."}
+   note:"HIPAA-required documentation generally must be retained for six years from the date of its creation or the date when it last was in effect, whichever is later, as applicable.",
+   why:"Required documentation must be retained for the applicable six-year period and be available to the people responsible for implementing the documented procedures."}
 ];
 
 var answers = {};
@@ -266,6 +269,7 @@ QUESTIONS.forEach(function(item, i){
     '<div class="qnum">Question ' + (i+1) + ' of ' + QUESTIONS.length + '</div>' +
     '<h3>' + item.q + '</h3>' +
     '<div class="cite">' + item.cite + '</div>' +
+    (item.note ? '<div class="qnote" style="font-size:.82rem;color:var(--muted);line-height:1.45;margin:6px 0 2px;max-width:60ch">' + item.note + '</div>' : '') +
     '<div class="opts" role="group">' +
       '<button type="button" data-i="'+i+'" data-v="2" aria-pressed="false">Yes</button>' +
       '<button type="button" data-i="'+i+'" data-v="1" aria-pressed="false">Partly</button>' +
@@ -322,7 +326,7 @@ document.getElementById('showResult').addEventListener('click', function(){
     sub='Some key documentation is in place and some needs attention. A review can help you sort out what to complete first.'; }
   else { band='Reasonably documented'; cls='r-good';
     head='Your core documentation appears in place.';
-    sub='The main task now is keeping it current and available, since HIPAA requires documentation stay up to date. An annual refresh helps.'; }
+    sub='The main task now is keeping it current and available. HIPAA does not set a fixed review interval, so refresh your documentation when your environment or operations change (a periodic review is a good ANSRd habit).'; }
 
   var card = document.getElementById('scoreCard');
   card.className = 'score-card ' + cls;
@@ -408,7 +412,7 @@ document.getElementById('captureForm').addEventListener('submit', function(e){
     .catch(function(){ status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; });
 });
 </script>
-<!-- Vercel Web Analytics (first-party, cookieless, no PII) -->
+<!-- Vercel Analytics (usage telemetry only; interaction-event counts carry no assessment answers) -->
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
