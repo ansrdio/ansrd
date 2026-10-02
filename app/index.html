@@ -389,6 +389,7 @@ tr.obj-row.hidden{display:none}
       <div class="dash-card"><div class="num" id="count-total">110</div><div class="lbl" id="lbl-total">Controls in Scope</div></div>
     </div>
     <p id="sprs-note" style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:8px">SPRS score is a self-assessment estimate over all 110 controls per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener" style="color:var(--teal)">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> — not an official SPRS submission.</p>
+    <p id="l2-note" style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:8px"><strong>Scope &amp; findings:</strong> This tool does not determine or validate your official CMMC assessment scope — define it under the official <a href="https://dodcio.defense.gov/CMMC/" target="_blank" rel="noopener" style="color:var(--teal)">CMMC Scoping Guides</a> before relying on these readiness results. The <strong>Met / Partial / Gap / Not Started</strong> labels are internal readiness and workflow indicators, <em>not</em> official CMMC findings — official Level 2 findings are <strong>MET / NOT MET / NOT APPLICABLE</strong> per the CMMC Level 2 Assessment Guide.</p>
     <p id="l1-note" style="display:none;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:8px">CMMC <strong>Level 1</strong> is assessed against the <strong>15 safeguarding requirements of FAR 52.204-21</strong> for the protection of Federal Contract Information (FCI). Each requirement is evaluated through its <strong>assessment objectives</strong> (from the CMMC Level 1 Assessment Guide) and rolls up to a finding of <strong>MET</strong>, <strong>NOT MET</strong>, or <strong>N/A</strong>; <em>Not started</em> is an internal pre-assessment state, not a CMMC finding. Level 1 requires an <strong>annual self-assessment and annual affirmation</strong>, entered into SPRS. There is <strong>no SPRS numerical score</strong> at Level 1 (the −203 to 110 methodology applies to Level 2 / NIST SP 800-171), and <strong>CMMC Level 1 POA&amp;Ms are not permitted</strong> (this does not stop you from keeping internal corrective-action or operational remediation plans). The Readiness % below counts MET and documented-N/A requirements as satisfied; it is an application-generated indicator, not an official CMMC or SPRS score.</p>
     <p id="ssp-warning" style="display:none;font-family:var(--mono);font-size:.7rem;color:var(--gap);margin-bottom:8px">⚠ 3.12.4 (System Security Plan) is not Met. Per the DoD methodology, without an SSP an assessment cannot be completed — the SSP is a prerequisite, not a point deduction.</p>
     <div class="review-summary" id="review-summary"></div>
@@ -495,7 +496,7 @@ tr.obj-row.hidden{display:none}
   <div class="panel" id="panel-faq" role="tabpanel" aria-label="Frequently Asked Questions">
     <div class="faq-wrap">
       <h3>Frequently asked questions</h3>
-      <details class="faq-item"><summary>Is my data saved? Where?</summary><div class="faq-body">Yes — in your browser's local storage, on your device only. It persists across reloads and restarts. It's never sent to a server, and we can't see it.</div></details>
+      <details class="faq-item"><summary>Is my data saved? Where?</summary><div class="faq-body">Yes — in your browser's local storage, on your device only. It persists across reloads and restarts. Your assessment content is not sent to ANSRd's application servers and we can't see it. (The hosted site does collect limited, non-assessment usage telemetry via Vercel Analytics — see <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a>.)</div></details>
       <details class="faq-item"><summary>Do I need an account or to sign in?</summary><div class="faq-body">No. No account, no email, no sign-up. Just open it and start.</div></details>
       <details class="faq-item"><summary>How do I back up or move my data to another computer?</summary><div class="faq-body">Use <strong>Export (.xlsx or JSON)</strong> to download a file, then <strong>Import</strong> on the other machine to restore it. This is also your backup — do it regularly, since clearing your browser data will erase your progress.</div></details>
       <details class="faq-item"><summary>Will I lose my work?</summary><div class="faq-body">Your work stays until you clear your browser's site data (or use Reset). To be safe, export a backup periodically.</div></details>
@@ -1522,6 +1523,7 @@ function renderDashboardL1() {
   // Hide Level-2-only chrome; show the Level 1 explainer.
   document.getElementById('sprs-card').style.display = 'none';
   document.getElementById('sprs-note').style.display = 'none';
+  document.getElementById('l2-note').style.display = 'none';
   document.getElementById('ssp-warning').style.display = 'none';
   document.getElementById('l1-note').style.display = 'block';
   document.getElementById('card-gap').style.display = '';       // repurposed as the N/A tile
@@ -1591,6 +1593,7 @@ function renderDashboard() {
   // Restore Level 2 dashboard chrome (in case we came from Level 1)
   document.getElementById('sprs-card').style.display = '';
   document.getElementById('sprs-note').style.display = '';
+  document.getElementById('l2-note').style.display = '';
   document.getElementById('l1-note').style.display = 'none';
   document.getElementById('card-gap').style.display = '';
   document.getElementById('lbl-total').textContent = 'Controls in Scope';
