@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NIST 800-171 / CMMC Readiness Tracker — Online Tool</title>
-<meta name="description" content="Free in-browser NIST 800-171 / CMMC compliance tracker. All 110 controls, SPRS self-assessment score, Microsoft-stack mapping, roadmap, export to XLSX. No signup, no data collection.">
+<meta name="description" content="Free in-browser NIST 800-171 / CMMC compliance tracker. All 110 controls, SPRS self-assessment score, Microsoft-stack mapping, roadmap, export to XLSX. No signup; your assessment content stays in your browser (limited, non-assessment usage analytics only).">
 <link rel="canonical" href="https://ansrd.io/app/">
 <meta property="og:title" content="NIST 800-171 Readiness Tracker — Use Online Free">
 <meta property="og:description" content="Track all 110 NIST 800-171 controls in your browser. Export to XLSX. No accounts.">
@@ -506,7 +506,7 @@ tr.obj-row.hidden{display:none}
       <details class="faq-item"><summary>I can't remember the control number — how do I find it?</summary><div class="faq-body">Press <strong>⌘K</strong> (or <strong>Ctrl+K</strong>), or click <strong>Search</strong> in the top bar, and type what you remember in plain language. It understands the shorthand people actually use — <strong>MFA</strong> finds the multifactor controls, <strong>antivirus</strong> finds the malicious-code ones, <strong>VPN</strong> finds remote access, <strong>USB</strong> finds portable storage, <strong>screen lock</strong> finds session lock. It searches control text, all 320 assessment objectives, the Microsoft mapping, HIPAA citations and cluster names, and tells you which one matched. Hit ↵ to jump straight to that control.</div></details>
       <details class="faq-item"><summary>What is the Overlap tab for?</summary><div class="faq-body">Two things. <strong>Implementation clusters</strong> group controls that one project usually closes together — a single MFA rollout covers requirements in both 3.5 and 3.7, so you can plan by effort instead of control number. (These groupings are ours, not NIST's.) <strong>HIPAA overlap</strong> shows which HIPAA Security Rule standards your 800-171 controls support, plus the requirements they don't cover.</div></details>
       <details class="faq-item"><summary>Is the SPRS score official?</summary><div class="faq-body">No. It's a self-assessment estimate calculated per the NIST SP 800-171 DoD Assessment Methodology (Annex A weights). It is not an official SPRS submission, and this tool does not grant CMMC certification. Always confirm against the official methodology and your contractual requirements.</div></details>
-      <details class="faq-item"><summary>Do you collect any of my data?</summary><div class="faq-body">No. Your assessment data never leaves your browser. The hosted site uses cookieless, aggregate analytics (page counts only) — nothing that identifies you or touches your tracker contents.</div></details>
+      <details class="faq-item"><summary>Do you collect any of my data?</summary><div class="faq-body">Your assessment content — control answers, notes, owners, evidence references, POA&amp;M items — stays in your browser and is not uploaded to ANSRd's application servers. The hosted site uses <strong>Vercel Analytics</strong> to collect limited, non-assessment usage telemetry: page/route visits, approximate geography, device/browser/OS information, referrers, and anonymous interaction-event counts. Analytics never includes your assessment content. See <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> for details.</div></details>
       <details class="faq-item"><summary>Can I run this on my own network or air-gapped?</summary><div class="faq-body">Yes. It's static and open source (<a href="https://github.com/ansrdio/ansrd" target="_blank" rel="noopener">github.com/ansrdio/ansrd</a>). Clone it and serve the folder — it works fully offline with no external calls.</div></details>
       <details class="faq-item"><summary>Which framework version is this based on?</summary><div class="faq-body">NIST SP 800-171 Rev 2 — the baseline for CMMC Level 2 under DoD Class Deviation 2024-O0013. (Intentionally not Rev 3.)</div></details>
       <details class="faq-item"><summary>How do I suggest a feature or report a problem?</summary><div class="faq-body">Open an issue on GitHub: <a href="https://github.com/ansrdio/ansrd/issues" target="_blank" rel="noopener">github.com/ansrdio/ansrd/issues</a>.</div></details>
@@ -521,15 +521,15 @@ tr.obj-row.hidden{display:none}
       <p class="privacy-sub">Your data, plainly.</p>
       <ul class="privacy-list">
         <li><strong>No account, ever.</strong> No sign-up, no login, no email required. Open it and start.</li>
-        <li><strong>No backend for your data.</strong> Everything you enter — control statuses, notes, owners, evidence, POA&amp;M items — is saved only in your own browser's local storage, on your device. It is never uploaded, transmitted, or stored on any server we control. We cannot see it.</li>
-        <li><strong>You own it.</strong> Use <strong>Export (.xlsx / JSON)</strong> to back up your work or move it between machines, and <strong>Import</strong> to restore it. That's the only way your data ever leaves your browser — because you chose to save a file.</li>
-        <li><strong>Back up regularly.</strong> Because nothing is stored on a server, clearing your browser's site data (or using Reset) erases your progress. Export a copy periodically.</li>
-        <li><strong>Analytics.</strong> The hosted site (ansrd.io) uses <strong>Vercel Web Analytics</strong> — cookieless, no personal data, aggregate page counts only. It cannot see or transmit anything you enter in the tracker. No advertising trackers, no third-party cookies.</li>
+        <li><strong>No backend for your assessment content.</strong> Everything you enter — control statuses, notes, owners, evidence references, POA&amp;M items — is saved only in your own browser's local storage, on your device. It is not uploaded to or stored on any ANSRd application server, and we cannot see it.</li>
+        <li><strong>You own it.</strong> Use <strong>Export (.xlsx / JSON)</strong> to back up your work or move it between machines, and <strong>Import</strong> to restore it. That's the only way your assessment content leaves your browser as application data — because you chose to save a file.</li>
+        <li><strong>Back up regularly.</strong> Because your assessment content is not stored on a server, clearing your browser's site data (or using Reset) erases your progress. Export a copy periodically.</li>
+        <li><strong>Analytics (hosted site).</strong> ansrd.io uses <strong>Vercel Analytics</strong> as a service provider for limited website-usage telemetry. This may include page/route usage, approximate geographic information, device/browser/operating-system information, and referrer data, plus anonymous counts of named interaction events (for example <code>assessment_started</code>, <code>control_updated</code>, <code>assessment_exported</code>, <code>workbook_downloaded</code>). These are counts only — they do <strong>not</strong> contain your control answers, notes, evidence references, or any assessment content. The purpose is to understand whether this public resource is being accessed and which functionality is used. No advertising trackers and no third-party advertising cookies. Run it yourself (see below) for zero external telemetry.</li>
         <li><strong>Run it yourself.</strong> It's static and open source. Clone it from <a href="https://github.com/ansrdio/ansrd" target="_blank" rel="noopener">GitHub</a> and run it entirely inside your own environment — even fully air-gapped. Self-hosted, it makes <strong>no external requests at all</strong>.</li>
         <li><strong>Verify it yourself.</strong> Open your browser's DevTools → Network tab and watch: your assessment data never posts anywhere.</li>
       </ul>
       <div class="dataflow">
-        <svg viewBox="0 0 600 150" role="img" aria-label="Your data flows from you into your browser's local storage on your device, and never to any server.">
+        <svg viewBox="0 0 600 150" role="img" aria-label="Your assessment data flows from you into your browser's local storage on your device, and is not sent to any ANSRd application server.">
           <defs><marker id="arw" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--teal)"/></marker></defs>
           <rect x="8" y="45" width="118" height="60" rx="10" fill="none" stroke="var(--teal)" stroke-width="2"/>
           <text x="67" y="72" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">You</text>
@@ -545,20 +545,20 @@ tr.obj-row.hidden{display:none}
           <line x1="446" y1="64" x2="424" y2="86" stroke="var(--gap)" stroke-width="3"/>
           <rect x="480" y="45" width="112" height="60" rx="10" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"/>
           <text x="536" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="var(--muted)">No server</text>
-          <text x="536" y="90" text-anchor="middle" font-size="10" fill="var(--muted)">nothing uploaded</text>
+          <text x="536" y="90" text-anchor="middle" font-size="10" fill="var(--muted)">no assessment data</text>
         </svg>
-        <div class="cap">Your data → your browser's local storage ✓ &nbsp;·&nbsp; ✕ never to a server</div>
+        <div class="cap">Your assessment data → your browser's local storage ✓ &nbsp;·&nbsp; ✕ not sent to an application server <span style="opacity:.75">(separate from limited Vercel Analytics usage telemetry)</span></div>
       </div>
     </div>
   </div>
 
   <div class="trust-line">
-    <strong>Free to use — no sign-up, no account.</strong> Your assessment data stays in your browser and is never uploaded to or stored on our servers; we can't see it. Export / Import lets you back it up or move it yourself. We use privacy-friendly, cookieless analytics that collect no personal data — only anonymous visit counts.
-    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.10 · Beta · updated August 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a> · <a href="mailto:info@ansrd.io?subject=ANSRd%20tracker%20beta%20feedback" style="color:var(--teal);text-decoration:none">Beta feedback</a></div>
+    <strong>Free to use — no sign-up, no account.</strong> Your assessment content stays in your browser and is not uploaded to ANSRd's application servers. We use Vercel Analytics to collect limited, non-assessment usage telemetry such as page visits, general device/browser information, approximate geographic information, referrers, and anonymous interaction-event counts. We do not send your control answers, evidence references, implementation notes, or other assessment content through analytics. Export / Import lets you back up your work or move it between machines. See <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> for details.
+    <div class="version-stamp">NIST 800-171 / CMMC Readiness Tracker · v2.11 · Beta · updated September 2026 · <a data-goto="privacy" style="color:var(--teal);cursor:pointer;text-decoration:none">Privacy</a> · <a data-goto="faq" style="color:var(--teal);cursor:pointer;text-decoration:none">FAQ</a> · <a href="mailto:info@ansrd.io?subject=ANSRd%20tracker%20beta%20feedback" style="color:var(--teal);text-decoration:none">Beta feedback</a></div>
   </div>
 
   <div class="disclaimer">
-    <strong>Disclaimer:</strong> Control text is summarized from the publicly available NIST SP 800-171 Rev.2. Always refer to the official NIST publication and your own contractual requirements for authoritative wording. All data stays in your browser's localStorage — nothing is transmitted to any server. <strong>Export regularly</strong> — use Export .xlsx / Export JSON to keep per-client or backup copies; Import restores them.
+    <strong>Disclaimer:</strong> Control text is summarized from the publicly available NIST SP 800-171 Rev.2. Always refer to the official NIST publication and your own contractual requirements for authoritative wording. Assessment content is stored locally in your browser's localStorage and is not transmitted as application data; limited website-usage telemetry is collected separately through Vercel Analytics as described in the Privacy section. <strong>Export regularly</strong> — use Export .xlsx / Export JSON to keep per-client or backup copies; Import restores them.
     <br><br>
     <strong>SPRS score:</strong> calculated per the <a href="https://www.acq.osd.mil/asda/dpc/cp/cyber/docs/safeguarding/NIST-SP-800-171-Assessment-Methodology-Version-1.2.1-6.24.2020.pdf" target="_blank" rel="noopener">NIST SP 800-171 DoD Assessment Methodology v1.2.1</a> (Annex A weights). It is a <em>self-assessment estimate</em>, not an official SPRS submission, and this tool does not grant CMMC certification. Weights for 3.5.3 (MFA) and 3.13.11 (FIPS crypto) apply built-in partial credit; 3.12.4 (SSP) is a prerequisite rather than a scored item.
     <br><br>
@@ -2825,7 +2825,7 @@ function renderAll() {
 
 renderAll();
 </script>
-<!-- Vercel Web Analytics (first-party, cookieless, no PII) -->
+<!-- Vercel Analytics (usage telemetry only; interaction-event counts carry no assessment content) -->
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
