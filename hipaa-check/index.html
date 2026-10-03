@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
-<title>HIPAA Documentation Support</title>
-<meta name="description" content="HIPAA documentation support for independent healthcare practices: review your current documentation, identify what needs attention, and agree practical next steps with a healthcare information security professional. Optional 2-minute self-check runs in your browser.">
+<title>HIPAA Documentation Self-Check</title>
+<meta name="description" content="A free, browser-based HIPAA documentation self-check: review your current HIPAA documentation and identify areas that may need attention. An indicative self-check — not a HIPAA audit, certification, or legal advice. No sign-up; your answers stay on your device.">
 <link rel="canonical" href="https://ansrd.io/hipaa-check/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ansrd.io/hipaa-check/">
-<meta property="og:title" content="HIPAA documentation support for independent practices">
-<meta property="og:description" content="Review your HIPAA documentation, identify what needs attention, and agree practical next steps. Optional 2-minute self-check, no signup, runs in your browser.">
+<meta property="og:title" content="HIPAA Documentation Self-Check">
+<meta property="og:description" content="Review your current HIPAA documentation and identify areas that may need attention. Free 2-minute self-check, no sign-up, runs in your browser.">
 <meta property="og:image" content="https://ansrd.io/og-image.svg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -141,14 +141,13 @@ header .inner a.back:hover{color:var(--teal)}
 <main>
 <div class="wrap">
   <section class="hero">
-    <span class="eyebrow">HIPAA Documentation Support</span>
-    <h1>HIPAA documentation support for independent practices</h1>
-    <p class="lede">Review your current documentation, identify work that needs attention, and agree on practical next steps with a healthcare information security professional.</p>
+    <span class="eyebrow">Free HIPAA Self-Check</span>
+    <h1>HIPAA documentation self-check</h1>
+    <p class="lede">Review your current HIPAA documentation and identify areas that may need attention.</p>
     <div class="hero-actions">
-      <a class="btn" id="heroBook" href="#">Book a free HIPAA documentation review</a>
-      <a class="btn btn-ghost" href="#quiz">Start the two-minute self-check</a>
+      <a class="btn" href="#quiz">Start the two-minute self-check</a>
     </div>
-    <p class="hero-note">The free review is a 15-minute introductory conversation. Its output is a short next-step summary — not a completed risk analysis or a compliance guarantee. The self-check below is optional and runs entirely in your browser.</p>
+    <p class="hero-note">A free, browser-based self-check. Your answers stay on your device, and there's no sign-up.</p>
     <div class="trust">
       <span>✓ <b>Free</b></span><span>✓ <b>No sign-up</b></span><span>✓ <b>Runs in your browser</b></span>
     </div>
@@ -166,7 +165,7 @@ header .inner a.back:hover{color:var(--teal)}
   </div>
 
   <section class="result" id="result" aria-live="polite">
-    <h2 class="result-title">Your documentation review summary</h2>
+    <h2 class="result-title">Your self-check summary</h2>
     <p class="result-note">This reflects your self-reported answers and points to areas that may need attention. It is an indicative self-check, not a completed risk analysis or a compliance determination.</p>
     <div class="score-card" id="scoreCard">
       <div class="band" id="scoreBand"></div>
@@ -175,22 +174,10 @@ header .inner a.back:hover{color:var(--teal)}
     </div>
     <div class="gaps" id="gapList"></div>
     <div class="cta">
-      <span class="eyebrow">Next step</span>
-      <h2 id="ctaHead">Discuss these results in a free HIPAA documentation review.</h2>
-      <p>A 15-minute conversation with a healthcare information security professional: we walk through what you have, what needs attention, and a practical next step. No obligation. Any full risk analysis, policy drafting, or remediation would be scoped separately if you want it.</p>
-      <a class="btn" id="bookBtn" href="#">Book a free HIPAA documentation review</a>
-      <div class="fineprint">If your documentation is already in good shape, I'll tell you.</div>
+      <span class="eyebrow">Next steps</span>
+      <p>Review the areas identified above against the HIPAA Security Rule and current HHS/OCR guidance. Use the results as a starting point for your organization's own risk-analysis, documentation, and remediation process.</p>
+      <a class="btn" href="https://www.hhs.gov/hipaa/for-professionals/security/guidance/index.html" target="_blank" rel="noopener">Review HHS/OCR guidance →</a>
     </div>
-    <form class="capture" id="captureForm">
-      <div class="cap-head">Prefer email? Send your review summary and request a free HIPAA documentation review.<span class="cap-disc">What's sent: the review summary above (the areas flagged), plus the name, email, and practice you enter here. No individual answers beyond that, and no patient information &mdash; please don't include any.</span></div>
-      <div class="cap-grid">
-        <input type="text" id="capName" placeholder="Your name (optional)" autocomplete="name">
-        <input type="email" id="capEmail" placeholder="Email *" autocomplete="email" required>
-      </div>
-      <input type="text" id="capPractice" placeholder="Practice / organization (optional)">
-      <button type="submit" class="btn" id="capSend">Send my summary and request a free review</button>
-      <div class="cap-status" id="capStatus" role="status" aria-live="polite"></div>
-    </form>
     <div class="submit-row"><button class="btn btn-ghost" id="againBtn">↻ Start over</button></div>
   </section>
 </div>
@@ -198,29 +185,14 @@ header .inner a.back:hover{color:var(--teal)}
 
 <footer class="foot">
   <div class="wrap">
-    <p>This is an <strong>indicative documentation self-check</strong> based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. It is <strong>not a HIPAA audit, not a certification, and not legal advice</strong>, and completing eight questions cannot establish compliance. For any formal compliance determination, rely on the actual HIPAA Rules, current HHS/OCR guidance, your specific facts, and qualified legal or compliance advice. <strong>Privacy:</strong> Your assessment answers are processed locally in your browser and are not transmitted to ANSRd as assessment content. If you voluntarily request a review or submit a summary, the information you choose to submit is sent to ANSRd for that purpose. We use Vercel Analytics to collect limited, non-assessment usage telemetry such as page visits, approximate geographic information, device/browser information, referrers, and anonymous interaction-event counts. Assessment answers are not included in those analytics events. See <a href="/app/#privacy">Privacy</a> for details.<br>
+    <p>This is an <strong>indicative documentation self-check</strong> based on the HIPAA Security Rule (45 CFR Part 164, Subpart C) and the Breach Notification Rule. It is <strong>not a HIPAA audit, not a certification, and not legal advice</strong>, and completing eight questions cannot establish compliance. For any formal compliance determination, rely on the actual HIPAA Rules, current HHS/OCR guidance, your specific facts, and qualified legal or compliance advice. <strong>Privacy:</strong> Your assessment answers are processed locally in your browser and are not transmitted to ANSRd as assessment content. We use Vercel Analytics to collect limited, non-assessment usage telemetry such as page visits, approximate geographic information, device/browser information, referrers, and anonymous interaction-event counts. Assessment answers are not included in those analytics events. See <a href="/app/#privacy">Privacy</a> for details.<br>
     Built by ANSRd · <a href="/app/">NIST 800-171 / CMMC Readiness Tracker</a> · <a href="/">ansrd.io</a></p>
   </div>
 </footer>
 
 <script>
-// ── Booking link ──────────────────────────────────────────────────────────
-// PASTE YOUR CALENDLY / CAL.COM LINK BELOW to make "Book a review" a one-tap
-// scheduling link (recommended — works for everyone, no mail app needed, and it
-// captures name/email/time). Leave it "" to fall back to the email option.
-var BOOK_URL = "https://calendly.com/ansrd-info/30min";
-
-// ── Lead capture (see submissions in your own dashboard) ────────────────────
-// PASTE YOUR FORMSPREE ENDPOINT BELOW to capture "Send my results" submissions
-// (name, email, practice, message + their gap results) reliably — you'll see
-// every one by email and in the Formspree dashboard. Create a free form at
-// formspree.io, then paste its endpoint here. Leave "" and it falls back to a
-// best-effort email draft.
-var FORM_ENDPOINT = "https://formspree.io/f/xeajnano";
-var resultText = "";     // filled when results are shown, sent with the form
-
-var BOOK_MAILTO = "mailto:info@ansrd.io?subject=" + encodeURIComponent("HIPAA documentation review request") +
-  "&body=" + encodeURIComponent("Hi — I ran the HIPAA documentation self-check and would like a free 15-minute review.\n\nPractice / organization:\nRole:\nWhat you'd like to look at first:\n");
+// Free, browser-based educational self-check. No booking, lead-capture, or
+// consulting workflow — results are shown on the page and never submitted anywhere.
 
 var QUESTIONS = [
   {q:"Do you have a current, documented Security Risk Analysis that is reviewed and updated when changes in your environment or operations warrant it?",
@@ -280,16 +252,7 @@ QUESTIONS.forEach(function(item, i){
 
 // Anonymous, no-PII funnel events (Vercel custom events; no-op if unavailable)
 function track(name){ try{ if(window.va) window.va('event', { name: name }); }catch(e){} }
-// Campaign attribution: ?ref= on the outreach link tags who converted. Used ONLY on opt-in actions
-// (booking + the results form) — never on the anonymous funnel events, so passive visits stay anonymous.
-var REF = (function(){ try{ return (new URLSearchParams(location.search).get('ref') || '').slice(0,60); }catch(e){ return ''; } })();
 var started = false;
-
-// Booking link: Calendly if set, else an email fallback. ?ref= rides the opt-in click only.
-function bookHrefStr(){ return BOOK_URL ? (BOOK_URL + (REF ? (BOOK_URL.indexOf('?') > -1 ? '&' : '?') + 'utm_source=hipaa-check&utm_content=' + encodeURIComponent(REF) : '')) : BOOK_MAILTO; }
-function applyBook(el){ if(!el) return; el.setAttribute('href', bookHrefStr()); if(BOOK_URL){ el.setAttribute('target','_blank'); el.setAttribute('rel','noopener'); } el.addEventListener('click', function(){ track('gapcheck_book_click'); }); }
-applyBook(document.getElementById('heroBook'));
-applyBook(document.getElementById('bookBtn'));
 
 quiz.addEventListener('click', function(e){
   var b = e.target.closest('button[data-i]');
@@ -320,13 +283,13 @@ document.getElementById('showResult').addEventListener('click', function(){
   var band, cls, head, sub;
   if(score <= 6){ band='Several areas to address'; cls='r-crit';
     head='Several core documents appear to be missing.';
-    sub='A number of the items HIPAA calls for are not yet in place. These are common to complete, and a documentation review can help you prioritise them.'; }
+    sub='A number of the items HIPAA calls for are not yet in place. These are common to complete; the list above is a starting point to prioritise them.'; }
   else if(score <= 12){ band='Some gaps to close'; cls='r-warn';
     head='You have a foundation, with gaps.';
-    sub='Some key documentation is in place and some needs attention. A review can help you sort out what to complete first.'; }
+    sub='Some key documentation is in place and some needs attention. Use the list above to sort out what to complete first.'; }
   else { band='Reasonably documented'; cls='r-good';
     head='Your core documentation appears in place.';
-    sub='The main task now is keeping it current and available. HIPAA does not set a fixed review interval, so refresh your documentation when your environment or operations change (a periodic review is a good ANSRd habit).'; }
+    sub='The main task now is keeping it current and available. HIPAA does not set a fixed review interval, so refresh your documentation when your environment or operations change (a periodic self-review of your own documentation is good practice).'; }
 
   var card = document.getElementById('scoreCard');
   card.className = 'score-card ' + cls;
@@ -338,7 +301,6 @@ document.getElementById('showResult').addEventListener('click', function(){
   var need = miss.length + partial.length;
   if(need === 0){
     gaps.innerHTML = '<div class="none-note">✓ You answered yes to all eight areas. Strong — the work now is keeping it reviewed and dated so it stays current.</div>';
-    document.getElementById('ctaHead').textContent = 'Discuss keeping it current in a free review.';
   } else {
     var html = '<h2>' + need + ' area' + (need>1?'s':'') + ' to review</h2>' +
       '<p class="intro">These are the areas to review first, in priority order.</p>';
@@ -350,21 +312,8 @@ document.getElementById('showResult').addEventListener('click', function(){
         '<p>' + item.why + '</p></div>';
     });
     gaps.innerHTML = html;
-    document.getElementById('ctaHead').textContent = 'Discuss these results in a free HIPAA documentation review.';
   }
 
-  // Capture the result text so the "Send my results" form can include it
-  var lines = ['HIPAA gap-check result: ' + band + ' — ' + score + ' / ' + max, ''];
-  if (miss.length + partial.length === 0) {
-    lines.push('Answered yes to all eight areas.');
-  } else {
-    lines.push('Areas needing attention:');
-    miss.concat(partial).forEach(function(item){
-      var isMiss = miss.indexOf(item) > -1;
-      lines.push('- ' + item.name + (isMiss ? ' (No / Unsure)' : ' (Partial)') + '  [' + item.cite.split(' — ')[0] + ']');
-    });
-  }
-  resultText = lines.join('\n');
   track('hipaa_completed'); track('results_generated');
 
   var r = document.getElementById('result');
@@ -378,38 +327,6 @@ document.getElementById('againBtn').addEventListener('click', function(){
   document.getElementById('result').classList.remove('show');
   updateProgress();
   window.scrollTo({top:0, behavior:'smooth'});
-});
-
-// "Send my results" — reliable capture (posts to your form service; nothing is
-// sent unless the visitor chooses to submit).
-document.getElementById('captureForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  var status = document.getElementById('capStatus');
-  status.className = 'cap-status';
-  var email = document.getElementById('capEmail').value.trim();
-  if (!email) { status.textContent = 'Please add an email so I can reach you.'; status.className = 'cap-status err'; return; }
-  var payload = {
-    name: document.getElementById('capName').value.trim(),
-    email: email,
-    practice: document.getElementById('capPractice').value.trim(),
-    ref: REF,
-    _subject: 'HIPAA documentation review request' + (REF ? ' [' + REF + ']' : ''),
-    results: resultText
-  };
-  if (!FORM_ENDPOINT) {
-    // Not configured yet — best-effort fallback to an email draft.
-    window.location.href = 'mailto:info@ansrd.io?subject=' + encodeURIComponent('HIPAA gap-check results') +
-      '&body=' + encodeURIComponent('Name: ' + payload.name + '\nEmail: ' + payload.email + '\nPractice: ' + payload.practice + '\n\n' + resultText);
-    return;
-  }
-  var send = document.getElementById('capSend');
-  send.disabled = true; status.textContent = 'Sending…';
-  fetch(FORM_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(payload) })
-    .then(function(r){
-      if (r.ok) { document.getElementById('captureForm').innerHTML = '<div class="cap-done">✓ Thanks — I’ll follow up shortly about a free documentation review.</div>'; track('action_plan_requested'); }
-      else { status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; }
-    })
-    .catch(function(){ status.textContent = 'Something went wrong. Please email info@ansrd.io.'; status.className = 'cap-status err'; send.disabled = false; });
 });
 </script>
 <!-- Vercel Analytics (usage telemetry only; interaction-event counts carry no assessment answers) -->
